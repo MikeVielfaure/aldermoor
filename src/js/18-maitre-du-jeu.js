@@ -57,7 +57,8 @@ async function callGM(mode,p){
    if(r&&typeof r==='object'&&!Array.isArray(r)){aiUsed=true;return {narration:String(r.narration||'').slice(0,700),actions:Array.isArray(r.actions)?r.actions.slice(0,4):[],ai:true};}}
   catch(e){const c=e&&e.code;
    if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].includes(c)){aiState='off';aiBadge();say('Le MJ IA n’est pas disponible : le MJ classique prend le relais.','sys');}
-   else if(c==='rate_limited')say('Le MJ IA reprend son souffle (limite atteinte). Le MJ classique improvise.','sys');}
+   else if(c==='rate_limited')say('Le MJ IA reprend son souffle (limite atteinte). Le MJ classique improvise.','sys');
+   else if(SAMPLE.own)mjFail(e);}
  }
  return fallbackGM(mode,p);
 }

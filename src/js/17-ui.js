@@ -1,8 +1,8 @@
 /* ================= UI ================= */
 function say(t,type){const f=$('#feed');const d=document.createElement('div');d.className='msg'+(type?' '+type:'');d.innerHTML=t;f.appendChild(d);while(f.children.length>4)f.removeChild(f.firstChild);setTimeout(()=>{d.style.opacity=0;setTimeout(()=>d.remove(),700);},type==='gm'?9000:6000);}
 let aiState='pending',SAMPLE=null,aiUsed=false;
-function aiBadge(){const b=$('#ai-badge');if(aiState==='on'){b.textContent='MJ : IA Claude ✦';b.classList.add('on');}else if(aiState==='off'){b.textContent='MJ : classique';b.classList.remove('on');}else b.textContent='MJ : connexion…';}
-setTimeout(async()=>{try{if(window.claude&&typeof window.claude.use==='function'){const s=await window.claude.use('sample');if(s){SAMPLE=s;aiState='on';}else aiState='off';}else aiState='off';}catch(e){aiState='off';}aiBadge();},0);
+function aiBadge(){const b=$('#ai-badge');if(aiState==='on'){b.textContent='MJ : IA Claude ✦';b.style.cursor='pointer';b.classList.add('on');}else if(aiState==='off'){b.textContent='MJ : classique';b.classList.remove('on');}else b.textContent='MJ : connexion…';}
+setTimeout(mjInit,0); // MJ IA : artifact claude.ai, sinon clé du joueur (18b-mj-cle), sinon MJ classique
 function updateHUD(){
  $('#i-time').textContent='Jour '+S.day+' · '+fmtTime(S.time)+' · '+(S.zone!=='monde'?'🕯':WEATHERS[(S.weather||{w:'clair'}).w].ic);
  $('#i-loc').textContent=(S.zone!=='monde'?ZONES[S.zone].n:S.locId?LOCBY[S.locId].name:'Sur les chemins')+(player.swim?' · 🏊 '+(BUFF.phoque?'':'froid '+Math.floor(player.cold||0)+'/13'):'');

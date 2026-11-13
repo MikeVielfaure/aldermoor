@@ -1,6 +1,6 @@
 {
   "name": "aldermoor",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "private": true,
   "description": "Aldermoor — Académie des Arcanes : RPG de sorcier 3D web (Three.js) avec maître du jeu IA",
   "scripts": {

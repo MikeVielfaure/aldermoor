@@ -155,7 +155,7 @@ function startGame(state,fresh){S=migrate(state);started=true;mana=manaMax();
 }
 function applyQuality(){HQ=QL>=1;const ok=QL<2||setupBloom();$('#b-q').textContent='Graphismes : '+['légers (plus fluide)','élevés','ultra'+(ok?' (halo lumineux)':' (halo indisponible)')][QL];renderer.shadowMap.enabled=HQ;sun.castShadow=HQ;{const ms=QL>=2?2048:1536;if(sun.shadow.mapSize.x!==ms){sun.shadow.mapSize.set(ms,ms);if(sun.shadow.map){sun.shadow.map.dispose();sun.shadow.map=null;}}}GRASS_FAR.value=HQ?60:45;CULL.dirty=true;scene.traverse(o=>{if(o.material){(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.needsUpdate=true);}});cubeT=0;resize();}
 $('#b-q').onclick=()=>{QL=(QL+1)%3;try{localStorage.setItem('aldermoor-q',['lq','hq','uq'][QL]);}catch(e){}applyQuality();};
-markStatic();buildWorld();buildWorld4();buildRift();buildBosquet();buildRack();const MERGED=mergeStatic();buildWorld2();buildWorld3();buildArenaStone();groupZones();resize();applyQuality();
+markStatic();buildWorld();buildWorld4();buildRift();buildBosquet();buildRack();const MERGED=mergeStatic();buildWorld2();buildWorld3();buildArenaStone();buildDecor();groupZones();resize();applyQuality();
 const saved=load();
 if(saved&&saved.v===1){$('#b-cont').classList.remove('hidden');$('#b-cont').textContent='Continuer : '+saved.name+' (jour '+saved.day+')';$('#name').value=saved.name;}
 $('#b-new').onclick=()=>{const n=$('#name').value.trim()||'Apprenti';startGame(newState(n),true);};

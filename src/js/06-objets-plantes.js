@@ -1,10 +1,15 @@
 /* ================= OBJETS PHYSIQUES & PLANTES ================= */
-let PROPS=[],PLANTS=[],DECALS=[],ORBS=[],CLOUDS=[];
-const PG={crate:new THREE.BoxGeometry(0.9,0.9,0.9),barrel:new THREE.CylinderGeometry(0.38,0.38,0.95,14),pump:new THREE.SphereGeometry(0.42,14,10),stem:new THREE.CylinderGeometry(0.04,0.05,0.18,6),rock:rockGeo(0.55),band:new THREE.CylinderGeometry(0.395,0.395,0.07,14)};
+let PROPS=[],PLANTS=[],DECALS=[],ORBS=[],CLOUDS=[],HAYM=null;
+const PG={crate:new THREE.BoxGeometry(0.9,0.9,0.9),barrel:new THREE.CylinderGeometry(0.38,0.38,0.95,14),pump:new THREE.SphereGeometry(0.42,14,10),stem:new THREE.CylinderGeometry(0.04,0.05,0.18,6),rock:rockGeo(0.55),band:new THREE.CylinderGeometry(0.395,0.395,0.07,14),
+ hay:new THREE.CylinderGeometry(0.42,0.42,0.82,14).rotateZ(Math.PI/2),sack:new THREE.SphereGeometry(0.36,12,9),
+ pot:new THREE.LatheGeometry([[0.13,0],[0.27,0.12],[0.31,0.3],[0.23,0.47],[0.14,0.55],[0.2,0.62]].map(p=>new THREE.Vector2(p[0],p[1])),14)};
 function makeProp(type,x,z){const g=new THREE.Group();let r=0.45,h=0.45,burn=true;
  if(type==='crate'){objMats();mesh(PG.crate,CRATEM,0,0,0,g);}
  else if(type==='barrel'){objMats();mesh(PG.barrel,BARRELM,0,0,0,g);[-0.3,0.3].forEach(y=>mesh(PG.band,mat(0x3a3a3a,{metalness:0.6,roughness:0.5,flatShading:false}),0,y,0,g));r=0.4;h=0.475;}
  else if(type==='pump'){const p=mesh(PG.pump,mat(0xe07a20,{flatShading:false}),0,0,0,g);p.scale.y=0.78;mesh(PG.stem,0x4a6a2a,0,0.38,0,g);r=0.42;h=0.33;}
+ else if(type==='hay'){objMats();mesh(PG.hay,HAYM||(HAYM=new THREE.MeshStandardMaterial({map:TX.wood,color:0xe6c35e,roughness:1})),0,0,0,g);r=0.42;h=0.42;} // une seule pièce par objet : moins d'appels de dessin
+ else if(type==='sack'){mesh(PG.sack,mat(0xb09a6a,{roughness:1}),0,0,0,g).scale.set(1,0.8,1.15);r=0.36;h=0.29;}
+ else if(type==='pot'){mesh(PG.pot,mat(0xb5623a,{roughness:0.7,side:THREE.DoubleSide}),0,-0.31,0,g);r=0.3;h=0.31;burn=false;}
  else {mesh(PG.rock,ROCKM,0,0,0,g);r=0.55;h=0.42;burn=false;}
  g.position.set(x,h,z);scene.add(g);
  const p={g,type,x,y:h,z,vx:0,vy:0,vz:0,r,h,burnable:burn,burn:0,lev:0,dead:0,hx:x,hz:z,spin:0};PROPS.push(p);return p;}
@@ -15,6 +20,7 @@ function buildProps(){
  put('pump',-30,20,5,3);put('crate',-42,19,2,1.5);
  put('crate',-12,34,3,3);put('barrel',-15,26,2,2);
  put('rock',-44,46,3,4);put('rock',55,-1,3,2.5);put('crate',27,20,2,1.5);put('barrel',3,-30,2,3);
+ put('hay',22,61,2,2);put('sack',8,66,2,1.5);put('pot',15.5,57,2,1.5);put('pot',-33,16.5,3,2.5);put('hay',-20,36,2,2.5);put('sack',39,-12,2,1.5);put('pot',-2,-6,2,1.5);put('hay',-8,54,2,2);
  put('crate',36.5,-13,2,1.2);put('barrel',36.4,-22.2,2,0.8);put('barrel',58.5,51.5,2,1);put('pump',49.5,55,2,1);put('rock',-60.5,-31,2,1.5);put('crate',-56.5,-21,1,1);
 }
 function updProps(dt){

@@ -6,7 +6,8 @@ const sl=ms=>new Promise(r=>setTimeout(r,ms));
 const URL='file://'+path.join(__dirname,'.tmp','index.html').replace(/\\/g,'/');
 async function launch(opts={}){
  const b=await puppeteer.launch({executablePath:process.env.CHROME_PATH||undefined,args:['--no-sandbox','--use-gl=swiftshader','--enable-unsafe-swiftshader','--autoplay-policy=no-user-gesture-required'],headless:'new'});
- const p=await b.newPage();await p.setViewport({width:opts.w||400,height:opts.h||820,isMobile:true,hasTouch:true});
+ const p=await b.newPage();p.setDefaultNavigationTimeout(180000); // le monde met 6 à 10 s à se construire sans carte graphique
+ await p.setViewport({width:opts.w||400,height:opts.h||820,isMobile:true,hasTouch:true});
  const errs=[],logs=[];p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'||m.type()==='warning')logs.push(m.type()+': '+m.text());});
  await p.goto(URL);await p.evaluate(()=>localStorage.clear());
  await p.goto(URL);await p.evaluate(()=>{window.__noAutoQ=1;});await sl(1500);

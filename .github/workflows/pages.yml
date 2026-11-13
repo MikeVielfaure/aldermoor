@@ -1,0 +1,44 @@
+# Publie le jeu (dist/) sur GitHub Pages à chaque push sur main.
+# À faire une fois sur GitHub : Settings → Pages → Source : « GitHub Actions ».
+# Tant que Pages n'est pas activé, ce workflow ne fait rien (et ne signale pas d'erreur).
+name: Publier le jeu
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pages est-il activé ?
+        id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${{ github.repository }}/pages" >/dev/null 2>&1; then
+            echo "actif=oui" >> "$GITHUB_OUTPUT"
+          else
+            echo "GitHub Pages n'est pas encore activé : rien à publier."
+            echo "actif=non" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Assembler le jeu
+        if: steps.pages.outputs.actif == 'oui'
+        run: node build.js
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.pages.outputs.actif == 'oui'
+        with:
+          path: dist
+      - uses: actions/deploy-pages@v4
+        if: steps.pages.outputs.actif == 'oui'
+        id: deploiement

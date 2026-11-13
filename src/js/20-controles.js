@@ -8,7 +8,7 @@ window.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;keys[
  if(/^Digit[1-4]$/.test(e.code)){castSlot(+e.code.slice(5)-1);}});
 window.addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='Space')jumpHeld=false;});
 window.addEventListener('keydown',e=>{if(e.code==='Escape'){closeDlg();$('#book').classList.add('hidden');}});
-const anyModal=()=>!$('#dlg').classList.contains('hidden')||!$('#book').classList.contains('hidden')||!$('#night').classList.contains('hidden')||!$('#pick').classList.contains('hidden')||!$('#map').classList.contains('hidden')||!$('#opts').classList.contains('hidden');
+const anyModal=()=>!$('#dlg').classList.contains('hidden')||!$('#book').classList.contains('hidden')||!$('#night').classList.contains('hidden')||!$('#pick').classList.contains('hidden')||!$('#map').classList.contains('hidden')||!$('#opts').classList.contains('hidden')||!$('#mjk').classList.contains('hidden');
 const joy={id:null,x:0,y:0};const joyEl=$('#joy'),knob=$('#knob');
 function joyMove(e){const r=joyEl.getBoundingClientRect();let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);const d=Math.hypot(dx,dy),m=50;if(d>m){dx*=m/d;dy*=m/d;}joy.x=dx/m;joy.y=-dy/m;knob.style.transform='translate('+dx+'px,'+dy+'px)';}
 $('#joy-zone').addEventListener('pointerdown',e=>{if(joy.id!==null)return;joy.id=e.pointerId;joyMove(e);e.preventDefault();});

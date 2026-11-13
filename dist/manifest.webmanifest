@@ -1,0 +1,17 @@
+{
+  "name": "Aldermoor — Académie des Arcanes",
+  "short_name": "Aldermoor",
+  "description": "RPG de sorcier en monde ouvert, avec un Maître du Jeu.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#0b0a22",
+  "theme_color": "#0b0a22",
+  "icons": [
+    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

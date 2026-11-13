@@ -43,6 +43,7 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 09-monde-interactif | potions, météo, énigmes (braseros, sceaux), coffres, souterrain, nage, routines des PNJ |
 | 10-relief-interieurs | plateau, falaises, rivière, cascade, intérieurs (`ZONES`, `enterZone`), bloom, reflets |
 | 11-textures-vegetation | textures canvas `TX`, matériau triplanaire `triMat`, arbres instanciés `TREEV`, `leafMat` |
+| 11b-decor | kit de décor `dkAt`/`dBox`/`dCyl`/`dSph`/`dTri` (fusion par matériau, couleurs par sommet), maison à colombages `house()`, étals, charrette, panneaux, `buildDecor()` (habillage des lieux, forêt lointaine) |
 | 12-perf-son-duels-carte | fusion statique `mergeStatic`, culling `cullAll`, audio `AU`/`SFX`/musique, duels `DUEL`, carte, options |
 | 13-visee-camera | ciblage `AIM` (verrouillage, point visé), `castTarget`, `aimShot`, gestes tactiles, zoom |
 | 14-lieux-… | Moulin du Ru, Marais des Lucioles, Ruines d'Ysmer (oracle, gardiens, crypte) |
@@ -50,19 +51,34 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 16-jeux-sorts-… | jeux de sorts A/B (`swapSets`), viseur libre (`freeAim`), réglages `AIMO` |
 | 17-ui | HUD, dialogues (`openDlg`, `send`), grimoire/journal (`renderBook`) |
 | 18-maitre-du-jeu | prompt du MJ (`RULES`, `worldCtx`, `buildPrompt`), `applyActions`, MJ de secours `fallbackGM` |
+| 18b-mj-cle | MJ IA avec la clé Claude du joueur (`mjInit`, `mjCall`, panneau `openMjk`), hors artifact |
 | 19-mecaniques | quêtes (`addQuest`, `finishQuest`, `curStep`), temps, nuit, génération de sorts `genSpell` |
 | 20-controles | joystick, clavier, glisser caméra |
 | 21-boucle | `update(dt)`, `loop()`, `startGame()`, puis la séquence de construction du monde |
+| 22-appli | plein écran, écran qui reste allumé, enregistrement du mode hors-ligne |
 
 Autres : `src/styles.css`, `src/body.html` (HUD/modales + balises `<script>` Three.js en CDN),
-`src/head.html`, `src/tail.html`.
+`src/head.html`, `src/tail.html`, `src/static/` (icône, manifeste, `sw.js` : copiés tels quels dans
+`dist/` ; l'icône se redessine avec `node tools/icone.js`).
+
+## Décor (11b-decor)
+
+Pour ajouter du décor fixe, ne pas créer de `mesh()` un par un : utiliser le kit.
+`dkAt(x,z,rotation)` pose le repère d'un objet au sol, puis `dBox(matière,couleur,l,h,p,x,y,z,ry,rx,rz)`,
+`dCyl`, `dSph`, `dTri`, `dRock` ajoutent des pièces en coordonnées locales (+z = devant). Matières :
+`wood`, `stone`, `rock`, `plaster`, `roof`, `plain`, `metal`, `win` (vitre qui s'allume la nuit).
+Tout est fusionné par `dkFlush()` à la fin de `buildDecor()`. Avant de poser un objet avec collision,
+tester `dkFree(x,z,rayon)` (chemins, eau, points d'arrivée des lieux, objets à actionner).
+Le décor a son propre hasard (`dkr()`) : ne pas y utiliser `srand()`, qui décalerait les arbres.
 
 ## Repères techniques
 
 - Monde : disque de rayon ~92, `gh(x,z)` = hauteur du sol. Zones `S.zone` : `monde`, `donjon`
   (z≈-700), intérieurs `salle`/`biblio_int`/`auberge`/`grotte` (z=700).
 - Séquence de construction (fin de 21-boucle) : `markStatic(); buildWorld(); buildWorld4();
-  buildRift(); buildBosquet(); buildRack(); mergeStatic(); buildWorld2(); buildWorld3(); …`.
+  buildRift(); buildBosquet(); buildRack(); mergeStatic(); buildWorld2(); buildWorld3();
+  buildArenaStone(); buildDecor(); …`. `buildDecor()` passe en dernier pour connaître toutes les
+  collisions et tous les objets à actionner avant de placer le décor.
   Tout mesh créé entre `markStatic()` et `mergeStatic()` est fusionné par matériau : s'il doit
   bouger/changer, mettre `obj.userData.dyn=true` (sur lui ou un parent).
 - Qualité `QL` 0/1/2 (légers/élevés/ultra+bloom), `HQ=QL>=1`. Cible : téléphone. Surveiller
@@ -75,13 +91,27 @@ Autres : `src/styles.css`, `src/body.html` (HUD/modales + balises `<script>` Thr
 
 ## Maître du jeu IA
 
-Le jeu a été créé comme « artifact » claude.ai : le MJ appelle `window.claude.use('sample')`
-(17-ui / 18-maitre-du-jeu), disponible UNIQUEMENT dans un artifact publié. Ailleurs (fichier local,
-hébergement perso) le jeu bascule seul sur `fallbackGM` (MJ procédural, sans IA).
-Pour un vrai MJ IA hors artifact : créer un petit serveur (proxy) qui appelle l'API Anthropic avec
-la clé côté serveur — jamais de clé dans le code du navigateur — et brancher `SAMPLE` dessus
-(objet avec `json(prompt, opts)` renvoyant `{narration, actions:[…]}`). Le MJ n'est appelé que
-sur action du joueur (clic, dialogue), jamais en boucle.
+Trois MJ possibles, choisis par `mjInit()` (18b-mj-cle) :
+
+1. **Artifact claude.ai** : `window.claude.use('sample')`, disponible uniquement dans un artifact publié.
+2. **Clé du joueur** (GitHub Pages, fichier local…) : le joueur colle sa clé API Claude dans
+   Options ⚙ → Maître du Jeu IA. Elle reste dans le `localStorage` de son appareil
+   (`aldermoor-mj-key`) et ne part que vers l'API Anthropic. Le SDK officiel
+   (`@anthropic-ai/sdk`, version figée) est chargé à la demande depuis jsDelivr, avec
+   `dangerouslyAllowBrowser`. Modèle au choix du joueur (Opus 5.5 par défaut, Sonnet 5.5, Haiku 5.5),
+   effort `low`, règles du MJ en prompt système mis en cache.
+3. **MJ classique** `fallbackGM` (procédural, sans IA) : sans clé, ou dès qu'un appel échoue.
+
+Règle absolue : jamais de clé dans le code ni dans le dépôt. `SAMPLE` est un objet avec
+`json(prompt, opts)` renvoyant `{narration, actions:[…]}`. Le MJ n'est appelé que sur action du
+joueur (dialogue, action libre, fin de cours, lever du jour), jamais en boucle.
+
+## Publication
+
+`.github/workflows/pages.yml` assemble le jeu et publie `dist/` sur GitHub Pages à chaque push sur
+`main` (il ne fait rien tant que Pages n'est pas activé : Settings → Pages → Source « GitHub Actions »).
+Une fois hébergé en https, le jeu s'installe sur l'écran d'accueil du téléphone (manifeste + icône)
+et se rejoue hors-ligne (`sw.js`, réseau d'abord).
 
 ## Tests
 

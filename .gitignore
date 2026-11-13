@@ -1,3 +1,5 @@
 node_modules/
 tests/.tmp/
 *.png
+!src/static/*.png
+!dist/*.png

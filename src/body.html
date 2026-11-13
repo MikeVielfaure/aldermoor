@@ -36,6 +36,7 @@
 
 <div id="pick" class="modal hidden"><div class="mh"><div><h3 id="pick-t"></h3></div><button class="x" id="pick-x">×</button></div><div id="pick-s"></div><div id="pick-l"></div></div>
 <div id="opts" class="modal hidden"><div class="mh"><div><h3>Options</h3></div><button class="x" id="opts-x">×</button></div><div id="opts-b"></div></div>
+<div id="mjk" class="modal hidden"><div class="mh"><div><h3>Maître du Jeu IA</h3><small>Branche ton Claude pour un MJ qui improvise vraiment.</small></div><button class="x" id="mjk-x">×</button></div><div id="mjk-b"></div></div>
 <div id="map" class="hidden"><div class="mh"><div><h3>Carte d’Aldermoor</h3></div><button class="x" id="map-x">×</button></div><canvas id="map-c"></canvas><div id="map-s"></div></div>
 <div id="start" class="overlay">
   <div class="ov">
@@ -46,7 +47,8 @@
     <button class="gold" id="b-new">Entrer dans l’académie</button>
     <button class="ghost hidden" id="b-cont">Continuer</button>
     <button class="ghost" id="b-q">Graphismes : élevés</button>
-    <div class="keys">Mobile : joystick à gauche, glisse à droite pour tourner la caméra.<br>Clavier : ZQSD/WASD · souris pour la caméra · 1 à 4 lancer les sorts · Espace sauter · E agir · Entrée MJ · Maj courir<br>Le Maître du Jeu IA utilise ton compte Claude : une autorisation te sera demandée au premier échange. Sans elle, un MJ classique prend le relais.</div>
+    <button class="ghost hidden" id="b-mjkey">Maître du Jeu IA : brancher ma clé Claude</button>
+    <div class="keys">Mobile : joystick à gauche, glisse à droite pour tourner la caméra.<br>Clavier : ZQSD/WASD · souris pour la caméra · 1 à 4 lancer les sorts · Espace sauter · E agir · Entrée MJ · Maj courir<br><span id="mj-note"></span></div>
   </div>
 </div>
 

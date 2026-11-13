@@ -1,0 +1,68 @@
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="top" class="ui hidden">
+  <div class="card" id="info"><div id="i-time"></div><div id="i-loc"></div><div id="i-rank"></div><div id="i-lvl"></div><div class="bar" id="xp-bar"><i></i></div><div class="bar" id="mana-bar"><i></i></div></div>
+  <div class="tbtns"><button id="b-book" class="rbtn">Grimoire</button><button id="b-jour" class="rbtn">Journal</button><button id="b-mj" class="rbtn" style="color:#ffc6ef;border-color:rgba(255,122,224,.55)">MJ ✦</button><div class="row"><button id="b-map" class="rbtn ic" aria-label="Carte">🗺</button><button id="b-opt" class="rbtn ic" aria-label="Options">⚙</button></div><div class="row"><button id="b-obj" class="rbtn ic hidden" aria-label="Objets">🎒</button><button id="b-broom" class="rbtn ic hidden" aria-label="Balai">🧹</button></div><div id="ai-badge">MJ : connexion…</div></div>
+</div>
+<div id="tracker" class="ui card hidden"><div id="arrow">▲</div><div><div id="tr-q"></div><div id="tr-s"></div></div></div>
+<div id="feed" class="ui"></div>
+<div id="duel" class="ui hidden"><div class="du"><span id="du-pn"></span><div class="hb" id="du-p"><i></i></div></div><div class="vs">⚔</div><div class="du"><span id="du-on"></span><div class="hb" id="du-o"><i></i></div><div id="du-w"></div></div></div>
+<div id="wave" class="ui hidden"><div id="w-t"></div><div id="w-hpw" class="hb"><i></i></div></div><div id="banner" class="ui hidden"></div><div id="hurt"></div><div id="xhair" class="hidden"><i></i></div><div id="fps" class="ui hidden"></div>
+<div id="joy-zone" class="ui hidden"><div id="joy"><div id="knob"></div></div></div>
+<div id="ctrls" class="ui hidden">
+  <div id="hint" class="hidden"></div>
+  <button id="b-act" class="cbtn">Agir</button><button id="b-down" class="cbtn hidden"><span style="font-size:20px">⬇</span>Descendre</button>
+  <button id="b-set" class="cbtn"><span>⇄</span><small>A</small></button><button id="b-jump" class="cbtn"><span style="font-size:20px">⤒</span>Saut</button>
+  <button class="cbtn slot" data-s="0" style="right:126px;bottom:11px"></button>
+  <button class="cbtn slot" data-s="1" style="right:110px;bottom:69px"></button>
+  <button class="cbtn slot" data-s="2" style="right:69px;bottom:110px"></button>
+  <button class="cbtn slot" data-s="3" style="right:11px;bottom:126px"></button>
+</div>
+
+<div id="dlg" class="modal hidden">
+  <div class="mh"><div><h3 id="dlg-title"></h3><small id="dlg-sub"></small></div><button class="x" id="dlg-x">×</button></div>
+  <div id="dlg-log"></div>
+  <div id="chips"></div>
+  <form id="dlg-form"><input id="dlg-in" autocomplete="off" placeholder="Écris ce que tu dis ou fais…"><button class="gold" id="dlg-send">Envoyer</button></form>
+</div>
+
+<div id="book" class="modal hidden">
+  <div class="mh"><div><h3 id="book-title">Grimoire</h3></div><button class="x" id="book-x">×</button></div>
+  <div class="tabs" id="book-tabs"></div>
+  <div id="book-body"></div>
+</div>
+
+<div id="pick" class="modal hidden"><div class="mh"><div><h3 id="pick-t"></h3></div><button class="x" id="pick-x">×</button></div><div id="pick-s"></div><div id="pick-l"></div></div>
+<div id="opts" class="modal hidden"><div class="mh"><div><h3>Options</h3></div><button class="x" id="opts-x">×</button></div><div id="opts-b"></div></div>
+<div id="map" class="hidden"><div class="mh"><div><h3>Carte d’Aldermoor</h3></div><button class="x" id="map-x">×</button></div><canvas id="map-c"></canvas><div id="map-s"></div></div>
+<div id="start" class="overlay">
+  <div class="ov">
+    <h1>ALDERMOOR</h1>
+    <h2>ACADÉMIE DES ARCANES</h2>
+    <p>Un monde ouvert de sorciers sans fil rouge. Suis des cours, déniche des parchemins de sorts qui apparaissent n’importe où, résous des événements, accepte des quêtes. Chaque élément agit vraiment sur le monde : le feu brûle, la glace gèle le lac, le vent projette, la nature fait pousser…</p>
+    <input id="name" maxlength="20" placeholder="Ton nom d’apprenti">
+    <button class="gold" id="b-new">Entrer dans l’académie</button>
+    <button class="ghost hidden" id="b-cont">Continuer</button>
+    <button class="ghost" id="b-q">Graphismes : élevés</button>
+    <div class="keys">Mobile : joystick à gauche, glisse à droite pour tourner la caméra.<br>Clavier : ZQSD/WASD · souris pour la caméra · 1 à 4 lancer les sorts · Espace sauter · E agir · Entrée MJ · Maj courir<br>Le Maître du Jeu IA utilise ton compte Claude : une autorisation te sera demandée au premier échange. Sans elle, un MJ classique prend le relais.</div>
+  </div>
+</div>
+
+<div id="night" class="overlay hidden">
+  <div class="ov">
+    <h1 style="font-size:28px">La nuit tombe</h1>
+    <h2 id="night-sub">FIN DU JOUR 1</h2>
+    <p id="night-txt"></p>
+    <button class="gold" id="b-sleep">Dormir jusqu’au matin</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>

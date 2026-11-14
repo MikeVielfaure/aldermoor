@@ -13,8 +13,8 @@ sons et musiques OpenGameArt via `bash tools/oga.sh <page>` (n'accepte que le CC
 
 | Dossier | Contenu | Usage prévu |
 |---|---|---|
-| `quaternius-animated-characters` | Ultimate Animated Character Pack : 50 personnages (sorcier, sorcière, elfe, chef, ouvrier, villageois…) sans texture, couleurs par matériau, 17 animations communes (même squelette) | **utilisé** : joueur et PNJ (`src/assets/persos`) |
-| `quaternius-rpg-characters` | RPG Character Pack : sorcier, clerc, moine, rôdeur, voleur, guerrier (textures, 11-15 animations) | réserve (duellistes, élèves) |
+| `quaternius-rpg-characters` | RPG Character Pack : sorcier, clerc, moine, rôdeuse, voleur, guerrier (textures peintes, animations de sort) | **utilisé** : joueur (6 apparences au choix) et PNJ (`src/assets/persos`) |
+| `quaternius-animated-characters` | Ultimate Animated Character Pack : 50 personnages sans texture | essayé puis abandonné (style moins apprécié) |
 | `quaternius-fantasy-props` | Fantasy Props MegaKit (version gratuite) : 94 objets — chaudron, potions, grimoires, parchemins, bougies, chandelier, bibliothèque, coffre, enclume… | **utilisé** : 36 objets dans `src/assets/objets/objets.glb` (intérieurs, arène) |
 | `quaternius-medieval-village` | Medieval Village MegaKit : 176 pièces de maisons modulaires (murs, toits, balcons, escaliers) | réserve (nouvelles maisons) |
 | `kenney-mini-characters-1` | 43 modèles .glb, dont 20 personnages (≈ 770 triangles, 240 Ko) avec 32 animations : repos, marche, course, saut, chute, ramasser, lancer main droite, attaque, interaction, oui/non, mort | joueur et PNJ (chapeau et robe de sorcier ajoutés par le jeu) |
@@ -60,7 +60,7 @@ sons et musiques OpenGameArt via `bash tools/oga.sh <page>` (n'accepte que le CC
 
 ## Utilisé dans le jeu (src/assets, ≈ 10 Mo)
 
-- `persos/` : sorcier, sorcière, elfe, forestier, aubergiste, meunier + `animations.glb` partagé.
+- `persos/` : sorcier, clerc, moine, rôdeuse, voleur, guerrier + `animations.glb` partagé.
 - `objets/objets.glb` : 36 objets (textures 512 px WebP partagées, sans relief) — 2,1 Mo.
 - `creatures/` : fantôme, champignon, yéti, démon, chauve-souris, cyclope, crabe, alien, arbre, crâne, dragon, abeille.
 - `sons/` (+ `sons.json`) : 29 groupes d'effets ; `musique/` : 8 musiques (jour, village, nuit, auberge, salle, duel, grotte, titre) et 5 ambiances (oiseaux, grillons, feu, rivière, vent).

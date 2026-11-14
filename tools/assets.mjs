@@ -17,14 +17,17 @@ const orphelins=doc=>doc.getRoot().listAccessors().forEach(a=>{if(a.listParents(
 const quoi=process.argv[2]||'tout';
 fs.mkdirSync(SORTIE,{recursive:true});
 
-/* ---------- personnages (Quaternius, Ultimate Animated Character Pack) ----------
-   Les maillages sans animation (un fichier par modèle), et UN fichier d'animations partagé :
-   tous ces personnages ont le même squelette de 23 os. */
-const PERSOS={sorcier:'Wizard',sorciere:'Witch',elfe:'Elf',forestier:'Worker_Male',aubergiste:'Chef_Male',meunier:'OldClassy_Male'};
-const ANIMS=['Idle','Walk','Run','Jump','Shoot_OneHanded','PickUp','RecieveHit','Death','Victory','Defeat','Punch'];
-async function persos(){const src=path.join(BRUT,'quaternius-animated-characters'),dst=path.join(SORTIE,'persos');fs.mkdirSync(dst,{recursive:true});
+/* ---------- personnages (Quaternius, RPG Character Pack : style peint, textures) ----------
+   Les maillages sans animation (un fichier par modèle), et UN fichier d'animations partagé (celles du
+   sorcier) : les six personnages ont le même squelette de 32 os. Textures réduites à 512 px (WebP).
+   (Ancien choix, abandonné : Ultimate Animated Character Pack, jugé moins beau.) */
+const PERSOS={sorcier:'Wizard',clerc:'Cleric',moine:'Monk',rodeuse:'Ranger',voleur:'Rogue',guerrier:'Warrior'};
+const ANIMS=['Idle','Walk','Run','Spell1','Spell2','Staff_Attack','PickUp','RecieveHit','Death','Roll','Idle_Attacking','Punch'];
+async function persos(){const src=path.join(BRUT,'quaternius-rpg-characters'),dst=path.join(SORTIE,'persos');
+ fs.rmSync(dst,{recursive:true,force:true});fs.mkdirSync(dst,{recursive:true});
  for(const [nom,f] of Object.entries(PERSOS)){const doc=await io.read(path.join(src,f+'.gltf'));
-  doc.getRoot().listAnimations().forEach(sansAnim);orphelins(doc);await doc.transform(prune(),dedup());
+  doc.getRoot().listAnimations().forEach(sansAnim);orphelins(doc);
+  await doc.transform(prune(),dedup(),textureCompress({encoder:sharp,targetFormat:'webp',resize:[512,512],quality:82}));
   const out=path.join(dst,nom+'.glb');await io.write(out,doc);console.log('perso',nom,'←',f,ko(out));}
  // animations : celles du sorcier, sans les maillages
  const doc=await io.read(path.join(src,'Wizard.gltf'));const R=doc.getRoot();

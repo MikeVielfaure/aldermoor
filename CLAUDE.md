@@ -42,7 +42,7 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 03-rendu | renderer, particules GPU (`PA` additif, `PN` normal, `PW` météo), lumières, collisions `COLS`/`pushOut` |
 | 04-monde | `buildWorld()` : terrain (`terrainH`, `gh(x,z)`), château, tours, village, lac, arbres, herbe |
 | 05-personnages | `makeHuman()`, `animHuman()` (personnages articulés) |
-| 05b-modeles | chargeur glTF `mdlLoad`, personnages 3D Quaternius (`MDL`, `mdlDress`, `mdlAnim`, couleurs `persoColor`, modèle par PNJ `MDL_PERSO`) |
+| 05b-modeles | chargeur glTF `mdlLoad`, personnages 3D Quaternius « RPG » (`MDL`, `mdlDress`, `mdlAnim`, modèle et teinte par PNJ `MDL_PERSO`, apparence du joueur `MDL_LOOK`, option d'origine/3D `mdlStyle`) |
 | 06-objets-plantes | objets physiques `PROPS` (caisses, tonneaux…), plantes |
 | 07-entites | `ENT` : parchemins, événements, créatures, coffres (`addEnt`, `removeEnt`) |
 | 08-sorts | `castSpell`, projectiles `PROJ`, `impact`, `doZone`, `doUtil`, `elemHit` (effets sur le monde) |
@@ -97,8 +97,10 @@ Le décor a son propre hasard (`dkr()`) : ne pas y utiliser `srand()`, qui déca
   Créatures (09b) : modèle chargé à la première apparition. Sons (12b) : après le premier geste (audio).
 - Pièges Three.js r128 : `THREE.SkeletonUtils.clone()` pour copier un personnage animé ; matériau
   `skinning:true` ; textures des modèles en `LinearEncoding` (le jeu n'utilise pas sRGB, sinon trop sombre).
-- Personnages : les 7 matériaux d'origine sont fusionnés en un (attribut `slot` + couleurs par sommet)
-  et recolorés d'après l'apparence du PNJ (`persoColor`). Un seul fichier d'animations partagé.
+- Personnages : pack « RPG Character Pack » (style peint, textures). Le joueur a d'abord trouvé le pack
+  « Ultimate Animated Character » moins beau : ne pas y revenir sans lui demander. Morceaux fusionnés par
+  texture, teinte par PNJ (`MDL_PERSO`), un seul fichier d'animations partagé (même squelette de 32 os).
+  Options : « Personnages » (3D / d'origine) et « Ton apparence » (6 modèles), mémorisés en localStorage.
 - Objets (11d) : à l'échelle réelle (mètres), couleurs par sommet en entiers normalisés : r128 ne les
   convertit pas dans `getX()`, diviser par 65535 (sinon tout devient blanc). Collisions ajoutées seulement
   quand les objets s'affichent. `setTimeout(o3Start,0)` : le module se charge avant `ZG` (12).

@@ -368,6 +368,8 @@ $('#map-x').onclick=()=>$('#map').classList.add('hidden');
 function openOpts(){$('#opts').classList.remove('hidden');renderOpts();}
 function renderOpts(){const q=['légers (plus fluide)','élevés','ultra (halo lumineux)'][QL];
  $('#opts-b').innerHTML='<div class="op"><span>Graphismes</span><button class="ghost sm" id="o-q">'+q+'</button></div>'+
+ '<div class="op"><span>Personnages</span><button class="ghost sm" id="o-pe">'+(MDL_ON?'3D peints':'d’origine')+'</button></div>'+
+ (MDL_ON?'<div class="op"><span>Ton apparence</span><button class="ghost sm" id="o-lk">'+(MDL_LOOKS.find(l=>l[0]===MDL_LOOK)||MDL_LOOKS[0])[1]+'</button></div>':'')+
  '<div class="op"><span>Maître du Jeu IA</span><button class="ghost sm" id="o-mj">'+(aiState==='on'?'✦ actif':'brancher ma clé')+'</button></div>'+
  '<div class="op"><span>Musique</span><input type="range" min="0" max="100" id="o-mu" value="'+Math.round(AU.music*100)+'"></div>'+
  '<div class="op"><span>Effets & ambiance</span><input type="range" min="0" max="100" id="o-fx" value="'+Math.round(AU.sfx*100)+'"></div>'+
@@ -385,7 +387,7 @@ function renderOpts(){const q=['légers (plus fluide)','élevés','ultra (halo l
  '<p class="note">Visée : touche une créature ou un objet pour le cibler, touche le sol pour viser un point, touche deux fois pour recentrer la caméra. Pince avec deux doigts pour zoomer. Glisse vers le bas pour regarder le ciel.</p>'+
  '<p class="note">Si le jeu saccade, passe en « légers ». Le réglage est mémorisé.</p>';
  $('#o-q').onclick=()=>{QL=(QL+1)%3;try{localStorage.setItem('aldermoor-q',['lq','hq','uq'][QL]);localStorage.setItem('aldermoor-qman','1');}catch(e){}applyQuality();renderOpts();};
- $('#o-fs').onclick=()=>{fullScreen(!document.fullscreenElement);setTimeout(renderOpts,400);};$('#o-mj').onclick=()=>{$('#opts').classList.add('hidden');openMjk();};$('#o-mu').oninput=e=>{AU.music=e.target.value/100;auVol();auSave();};$('#o-fx').oninput=e=>{AU.sfx=e.target.value/100;auVol();auSave();};
+ $('#o-pe').onclick=()=>{mdlStyle(!MDL_ON);renderOpts();};{const lk=$('#o-lk');if(lk)lk.onclick=()=>{mdlNextLook();renderOpts();};}$('#o-fs').onclick=()=>{fullScreen(!document.fullscreenElement);setTimeout(renderOpts,400);};$('#o-mj').onclick=()=>{$('#opts').classList.add('hidden');openMjk();};$('#o-mu').oninput=e=>{AU.music=e.target.value/100;auVol();auSave();};$('#o-fx').oninput=e=>{AU.sfx=e.target.value/100;auVol();auSave();};
  $('#o-m').onclick=()=>{AU.mute=!AU.mute;auInit();auVol();auSave();renderOpts();};$('#o-f').onclick=()=>{FPSV.on=!FPSV.on;$('#fps').classList.toggle('hidden',!FPSV.on);renderOpts();};
  $('#o-am').onclick=()=>{AIMO.mode={camera:'libre',libre:'perso',perso:'camera'}[AIMO.mode]||'camera';aimSave();renderOpts();if(AIMO.mode==='libre'&&!S.seenLibre){S.seenLibre=1;say('🎯 <b>Viseur libre</b> : tes sorts partent vers le cercle au centre de l’écran. Lève ou baisse la caméra pour viser haut ou bas.','sys');}};$('#o-as').onclick=()=>{AIMO.assist=!AIMO.assist;aimSave();renderOpts();};$('#o-dl').onclick=()=>{AIMO.duelLock=!AIMO.duelLock;aimSave();renderOpts();if(DUEL&&!AIMO.duelLock&&AIM.lock&&AIM.lock.ref===DUEL.e)AIM.lock=null;};$('#o-tp').onclick=()=>{AIMO.tap=!AIMO.tap;aimSave();renderOpts();};$('#o-fo').onclick=()=>{AIMO.follow=!AIMO.follow;aimSave();renderOpts();};
  $('#o-se').oninput=e=>{AIMO.sens=e.target.value/100;aimSave();};$('#o-zo').oninput=e=>{CAMZ=e.target.value/100;try{localStorage.setItem('aldermoor-zoom',CAMZ.toFixed(2));}catch(er){}};}

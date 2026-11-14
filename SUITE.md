@@ -55,6 +55,7 @@
 - 4 sorts de garde, un par duel gagné : Rempart de pierre, Égide miroir (renvoie les tirs des duellistes,
   se brise après 2 boules de feu d'Ignivor), Haie de ronces, Mur d'eau.
 - Démantibulus agit en duel (30 %, puis 10 %) ; Souffle du dragon plus long (17 m) et plus large.
+- Boutons de sort : 1-2-3 en arc près du pouce, 4-5 derrière, ⇄ en bas à gauche ; un peu plus petits en paysage.
 - Ignivor se tourne enfin vers le joueur (un commentaire mal placé l'en empêchait).
 
 ## Idées proposées par le joueur, pas encore faites

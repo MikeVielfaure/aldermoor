@@ -3,3 +3,6 @@ tests/.tmp/
 *.png
 !src/static/*.png
 !dist/*.png
+
+# packs bruts téléchargés (lourds) : seuls les fichiers retenus et optimisés vont dans le jeu
+assets/brut/

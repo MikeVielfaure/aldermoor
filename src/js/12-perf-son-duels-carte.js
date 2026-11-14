@@ -241,7 +241,7 @@ function duelOpen(d){const n=d.npc?NPCOBJ(d.npc):null;if(d.npc&&(!n||n.sleep))re
 function duelMenu(){const R=duelRec();const items=DUELISTS.map(d=>{const st=duelOpen(d),b=R.best[d.id];const why=st==='niv'?'niveau '+d.lvl+' requis':st==='absent'?'absent pour le moment':st==='wins'?'3 victoires requises':'';
  return {t:esc(d.name)+' <small style="color:'+hex(ELEM[d.el].c)+'">'+ELEM[d.el].n+'</small>',s:(b?'✓ battu · ':'')+(why||'niveau conseillé '+d.lvl),off:st!=='ok',fn:()=>{closePick();startDuel(d);}};});
  openPick('⚔ Arène des duels','Victoires '+R.w+' · Défaites '+R.l+'. Esquive les sorts adverses en te déplaçant, saute par-dessus les ondes au sol, et vise leur faiblesse.',items);}
-function makeDuelist(d){const look=d.look||NPCBY[d.npc].look;const H=makeHuman(look);const l=label(d.name,'#ffb0b0');l.position.y=2.35*look.h;H.root.add(l);return H;}
+function makeDuelist(d){const look=d.look||NPCBY[d.npc].look;const H=makeHuman(look);const l=nearFade(label(d.name,'#ffb0b0'));l.position.y=2.35*look.h;H.root.add(l);return H;}
 function startDuel(d){if(DUEL||S.zone!=='monde')return;fade(()=>{
  const n=d.npc?NPCOBJ(d.npc):null;if(n){n.obj.visible=false;n.inDuel=true;}
  player.x=ARENA.x;player.z=ARENA.z+5.2;player.y=gh(player.x,player.z);player.vx=player.vz=player.vy=0;player.ry=Math.PI;camYaw=Math.PI;camPitch=0.32;

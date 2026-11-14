@@ -11,7 +11,7 @@ sun.shadow.mapSize.set(2048,2048);const sc=sun.shadow.camera;sc.left=-38;sc.righ
 scene.add(sun);scene.add(sun.target);
 const amb=new THREE.AmbientLight(0x6070a0,0.15);scene.add(amb);
 let pScale=400;
-function resize(){const w=window.innerWidth,h=window.innerHeight;renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,QL>=2?2:QL>=1?1.6:1.15));renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();const v=new THREE.Vector2();renderer.getDrawingBufferSize(v);pScale=v.y/(2*Math.tan(camera.fov*Math.PI/360));PS_ALL.forEach(p=>p.mat.uniforms.scale.value=pScale);if(composer){composer.setPixelRatio(renderer.getPixelRatio());composer.setSize(w,h);}if(TALK)setTalk(TALK.n);}
+function resize(){const w=window.innerWidth,h=window.innerHeight;renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,QL>=2?2:QL>=1?1.6:1.15));renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();const v=new THREE.Vector2();renderer.getDrawingBufferSize(v);pScale=v.y/(2*Math.tan(camera.fov*Math.PI/360));/* le champ de vision peut changer en intérieur (13b) */PS_ALL.forEach(p=>p.mat.uniforms.scale.value=pScale);if(composer){composer.setPixelRatio(renderer.getPixelRatio());composer.setSize(w,h);}if(TALK)setTalk(TALK.n);}
 window.addEventListener('resize',resize);
 
 const matCache={};

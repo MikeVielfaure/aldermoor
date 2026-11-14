@@ -285,4 +285,5 @@ function decorFarForest(){const N=HQ?520:300;const parts=[],put=(g,c)=>{const co
  for(let i=0;i<N*5&&k<N;i++){const a=dkr()*TAU,r=97+Math.pow(dkr(),0.8)*31,x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.abs(x)>128||Math.abs(z)>128)continue;if(noise(x*0.09,z*0.09)<-0.25&&dkr()<0.8)continue;
   const sc=dkrr(1.3,2.5);q.setFromAxisAngle(UPV,dkr()*TAU);m4.compose(p.set(x,gh(x,z)-0.3,z),q,s.set(sc,sc*dkrr(0.9,1.3),sc));im.setMatrixAt(k,m4);im.setColorAt(k,_dc.setHSL(0.27+dkr()*0.07,0.3,0.5+dkr()*0.22));k++;}
  im.count=k;im.frustumCulled=false;im.userData.decor=true;scene.add(im);regInst(im,instPos(im),9,400,0);}
-function buildDecor(){dkMats();decorCastle();decorCour();decorVillage();decorLake();decorArena();decorSerre();decorPaths();decorNature();decorFarForest();dSignsFlush();return dkFlush();}
+let DECOR_LOG=null; // compte rendu du décor automatique (tests)
+function buildDecor(){dkMats();decorCastle();decorCour();decorVillage();decorLake();decorArena();decorSerre();decorPaths();DECOR_LOG={lieux:autoDecor(),chemins:decorPathsides()};decorNature();decorFarForest();dSignsFlush();return dkFlush();}

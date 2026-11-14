@@ -14,7 +14,8 @@ const mLvl=el=>Math.min(10,Math.floor(((S.mastery||{})[el]||0)/30));
 const ptsTotal=()=>lvl()-1+(S.relics||0)+ELS.reduce((a,e)=>a+Math.floor(mLvl(e)/3),0);
 const ptsSpent=()=>Object.values(S.talents||{}).reduce((a,b)=>a+b,0);
 const ptsFree=()=>ptsTotal()-ptsSpent();
-const pow=el=>(1+0.25*tal(el+'_pow')+0.03*mLvl(el))*wMul(el)*(BUFF.puissance?1.3:1)*karmaMul(el);
+let CAST_K=1; // rang du sort en cours de lancement (19b-sorts-uniques)
+const pow=el=>(1+0.25*tal(el+'_pow')+0.03*mLvl(el))*wMul(el)*(BUFF.puissance?1.3:1)*karmaMul(el)*CAST_K;
 const manaMax=()=>100+25*tal('reserve');
 const manaRegen=()=>9*(1+0.3*tal('flux'))*(lvl()>=15?1.5:1);
 function migrate(s){s.inv=s.inv||{};s.rep=s.rep||{};s.zone='monde';s.talents=s.talents||{};s.mastery=s.mastery||{};s.combos=s.combos||[];

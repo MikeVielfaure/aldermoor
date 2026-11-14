@@ -44,8 +44,10 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 10-relief-interieurs | plateau, falaises, rivière, cascade, intérieurs (`ZONES`, `enterZone`), bloom, reflets |
 | 11-textures-vegetation | textures canvas `TX`, matériau triplanaire `triMat`, arbres instanciés `TREEV`, `leafMat` |
 | 11b-decor | kit de décor `dkAt`/`dBox`/`dCyl`/`dSph`/`dTri` (fusion par matériau, couleurs par sommet), maison à colombages `house()`, étals, charrette, panneaux, `buildDecor()` (habillage des lieux, forêt lointaine) |
+| 11c-decor-auto | décor automatique : catalogue `DECOR_KIT`, recettes `DECOR_STYLES`, style de chaque lieu `LOC_STYLE`, `autoDecor()`, bords de chemins `decorPathsides()` |
 | 12-perf-son-duels-carte | fusion statique `mergeStatic`, culling `cullAll`, audio `AU`/`SFX`/musique, duels `DUEL`, carte, options |
 | 13-visee-camera | ciblage `AIM` (verrouillage, point visé), `castTarget`, `aimShot`, gestes tactiles, zoom |
+| 13b-camera-interieurs | caméra des lieux clos `inCam()` (plafond, murs, meubles, champ de vision), noms qui s'effacent de près `nearFade()` |
 | 14-lieux-… | Moulin du Ru, Marais des Lucioles, Ruines d'Ysmer (oracle, gardiens, crypte) |
 | 15-balai-… | balai `FLY`, course d'anneaux `RACE`, objets magiques `OBJS`, Faille à vagues `WAVE`, karma, quête de l'Oubli, Bosquet |
 | 16-jeux-sorts-… | jeux de sorts A/B (`swapSets`), viseur libre (`freeAim`), réglages `AIMO` |
@@ -53,6 +55,7 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 18-maitre-du-jeu | prompt du MJ (`RULES`, `worldCtx`, `buildPrompt`), `applyActions`, MJ de secours `fallbackGM` |
 | 18b-mj-cle | MJ IA avec la clé Claude du joueur (`mjInit`, `mjCall`, panneau `openMjk`), hors artifact |
 | 19-mecaniques | quêtes (`addQuest`, `finishQuest`, `curStep`), temps, nuit, génération de sorts `genSpell` |
+| 19b-sorts-uniques | un sort par élément × forme ; un doublon fait monter de rang (`rankUp`, `spRank`, `CAST_K`), fusion des anciennes sauvegardes |
 | 20-controles | joystick, clavier, glisser caméra |
 | 21-boucle | `update(dt)`, `loop()`, `startGame()`, puis la séquence de construction du monde |
 | 22-appli | plein écran, écran qui reste allumé, enregistrement du mode hors-ligne |
@@ -70,6 +73,23 @@ Pour ajouter du décor fixe, ne pas créer de `mesh()` un par un : utiliser le k
 Tout est fusionné par `dkFlush()` à la fin de `buildDecor()`. Avant de poser un objet avec collision,
 tester `dkFree(x,z,rayon)` (chemins, eau, points d'arrivée des lieux, objets à actionner).
 Le décor a son propre hasard (`dkr()`) : ne pas y utiliser `srand()`, qui décalerait les arbres.
+
+**Décor automatique (11c)** : préférer une recette à du placement à la main. Chaque lieu a un style
+(`LOC_STYLE`, « campagne » par défaut pour un nouveau lieu), chaque style une liste `[objet, nombre]`
+(`DECOR_STYLES`), et `autoPlace()` trouve seul les places libres. Pour un nouvel objet : une fonction
+`dXxx(x,z,ry)` dans le kit, puis une ligne dans `DECOR_KIT` (avec `col:false` s'il n'a pas de collision).
+`DECOR_LOG` indique ce qui a été posé (utile dans les tests).
+
+## Sorts
+
+Un seul sort par élément et par forme (8 × 3) : apprendre un sort dont l'élément ET la forme sont
+déjà connus le fait monter de rang (II, III : −15 % de mana et de recharge, +15 % de puissance par rang).
+Ne pas créer de variantes qui font la même chose. `genSpell()` propose d'abord un couple inconnu.
+
+## Commentaires
+
+Beaucoup de lignes contiennent plusieurs instructions : un commentaire `//` inséré au milieu d'une
+ligne neutralise tout le reste de la ligne sans erreur visible. Dans une ligne existante, utiliser `/* … */`.
 
 ## Repères techniques
 

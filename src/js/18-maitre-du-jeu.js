@@ -1,6 +1,6 @@
 /* ================= MAÎTRE DU JEU ================= */
 function worldCtx(){return {
- joueur:{nom:S.name,niveau:lvl(),rang:rankOf(lvl()).n,lieu_actuel:S.locId||'chemins',sorts_connus:S.spells.map(s=>s.name+' ['+s.el+'/'+s.form+']'),talents:S.talents,combos_decouverts:S.combos},
+ joueur:{nom:S.name,niveau:lvl(),rang:rankOf(lvl()).n,lieu_actuel:S.locId||'chemins',sorts_connus:S.spells.map(s=>s.name+' ['+s.el+'/'+s.form+(spRank(s)>1?', rang '+spRank(s):'')+']'),talents:S.talents,combos_decouverts:S.combos},
  formes_de_sorts:ELS.map(e=>e+' — zone : '+FORMFX[e].zone+' | util : '+FORMFX[e].util),
  moment:{jour:S.day,heure:fmtTime(S.time)},
  lieux:LOCS.map(l=>l.id+' = '+l.name).concat(INLOCS.map(l=>l.id+' = '+l.name+' (intérieur)')),
@@ -34,6 +34,7 @@ Le joueur peut voler à balai (dès le niveau 3), affronter des vagues de créat
 L'Arène des duels possède aussi une pierre rouge où le joueur affronte des duellistes (Mannequin enchanté, Lila, Corentin Ardent [feu], Sélène Givrecœur [glace], Maël Sombrelune [ombre], Pr. Orvane) : tu peux y faire allusion, organiser des tournois par des quêtes, ou faire réagir les PNJ à ses victoires.
 Le monde contient des énigmes (braseros du Cercle de pierres, trois sceaux devant le château qui ouvrent les Souterrains et leur Gardien, glyphe secret sur la tour-bibliothèque) : tu peux y faire allusion par des indices. Les PNJ ont une humeur envers le joueur (humeur_pnj, de -10 à 10) : un PNJ fâché est froid, voire refuse d'aider ; un PNJ amical peut offrir des ingrédients.
 Formes de sort : trait = projectile, zone = effet tout autour du joueur, util = utilitaire (déplacement, révélation…). L'effet réel dépend de l'élément ET de la forme (voir formes_de_sorts). Le joueur a un rang (Apprenti, Adepte, Mage, Archimage) : adapte la difficulté et la manière dont les PNJ le traitent. Les combos d'éléments existent ; tu peux y faire allusion de façon énigmatique.
+Il n'existe qu'UN sort par élément et par forme (8 éléments × 3 formes) : un sort enseigné ou caché dont l'élément ET la forme sont déjà connus du joueur ne crée pas de nouveau sort, il fait monter de rang le sort connu (rang I à III). Pour surprendre le joueur, enseigne de préférence les couples élément/forme qu'il ne connaît pas encore (voir sorts_connus).
 Astuce : si un événement ou une quête exige un élément que le joueur ne connaît pas, tu peux cacher ailleurs un parchemin de cet élément. Varie les lieux. Pas d'action à chaque fois si ce n'est pas pertinent.
 
 Réponds UNIQUEMENT avec un objet JSON : {"narration":"…","actions":[…]} (0 à 3 actions).`;
@@ -71,7 +72,7 @@ function applyActions(actions,giverDefault){
   else if(a.type==='quest'){const q=normQuest(a,giverDefault);if(q){addQuest(q);out.push('Nouvelle quête : '+q.title);}}
   else if(a.type==='creatures'){spawnCreatures(a.loc,String(a.name||'Créatures').slice(0,30),a.count,a.weak,a.look);out.push((a.name||'Des créatures')+' rôdent vers '+(LOCBY[a.loc]||{name:'quelque part'}).name);}
   else if(a.type==='move_npc'){const n=NPCOBJ(a.npc),L=LOCBY[a.loc];if(n&&L){S.npcLoc[n.d.id]=L.id;out.push(n.d.name+' part vers '+L.name);}}
-  else if(a.type==='teach'){const sp=normSpell(a.spell);if(learnSpell(sp))out.push('Sort appris : '+sp.name);}
+  else if(a.type==='teach'){const sp=normSpell(a.spell);const r=learnSpell(sp);if(r)out.push(r==='rang'?'Sort renforcé : '+(sameSpell(sp)||sp).name:'Sort appris : '+sp.name);}
   else if(a.type==='weather'){if(WEATHERS[a.w]){setWeather(a.w);out.push('Météo : '+WEATHERS[a.w].n);}}
   else if(a.type==='chest'){const e=spawnChest(LOCBY[a.loc]?a.loc:pick(LOCS).id,(a.lock===null||a.lock==='null')?null:a.lock);out.push('Un coffre est apparu vers '+LOCBY[e.data.loc].name);}
   else if(a.type==='item'){if(INGR[a.id]){const n=clamp(+a.n||1,1,3);addItem(a.id,n);out.push('+'+n+' '+INGR[a.id].n);}}

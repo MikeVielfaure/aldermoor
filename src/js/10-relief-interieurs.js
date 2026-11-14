@@ -37,10 +37,10 @@ function setupBloom(){if(composer)return true;if(!(THREE.EffectComposer&&THREE.R
 
 /* ---------- zones intérieures ---------- */
 const ZONES={monde:{n:null},donjon:{n:'Souterrains',hemi:0.1,amb:0.06,fogC:0x05040a,fogN:4,fogF:36,pl:1.2},
- salle:{n:'Grande Salle',ic:'🏰',O:{x:0,z:700},sp:{x:0,z:14.3},ex:{x:0,z:16},door:{x:0,z:-35.9},st:{x:0,z:-37.4},yaw:0,hemi:0.4,hc:0xffe2b8,gc:0x3a2a1a,amb:0.12,fogC:0x140e08,fogN:18,fogF:80,pl:0.3,lights:[]},
- biblio_int:{n:'Bibliothèque',ic:'📚',O:{x:120,z:700},sp:{x:0,z:6.6},ex:{x:0,z:8.3},door:{x:-28.2,z:-25.9},st:{x:-28.9,z:-27},yaw:0.56,hemi:0.45,hc:0xffe0c0,gc:0x2a2018,amb:0.1,fogC:0x120c08,fogN:14,fogF:60,pl:0.4,lights:[]},
- auberge:{n:'Auberge de la Lanterne Ivre',ic:'🏮',O:{x:240,z:700},sp:{x:0,z:4.2},ex:{x:0,z:5.3},door:{x:4.8,z:49.4},st:{x:5.3,z:50.2},yaw:-2.62,hemi:0.36,hc:0xffd8a8,gc:0x3a2414,amb:0.1,fogC:0x140c06,fogN:12,fogF:50,pl:0.35,lights:[]},
- grotte:{n:'Grotte aux Cristaux',ic:'💎',O:{x:360,z:700},sp:{x:0,z:11},ex:{x:0,z:12.6},door:{x:27.8,z:-58.5},st:{x:32.4,z:-58},yaw:-1.67,hemi:0.18,hc:0x80a8ff,gc:0x101828,amb:0.06,fogC:0x040810,fogN:5,fogF:38,pl:1.0,lights:[]}};
+ salle:{n:'Grande Salle',ic:'🏰',O:{x:0,z:700},sp:{x:0,z:12.3},ex:{x:0,z:16},door:{x:0,z:-35.9},st:{x:0,z:-37.4},yaw:0,hemi:0.4,hc:0xffe2b8,gc:0x3a2a1a,amb:0.12,fogC:0x140e08,fogN:18,fogF:80,pl:0.3,lights:[]},
+ biblio_int:{n:'Bibliothèque',ic:'📚',O:{x:120,z:700},sp:{x:0,z:5.0},ex:{x:0,z:8.3},door:{x:-28.2,z:-25.9},st:{x:-28.9,z:-27},yaw:0.56,hemi:0.45,hc:0xffe0c0,gc:0x2a2018,amb:0.1,fogC:0x120c08,fogN:14,fogF:60,pl:0.4,lights:[]},
+ auberge:{n:'Auberge de la Lanterne Ivre',ic:'🏮',O:{x:240,z:700},sp:{x:0,z:1.8},ex:{x:0,z:5.3},door:{x:4.8,z:49.4},st:{x:5.3,z:50.2},yaw:-2.62,hemi:0.36,hc:0xffd8a8,gc:0x3a2414,amb:0.1,fogC:0x140c06,fogN:12,fogF:50,pl:0.35,lights:[]},
+ grotte:{n:'Grotte aux Cristaux',ic:'💎',O:{x:360,z:700},sp:{x:0,z:7},ex:{x:0,z:12.6},door:{x:27.8,z:-58.5},st:{x:32.4,z:-58},yaw:-1.67,hemi:0.18,hc:0x80a8ff,gc:0x101828,amb:0.06,fogC:0x040810,fogN:5,fogF:38,pl:1.0,lights:[]}};
 const INLOCS=[{id:'salle',name:'Grande Salle',x:0,z:700,r:18,spot:{x:0,z:689.5}},{id:'biblio_int',name:'Bibliothèque (intérieur)',x:120,z:700,r:10,spot:{x:120,z:704.3}},{id:'auberge',name:'Auberge de la Lanterne Ivre',x:240,z:700,r:9,spot:{x:240,z:701.6}},{id:'grotte',name:'Grotte aux Cristaux',x:360,z:700,r:14,spot:{x:360,z:706}}];
 INLOCS.forEach(l=>LOCBY[l.id]=l);
 function zoneAt(x,z){if(z<-300)return 'donjon';if(z>300){for(const k of ['salle','biblio_int','auberge','grotte'])if(Math.abs(x-ZONES[k].O.x)<60)return k;}return 'monde';}

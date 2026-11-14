@@ -10,6 +10,14 @@
 - Application mobile : icône, installation sur l'écran d'accueil, plein écran, écran qui reste
   allumé, jeu rejouable hors-ligne ; publication automatique sur GitHub Pages.
 
+## Fait en v14 (novembre 2026)
+- Caméra des lieux clos : angle libre, butée sous le plafond, arrêt devant murs et meubles, champ de
+  vision élargi dans les petites pièces, entrée deux pas plus loin de la porte, noms qui s'effacent de près.
+- Sorts : un seul par élément × forme ; les doublons deviennent des rangs (II, III). Les anciennes
+  sauvegardes sont fusionnées automatiquement. Le MJ est prévenu de la règle.
+- Décor automatique par recettes (11c) : Moulin, Marais, Ruines, Cercle, Hauteurs, Observatoire,
+  Bibliothèque, Forêt, Serres ; bords de chemins garnis.
+
 ## Demandé par le joueur
 - **Métiers** (il a validé la liste) : Alchimiste (potions rares, vente), Dresseur (créatures
   apprivoisées / familier), Enchanteur (améliorer balai et objets), Chasseur de failles (contrats
@@ -19,8 +27,7 @@
 - Plus de lieux, d'objets magiques, un univers plus riche. Multijoueur évoqué un jour.
 
 ## Idées de décor pour la suite
-- Habiller avec le kit les lieux pas encore touchés : Moulin, Marais, Ruines, Cercle de pierres,
-  Hauteurs, Observatoire, Tour-Bibliothèque.
+- Décor automatique aussi pour les intérieurs (étagères, tonneaux, bougies selon le type de pièce).
 - Rendre les étals du marché utiles (acheter/vendre : lien avec le métier d'Alchimiste).
 - Parchemins, coffres et créatures (07-entites) gardent leur ancien aspect.
 

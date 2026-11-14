@@ -53,7 +53,7 @@ const npcs=[];
 function buildCharacters(){
  player.H=makeHuman({skin:0xf0c8a0,hair:0x5a3a20,style:'short',hat:0x161c3a,robe:0x23305e,trim:0xf3cf7a,h:1});scene.add(player.H.root);
  const ring=new THREE.Mesh(new THREE.RingGeometry(0.55,0.68,28).rotateX(-Math.PI/2),basic(0xf3cf7a,{transparent:true,opacity:0.45,depthWrite:false}));ring.position.y=0.04;player.H.root.add(ring);
- NPCS.forEach(n=>{const H=makeHuman(n.look);const l=label(n.name);l.position.y=2.35*n.look.h;H.root.add(l);const L=LOCBY[S.npcLoc[n.id]||n.home];const p=freePoint(L,3);H.root.position.set(p.x,0,p.z);scene.add(H.root);
+ NPCS.forEach(n=>{const H=makeHuman(n.look);const l=nearFade(label(n.name));l.position.y=2.35*n.look.h;H.root.add(l);const L=LOCBY[S.npcLoc[n.id]||n.home];const p=freePoint(L,3);H.root.position.set(p.x,0,p.z);scene.add(H.root);
   npcs.push({d:n,H,obj:H.root,x:p.x,z:p.z,tx:p.x,tz:p.z,wait:rnd(1,4),cur:L.id,spd:0});});
 }
 const NPCOBJ=id=>npcs.find(n=>n.d.id===id);

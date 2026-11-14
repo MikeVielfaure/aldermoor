@@ -57,6 +57,7 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 12-perf-son-duels-carte | fusion statique `mergeStatic`, culling `cullAll`, audio `AU`/`SFX`/musique, duels `DUEL`, carte, options |
 | 12b-sons-reels | vrais sons par-dessus la synthèse (`SMP`, `smpPlay`, `smpSfx`), musique par ambiance `smpMusic`, boucles d'ambiance `smpAmb` |
 | 13-visee-camera | ciblage `AIM` (verrouillage, point visé), `castTarget`, `aimShot`, gestes tactiles, zoom |
+| 13c-camera-auto | caméra qui suit les déplacements et garde les monstres hostiles à l'écran (`camAutoTick`, réglage `CAMA.mode` : manuelle / suit / suit + combat) |
 | 13b-camera-interieurs | caméra des lieux clos `inCam()` (plafond, murs, meubles, champ de vision), noms qui s'effacent de près `nearFade()` |
 | 14-lieux-… | Moulin du Ru, Marais des Lucioles, Ruines d'Ysmer (oracle, gardiens, crypte) |
 | 15-balai-… | balai `FLY`, course d'anneaux `RACE`, objets magiques `OBJS`, Faille à vagues `WAVE`, karma, quête de l'Oubli, Bosquet |

@@ -387,7 +387,7 @@ const ptsFree=()=>ptsTotal()-ptsSpent();
 let CAST_K=1; // rang du sort en cours de lancement (19b-sorts-uniques)
 const pow=el=>(1+0.25*tal(el+'_pow')+0.03*mLvl(el))*wMul(el)*(BUFF.puissance?1.3:1)*karmaMul(el)*CAST_K;
 const manaMax=()=>100+25*tal('reserve');
-const manaRegen=()=>9*(1+0.3*tal('flux'))*(lvl()>=15?1.5:1);
+const manaRegen=()=>9*(1+0.3*tal('flux'))*(lvl()>=15?1.5:1)*(typeof player!=='undefined'&&player.grounded&&player.spd<0.05&&!FLY.on?1.8:1); // immobile : méditation
 function migrate(s){s.inv=s.inv||{};s.rep=s.rep||{};s.zone='monde';s.talents=s.talents||{};s.mastery=s.mastery||{};s.combos=s.combos||[];
  s.spells.forEach(sp=>{const p=POOL.find(x=>x.name.toLowerCase()===String(sp.name).toLowerCase());if(p){sp.form=p.form;sp.desc=p.desc;sp.inc=p.inc;}if(!FORMS[sp.form])sp.form='trait';if(!sp.id)sp.id=String(sp.name).toLowerCase().replace(/[^a-zà-ÿ0-9]+/g,'-');});
  if(!Array.isArray(s.slots))s.slots=[];
@@ -2591,6 +2591,7 @@ function renderOpts(){const q=['légers (plus fluide)','élevés','ultra (halo l
  '<div class="op"><span>Son</span><button class="ghost sm" id="o-m">'+(AU.mute?'🔇 coupé':'🔊 activé')+'</button></div>'+
  '<div class="op"><span>Plein écran</span><button class="ghost sm" id="o-fs">'+(document.fullscreenElement?'activé':'activer')+'</button></div>'+
  '<div class="op"><span>Compteur d’images</span><button class="ghost sm" id="o-f">'+(FPSV.on?'affiché':'masqué')+'</button></div>'+
+ '<div class="op"><span>Caméra</span><button class="ghost sm" id="o-cam">'+CAM_MODES[CAMA.mode]+'</button></div>'+
  '<div class="op"><span>Visée des sorts</span><button class="ghost sm" id="o-am">'+({camera:'là où je regarde',libre:'viseur libre (haut/bas)',perso:'devant mon perso'}[AIMO.mode]||'là où je regarde')+'</button></div>'+
  '<div class="op"><span>Aide à la visée</span><button class="ghost sm" id="o-as">'+(AIMO.assist?'activée':'désactivée')+'</button></div>'+
  '<div class="op"><span>Cible auto en duel</span><button class="ghost sm" id="o-dl">'+(AIMO.duelLock?'oui':'non')+'</button></div>'+
@@ -2602,7 +2603,7 @@ function renderOpts(){const q=['légers (plus fluide)','élevés','ultra (halo l
  '<p class="note">Visée : touche une créature ou un objet pour le cibler, touche le sol pour viser un point, touche deux fois pour recentrer la caméra. Pince avec deux doigts pour zoomer. Glisse vers le bas pour regarder le ciel.</p>'+
  '<p class="note">Si le jeu saccade, passe en « légers ». Le réglage est mémorisé.</p>';
  $('#o-q').onclick=()=>{QL=(QL+1)%3;try{localStorage.setItem('aldermoor-q',['lq','hq','uq'][QL]);localStorage.setItem('aldermoor-qman','1');}catch(e){}applyQuality();renderOpts();};
- $('#o-pe').onclick=()=>{mdlStyle(!MDL_ON);renderOpts();};{const lk=$('#o-lk');if(lk)lk.onclick=()=>{mdlNextLook();renderOpts();};}$('#o-fs').onclick=()=>{fullScreen(!document.fullscreenElement);setTimeout(renderOpts,400);};$('#o-mj').onclick=()=>{$('#opts').classList.add('hidden');openMjk();};$('#o-mu').oninput=e=>{AU.music=e.target.value/100;auVol();auSave();};$('#o-fx').oninput=e=>{AU.sfx=e.target.value/100;auVol();auSave();};
+ $('#o-cam').onclick=()=>{camModeNext();renderOpts();};$('#o-pe').onclick=()=>{mdlStyle(!MDL_ON);renderOpts();};{const lk=$('#o-lk');if(lk)lk.onclick=()=>{mdlNextLook();renderOpts();};}$('#o-fs').onclick=()=>{fullScreen(!document.fullscreenElement);setTimeout(renderOpts,400);};$('#o-mj').onclick=()=>{$('#opts').classList.add('hidden');openMjk();};$('#o-mu').oninput=e=>{AU.music=e.target.value/100;auVol();auSave();};$('#o-fx').oninput=e=>{AU.sfx=e.target.value/100;auVol();auSave();};
  $('#o-m').onclick=()=>{AU.mute=!AU.mute;auInit();auVol();auSave();renderOpts();};$('#o-f').onclick=()=>{FPSV.on=!FPSV.on;$('#fps').classList.toggle('hidden',!FPSV.on);renderOpts();};
  $('#o-am').onclick=()=>{AIMO.mode={camera:'libre',libre:'perso',perso:'camera'}[AIMO.mode]||'camera';aimSave();renderOpts();if(AIMO.mode==='libre'&&!S.seenLibre){S.seenLibre=1;say('🎯 <b>Viseur libre</b> : tes sorts partent vers le cercle au centre de l’écran. Lève ou baisse la caméra pour viser haut ou bas.','sys');}};$('#o-as').onclick=()=>{AIMO.assist=!AIMO.assist;aimSave();renderOpts();};$('#o-dl').onclick=()=>{AIMO.duelLock=!AIMO.duelLock;aimSave();renderOpts();if(DUEL&&!AIMO.duelLock&&AIM.lock&&AIM.lock.ref===DUEL.e)AIM.lock=null;};$('#o-tp').onclick=()=>{AIMO.tap=!AIMO.tap;aimSave();renderOpts();};$('#o-fo').onclick=()=>{AIMO.follow=!AIMO.follow;aimSave();renderOpts();};
  $('#o-se').oninput=e=>{AIMO.sens=e.target.value/100;aimSave();};$('#o-zo').oninput=e=>{CAMZ=e.target.value/100;try{localStorage.setItem('aldermoor-zoom',CAMZ.toFixed(2));}catch(er){}};}
@@ -2877,6 +2878,38 @@ function fovTo(target,dt){const f=fovCur+(target-fovCur)*Math.min(1,dt*4);if(Mat
 // étiquette (nom de personnage…) qui s'efface quand la caméra est tout près, au lieu de remplir l'écran
 const NFV=new THREE.Vector3();
 function nearFade(s,a,b){s.onBeforeRender=(r,sc,cam)=>{s.getWorldPosition(NFV);s.material.opacity=clamp((NFV.distanceTo(cam.position)-(a||3))/(b||3),0,1);};return s;}
+/* ================= CAMÉRA AUTOMATIQUE : elle suit les déplacements et garde les monstres à l'écran =================
+   Avant : il fallait tourner la caméra avec l'autre doigt pour regarder à gauche ou à droite.
+   - Suivi : en se déplaçant de côté, la caméra pivote doucement pour se replacer derrière le joueur
+     (plus vite en courant et en balai). En reculant, elle ne tourne pas (pas de vrille).
+   - Combat : une créature hostile proche qui sort du champ est ramenée à l'écran (les animaux paisibles
+     sont ignorés ; une cible verrouillée garde son propre suivi, 13-visee-camera).
+   - L'inclinaison revient doucement à une hauteur normale quand on marche.
+   - Dès que le joueur fait glisser la caméra lui-même, l'automatisme se tait un instant.
+   Options ⚙ → « Caméra » : manuelle / suit les déplacements / suit + combat (mémorisé). */
+const CAM_MODES=['manuelle','suit les déplacements','suit + combat'];
+const CAMA={mode:2,lastDrag:-9,threat:null,tT:0};
+try{const v=+localStorage.getItem('aldermoor-cam');if(v>=0&&v<=2&&localStorage.getItem('aldermoor-cam')!==null)CAMA.mode=v;}catch(e){}
+const angDiff=(a,b)=>Math.atan2(Math.sin(a-b),Math.cos(a-b));
+function camAutoTick(dt){if(!started||anyModal()||TALK||CAMA.mode===0)return;const now=performance.now()/1000;
+ if(drag.id!==null||PINCH.on){CAMA.lastDrag=now;return;}
+ const calm=now-CAMA.lastDrag; // secondes depuis la dernière fois que le joueur a tourné la caméra lui-même
+ // commande de déplacement (même calcul que la boucle de jeu)
+ let ix=joy.x,iy=joy.y;if(keys.KeyW||keys.KeyZ||keys.ArrowUp)iy+=1;if(keys.KeyS||keys.ArrowDown)iy-=1;if(keys.KeyA||keys.KeyQ||keys.ArrowLeft)ix-=1;if(keys.KeyD||keys.ArrowRight)ix+=1;
+ const mag=Math.min(1,Math.hypot(ix,iy)),moving=mag>0.15;
+ // combat : la menace hostile la plus proche, si elle sort du champ de vision
+ let turned=false;
+ if(CAMA.mode===2&&calm>1.2&&!(AIM.lock&&AIMO.follow)&&S.zone==='monde'){CAMA.tT-=dt;if(CAMA.tT<=0){CAMA.tT=0.25;let best=null,bd=14;
+   for(const e of ENT){if(e.kind!=='creature'||e.data.calme||e.data.duel)continue;const d=Math.hypot(e.x-player.x,e.z-player.z);if(d<bd){bd=d;best=e;}}CAMA.threat=best;}
+  const e=CAMA.threat;if(e&&ENT.includes(e)){const want=Math.atan2(e.x-player.x,e.z-player.z),d=angDiff(want,camYaw),cone=0.55;
+   if(Math.abs(d)>cone){camYaw+=(d-Math.sign(d)*cone)*Math.min(1,dt*2.4);turned=true;}}}
+ // suivi des déplacements
+ if(!turned&&moving&&calm>0.8&&!(AIM.lock&&AIMO.follow)){const fx=Math.sin(camYaw),fz=Math.cos(camYaw),mx=fx*iy-fz*ix,mz=fz*iy+fx*ix,head=Math.atan2(mx,mz),d=angDiff(head,camYaw);
+  if(Math.abs(d)<2.2){const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95,k=(FLY.on?1.8:run?1.0:0.7)*Math.min(1,Math.abs(ix)*1.6+0.15);camYaw+=d*Math.min(1,dt*k);}}
+ // inclinaison : retour doux vers une vue normale en marchant
+ if(moving&&calm>2.5&&!FLY.on){const want=S.zone==='monde'?0.38:0.32;camPitch+=(want-camPitch)*Math.min(1,dt*0.8);}}
+{const _at=aimTick;aimTick=function(dt){const r=_at.apply(this,arguments);try{camAutoTick(dt);}catch(e){}return r;};}
+function camModeNext(){CAMA.mode=(CAMA.mode+1)%3;try{localStorage.setItem('aldermoor-cam',String(CAMA.mode));}catch(e){}}
 /* ================= ÉTAPE 7 : NOUVEAUX LIEUX (MOULIN, MARAIS, RUINES) & OBJETS ================= */
 const POOLS=[{x:51,z:57,r:3.4},{x:58,z:48.5,r:2.8},{x:63.5,z:50,r:2.4},{x:54.5,z:62.5,r:2.6},{x:48,z:51,r:2.0}];
 function poolCarve(x,z){if(x<42||z<42||x>70||z>70)return 0;let m=0;for(const p of POOLS){const d=Math.hypot(x-p.x,z-p.z);if(d<p.r)m=Math.max(m,0.55*smooth(p.r,p.r-1.3,d));}return m;}
@@ -3843,6 +3876,19 @@ function landesTick(dt){if(!started)return;skyMesh.position.copy(camera.position
  $('#map-s').innerHTML='Tu es dans les <b>Landes d’Ombrelune</b>. Retour à Aldermoor : la Pierre-Portail à l’ouest, ou les crêtes en balai.';cv.onclick=null;};}
 // le MJ connaît la région
 {const _bp=buildPrompt;buildPrompt=function(){return _bp.apply(this,arguments).replace(RULES,RULES+'\nRégion des Landes d’Ombrelune (lieux landes_*) : grande région sauvage au-delà des montagnes, atteinte par la Pierre-Portail ou en balai. Lac Miroir-Ciel, Forêt des Murmures-Anciens, Pic de Givrecorne enneigé, Plateau des Géants, Nid d’une vouivre de braise, Campement des Voyageurs. Animaux paisibles (cerfs, poules, pandas, pingouins) et créatures hostiles. Tu peux y envoyer le joueur en quête.');};}
+/* ---------- quêtes des Landes (MJ classique) : proposées une fois la région découverte ---------- */
+const LANDES_QUETES=[
+ g=>({title:'La colère de la vouivre',desc:'Bram a vu des fumées au-dessus du Nid de la Vouivre, dans les Landes. Il faut apaiser les braises avant qu’elles n’embrasent la forêt.',giver:'bram',
+  steps:[{kind:'goto',loc:'landes_nid',text:'Rejoindre le Nid de la Vouivre (Landes)'},{kind:'cast',loc:'landes_nid',el:'glace',text:'Apaiser les braises du nid avec un sort de Glace'},{kind:'talk',npc:'bram',text:'Rassurer Bram'}],reward:{xp:120,spell:null}}),
+ g=>({title:'Les pierres qui chantent',desc:'Ysolde a lu qu’au Plateau des Géants, les pierres répondent à la magie pure.',giver:'ysolde',
+  steps:[{kind:'goto',loc:'landes_plateau',text:'Gravir le Plateau des Géants (Landes)'},{kind:'cast',loc:'landes_plateau',el:'arcane',text:'Faire chanter les pierres avec un sort d’Arcane'},{kind:'collect',loc:'landes_plateau',item:'un éclat de pierre chantante',text:'Ramasser un éclat de pierre chantante'},{kind:'talk',npc:'ysolde',text:'Rapporter l’éclat à Ysolde'}],reward:{xp:110,spell:genSpell()}}),
+ g=>({title:'Le reflet du lac',desc:'Cassius jure que le Lac Miroir-Ciel garde les reflets des étoiles même en plein jour.',giver:'cassius',
+  steps:[{kind:'goto',loc:'landes_lac',text:'Aller au Lac Miroir-Ciel (Landes)'},{kind:'cast',loc:'landes_lac',el:'lumiere',text:'Éclairer le lac avec un sort de Lumière'},{kind:'collect',loc:'landes_lac',item:'une écaille de lune',text:'Trouver l’écaille de lune sur la rive'},{kind:'talk',npc:'cassius',text:'Montrer l’écaille à Cassius'}],reward:{xp:100,spell:null}}),
+ g=>({title:'La fleur de givre',desc:'Mère Brindille a besoin d’une fleur qui ne pousse que sur les pentes du Pic de Givrecorne.',giver:'brindille',
+  steps:[{kind:'goto',loc:'landes_pic',text:'Monter au Pic de Givrecorne (Landes)'},{kind:'collect',loc:'landes_pic',item:'une fleur de givre',text:'Cueillir une fleur de givre'},{kind:'talk',npc:'brindille',text:'Apporter la fleur à Mère Brindille'}],reward:{xp:90,spell:null}}),
+ g=>({title:'Les cerfs effrayés',desc:'Mirelle s’inquiète : les cerfs de la Prairie aux Lucioles ne broutent plus. La terre aurait besoin d’un peu de magie.',giver:'mirelle',
+  steps:[{kind:'goto',loc:'landes_prairie',text:'Aller à la Prairie aux Lucioles (Landes)'},{kind:'cast',loc:'landes_prairie',el:'nature',text:'Ranimer la prairie avec un sort de Nature'},{kind:'talk',npc:'mirelle',text:'Prévenir Mirelle'}],reward:{xp:80,spell:null}})];
+{const _gq=genQuest;genQuest=function(giverId){if(S&&S.landesVu&&Math.random()<0.4){const q=pick(LANDES_QUETES)(giverId);if(!S.quests.some(x=>x.title===q.title)&&!(S.done||[]).includes(q.title))return q;}return _gq.apply(this,arguments);};}
 /* ================= BOUCLE ================= */
 let started=false,fastT=0,last=performance.now(),ambT=40,saveT=0,hudT=0,focT=0,waterT=0;
 const cTopD=new THREE.Color(0x3f86e0),cBotD=new THREE.Color(0xc4e0f6),cTopN=new THREE.Color(0x050818),cBotN=new THREE.Color(0x141c3c),cDusk=new THREE.Color(0xf0905a),tTop=new THREE.Color(),tBot=new THREE.Color();

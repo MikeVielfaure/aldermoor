@@ -31,6 +31,17 @@
   passage en balai par les crêtes ; carte de la région ; le MJ la connaît.
 - Partie de test niveau 50 (adresse avec `?test`).
 
+## Fait en v17 (novembre 2026)
+- Caméra automatique : elle suit les déplacements, ramène à l'écran les monstres hostiles proches, se tait
+  quand le joueur tourne lui-même ; réglage Options ⚙ → Caméra.
+- Méditation : immobile au sol, le mana revient 80 % plus vite.
+- 5 quêtes du MJ classique dans les Landes (vouivre, pierres chantantes, lac, fleur de givre, cerfs).
+
+## En attente d'une décision du joueur
+- Personnages modulaires Quaternius (zips déposés le 2026-11-14 dans assets/brut, décompressés dans
+  zip-modular-a / zip-modular-b) : maquette faite (apprentie en robe noire, apprenti à capuche), rien
+  d'intégré. Il a demandé qu'on lui demande avant de changer quoi que ce soit avec ces fichiers.
+
 ## Demandé par le joueur
 - **Métiers** (il a validé la liste) : Alchimiste (potions rares, vente), Dresseur (créatures
   apprivoisées / familier), Enchanteur (améliorer balai et objets), Chasseur de failles (contrats

@@ -73,7 +73,7 @@ function pushOut(o,rad,allowIce,py){
   if(c.r!==undefined){if(c.off)continue;if(c.lake&&allowIce===2)continue;const dx=o.x-c.x,dz=o.z-c.z;if(Math.abs(dx)>c.r+rad||Math.abs(dz)>c.r+rad)continue;if(c.lake&&allowIce&&onIce(o))continue;const d=Math.hypot(dx,dz),m=c.r+rad;if(d<m){if(d<1e-4)o.x+=m;else{o.x=c.x+dx/d*m;o.z=c.z+dz/d*m;}}}
   else{const dx=o.x-c.x,dz=o.z-c.z,px=c.hw+rad-Math.abs(dx),pz=c.hd+rad-Math.abs(dz);if(px>0&&pz>0){if(px<pz)o.x+=(dx>=0?1:-1)*px;else o.z+=(dz>=0?1:-1)*pz;}}
  }
- if(o.z>-300&&o.z<300){const d=Math.hypot(o.x,o.z);if(d>92){o.x*=92/d;o.z*=92/d;}}roomClamp(o,rad);
+ if(o.z>-300&&o.z<300){if(o.x>1500){const dx=o.x-2000,dz=o.z,d=Math.hypot(dx,dz);if(d>168){o.x=2000+dx*168/d;o.z=dz*168/d;}}else{const d=Math.hypot(o.x,o.z);if(d>92){o.x*=92/d;o.z*=92/d;}}}roomClamp(o,rad);
 }
 function isFree(p,rad){const q={x:p.x,z:p.z};pushOut(q,rad);return Math.hypot(q.x-p.x,q.z-p.z)<0.01;}
 function hitsSolid(x,z){for(const c of COLS){if(c.lake||c.off)continue;if(c.r!==undefined){if(Math.hypot(x-c.x,z-c.z)<c.r)return true;}else if(Math.abs(x-c.x)<c.hw&&Math.abs(z-c.z)<c.hd)return true;}return false;}

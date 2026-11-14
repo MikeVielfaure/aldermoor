@@ -24,6 +24,13 @@
   animées, 36 objets meublant la Grande Salle, la Bibliothèque, l'Auberge, la Grotte et l'arène,
   vrais effets sonores, 8 musiques selon le lieu et l'heure, ambiances (oiseaux, grillons, feu, rivière, vent).
 
+## Fait en v16 (novembre 2026)
+- L'apprenti(e) à baguette (robe d'école, écharpe violet et or, cravate) : apparence par défaut, et Lila.
+- Les Landes d'Ombrelune : grande région (≈ 3,5 × la vallée), lac, forêt, pic enneigé, plateau des
+  géants, nid de vouivre, campement ; 13 groupes de créatures (dont des animaux paisibles) ; portail et
+  passage en balai par les crêtes ; carte de la région ; le MJ la connaît.
+- Partie de test niveau 50 (adresse avec `?test`).
+
 ## Demandé par le joueur
 - **Métiers** (il a validé la liste) : Alchimiste (potions rares, vente), Dresseur (créatures
   apprivoisées / familier), Enchanteur (améliorer balai et objets), Chasseur de failles (contrats
@@ -31,6 +38,11 @@
 - **Bien / mal** : plus de quêtes obscures et exotiques menant à des sorts interdits puissants,
   utilisables librement plus tard (modèle : la quête « Le Murmure de l'Oubli » → sort Oubli).
 - Plus de lieux, d'objets magiques, un univers plus riche. Multijoueur évoqué un jour.
+
+## Idées pour la région
+- Quêtes propres aux Landes (la vouivre, les pierres géantes, le lac), un village ou un refuge, des
+  chemins tracés, des nuages au-dessus de la région (aujourd'hui seulement au-dessus de la vallée).
+- Apprivoiser un animal paisible (métier de Dresseur).
 
 ## Idées de décor pour la suite
 - Décor automatique aussi pour les intérieurs (étagères, tonneaux, bougies selon le type de pièce).

@@ -7,12 +7,13 @@
    modèle sont distingués par une teinte. Morceaux fusionnés par texture : 1 à 2 appels de dessin par personnage.
    Options ⚙ → « Personnages » permet de revenir aux personnages d'origine (réglage mémorisé). */
 const MDL={base:'assets/',ready:false,tpl:{},clips:{},failed:false,loading:false};
-const MDL_PERSO={orvane:['sorcier',0xd2bcff],cassius:['clerc'],mirelle:['rodeuse'],lila:['rodeuse',0xffc0c8],ysolde:['voleur',0xd8c8ff,'sansArme'],
+const MDL_PERSO={orvane:['sorcier',0xd2bcff],cassius:['clerc'],mirelle:['rodeuse'],lila:['apprenti',0x8a2a4a],ysolde:['voleur',0xd8c8ff,'sansArme'],
  bram:['guerrier'],tobias:['moine'],gaspard:['moine',0xffe6c0],brindille:['clerc',0xc8f0b8]};
 let MDL_ON=true;try{MDL_ON=localStorage.getItem('aldermoor-persos')!=='simple';}catch(e){}
 // apparence du joueur (Options ⚙) : un des six modèles
-const MDL_LOOKS=[['sorcier','sorcier'],['rodeuse','rôdeuse'],['voleur','voleur·se'],['guerrier','guerrier'],['moine','moine'],['clerc','clerc']];
-let MDL_LOOK='sorcier';try{const v=localStorage.getItem('aldermoor-look');if(MDL_LOOKS.some(l=>l[0]===v))MDL_LOOK=v;}catch(e){}
+const MDL_LOOKS=[['apprenti','apprenti(e)'],['sorcier','sorcier'],['rodeuse','rôdeuse'],['voleur','voleur·se'],['guerrier','guerrier'],['moine','moine'],['clerc','clerc']];
+let MDL_LOOK='apprenti';try{const v=localStorage.getItem('aldermoor-look');if(MDL_LOOKS.some(l=>l[0]===v))MDL_LOOK=v;}catch(e){}
+const makeHuman0=makeHuman; // version d'origine (sans habillage), utilisée par 05c-apprenti
 const HUMS=[]; // tous les personnages créés (joueur, PNJ, duellistes) : habillés dès que les modèles sont prêts
 function mdlLoad(url){return new Promise((res,rej)=>{try{new THREE.GLTFLoader().load(MDL.base+url,res,undefined,rej);}catch(e){rej(e);}});}
 // fusionne des morceaux animés qui partagent la même texture (même squelette) en un seul maillage
@@ -42,7 +43,9 @@ function persoFor(H){if(H===player.H)return [MDL_LOOK];const n=NPCS.find(x=>x.lo
 // matériau teinté (mis en cache : tous les personnages de même modèle et même teinte le partagent)
 function mdlTint(T,m,tint){if(!tint)return m;const k=m.uuid+'|'+tint;if(!T.tint[k]){const c=m.clone();c.color.setHex(tint);T.tint[k]=c;}return T.tint[k];}
 // habille un personnage avec son modèle
-function mdlDress(H){if(H.M||!MDL.ready||!MDL_ON)return;const [nom,tint,opt]=persoFor(H),T=MDL.tpl[nom];if(!T)return;const L=H.L||{h:1};
+function mdlDress(H){if(!MDL_ON||H.M||H.appr)return;const [nom,tint,opt]=persoFor(H);
+ if(nom==='apprenti'){apprDress(H,tint);return;} // fabriqué par le jeu : pas besoin de fichier
+ if(!MDL.ready)return;const T=MDL.tpl[nom];if(!T)return;const L=H.L||{h:1};
  const r=THREE.SkeletonUtils.clone(T.scene);let hand=null;
  r.traverse(o=>{if(o.isSkinnedMesh){o.material=mdlTint(T,o.material,tint);o.castShadow=true;o.receiveShadow=true;o.frustumCulled=false;if(o.name==='arme'&&(opt==='sansArme'||H===player.H&&!['sorcier','clerc'].includes(nom)))o.visible=false; /* un apprenti mage n'a que son bâton */}if(T.tip&&o.isBone&&o.name===T.tip.bone)hand=o;});
  const k=1.5*(L.h||1)/T.headY;r.scale.set(k*(L.w||1),k,k*(L.w||1)*0.95);H.root.add(r);H.body.visible=false;
@@ -57,20 +60,22 @@ function mdlAnim(H,dt,spd,air){const M=H.M;if(!M.r.visible)return;
  else{const want=spd>0.75?'Run':spd>0.08?'Walk':'Idle';mdlPlay(H,want,0.2);
   if(M.A.Walk)M.A.Walk.timeScale=clamp(spd/0.4,0.6,1.6);if(M.A.Run)M.A.Run.timeScale=clamp(spd/1.05,0.8,1.4)*(air?0.4:1);}
  M.mx.update(dt);}
-{const _m=makeHuman;makeHuman=function(L){const H=_m.apply(this,arguments);H.L=L;HUMS.push(H);if(HUMS.length>60)HUMS.splice(0,HUMS.length-60);if(MDL.ready)mdlDress(H);return H;};}
+{const _m=makeHuman;makeHuman=function(L){const H=_m.apply(this,arguments);H.L=L;HUMS.push(H);if(HUMS.length>60)HUMS.splice(0,HUMS.length-60);mdlDress(H);return H;};}
 {const _a=animHuman;animHuman=function(H,dt,spd,t,air){_a.apply(this,arguments);if(H.M)mdlAnim(H,dt,spd,air);};}
 // retire le modèle d'un personnage (pour en changer)
-function mdlUndress(H){if(!H.M)return;H.root.remove(H.M.r);H.M.mx.stopAllAction();H.M=null;H.body.visible=true;if(H.tip0)H.p.tip=H.tip0;}
+function mdlUndress(H){apprUndress(H);if(!H.M)return;H.root.remove(H.M.r);H.M.mx.stopAllAction();H.M=null;H.body.visible=true;if(H.tip0)H.p.tip=H.tip0;}
 function mdlNextLook(){const i=MDL_LOOKS.findIndex(l=>l[0]===MDL_LOOK);MDL_LOOK=MDL_LOOKS[(i+1)%MDL_LOOKS.length][0];try{localStorage.setItem('aldermoor-look',MDL_LOOK);}catch(e){}
  if(player.H){mdlUndress(player.H);mdlDress(player.H);}}
 // changer de style en cours de partie (Options ⚙)
 function mdlStyle(on){MDL_ON=on;try{localStorage.setItem('aldermoor-persos',on?'3d':'simple');}catch(e){}
- if(on&&!MDL.ready){mdlStart();return;}
+ if(on&&!MDL.ready)mdlStart();
  HUMS.forEach(H=>{if(on)mdlDress(H);else mdlUndress(H);});}
 // chargement : animations partagées + un modèle par type de personnage
 function mdlStart(){if(MDL.loading||MDL.ready)return;if(typeof THREE.GLTFLoader!=='function'||!THREE.SkeletonUtils||typeof THREE.SkeletonUtils.clone!=='function'){MDL.failed=true;return;}
- MDL.loading=true;const noms=[...new Set(['sorcier',MDL_LOOK].concat(Object.values(MDL_PERSO).map(v=>v[0]),MDL_LOOKS.map(l=>l[0])))];
+ MDL.loading=true;const noms=[...new Set(['sorcier'].concat(Object.values(MDL_PERSO).map(v=>v[0]),MDL_LOOKS.map(l=>l[0])))].filter(n=>n!=='apprenti');
  Promise.all([mdlLoad('persos/animations.glb')].concat(noms.map(n=>mdlLoad('persos/'+n+'.glb')))).then(([an,...ms])=>{
   an.animations.forEach(c=>{MDL.clips[c.name]=c;});ms.forEach((g,i)=>{const t=mdlPrep(g);if(t)MDL.tpl[noms[i]]=t;});
   MDL.ready=true;HUMS.forEach(mdlDress);}).catch(e=>{MDL.failed=true;console.warn('Modèles 3D indisponibles, personnages faits par le code.',e&&e.message||e);});}
 if(MDL_ON)mdlStart();else MDL.failed=false;
+// le joueur est créé avant que player.H soit connu : on l'habille (ou rhabille) une fois les personnages créés
+{const _bc=buildCharacters;buildCharacters=function(){const r=_bc.apply(this,arguments);if(player.H){mdlUndress(player.H);mdlDress(player.H);}return r;};}

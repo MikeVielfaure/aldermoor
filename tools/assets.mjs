@@ -36,7 +36,8 @@ async function persos(){const src=path.join(BRUT,'quaternius-rpg-characters'),ds
  await doc.transform(prune({keepLeaves:true}));const out=path.join(dst,'animations.glb');await io.write(out,doc);console.log('animations',R.listAnimations().map(a=>a.getName()).join(','),ko(out));}
 
 /* ---------- créatures (Quaternius, Cute Monsters) : texture réduite à 256 px ---------- */
-const CREAS={fantome:'Ghost',champignon:'Mushroom',yeti:'Yeti',demon:'Demon',chauvesouris:'Bat',cyclope:'Cyclops',crabe:'Crab',alien:'Alien',arbre:'Tree',crane:'Skull',dragon:'YellowDragon',abeille:'Bee'};
+const CREAS={fantome:'Ghost',champignon:'Mushroom',yeti:'Yeti',demon:'Demon',chauvesouris:'Bat',cyclope:'Cyclops',crabe:'Crab',alien:'Alien',arbre:'Tree',crane:'Skull',dragon:'YellowDragon',abeille:'Bee',
+ cerf:'Deer',pingouin:'Penguin',cochon:'Pig',poule:'Chicken',diablotin:'GreenDemon',poulpe:'Cthulhu',panda:'Panda',cactus:'Cactus'};
 async function creatures(){const src=path.join(BRUT,'quaternius-cute-monsters'),dst=path.join(SORTIE,'creatures');fs.mkdirSync(dst,{recursive:true});
  for(const [nom,f] of Object.entries(CREAS)){const doc=await io.read(path.join(src,f+'.gltf'));
   doc.getRoot().listAnimations().forEach(a=>a.setName(a.getName().replace(/^.*\|/,'')));

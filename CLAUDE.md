@@ -42,6 +42,7 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 03-rendu | renderer, particules GPU (`PA` additif, `PN` normal, `PW` météo), lumières, collisions `COLS`/`pushOut` |
 | 04-monde | `buildWorld()` : terrain (`terrainH`, `gh(x,z)`), château, tours, village, lac, arbres, herbe |
 | 05-personnages | `makeHuman()`, `animHuman()` (personnages articulés) |
+| 05c-apprenti | l'apprenti(e) à baguette, construit par le jeu (`makeApprenti`, `apprDress`) : apparence par défaut du joueur et de Lila |
 | 05b-modeles | chargeur glTF `mdlLoad`, personnages 3D Quaternius « RPG » (`MDL`, `mdlDress`, `mdlAnim`, modèle et teinte par PNJ `MDL_PERSO`, apparence du joueur `MDL_LOOK`, option d'origine/3D `mdlStyle`) |
 | 06-objets-plantes | objets physiques `PROPS` (caisses, tonneaux…), plantes |
 | 07-entites | `ENT` : parchemins, événements, créatures, coffres (`addEnt`, `removeEnt`) |
@@ -66,8 +67,10 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 19-mecaniques | quêtes (`addQuest`, `finishQuest`, `curStep`), temps, nuit, génération de sorts `genSpell` |
 | 19b-sorts-uniques | un sort par élément × forme ; un doublon fait monter de rang (`rankUp`, `spRank`, `CAST_K`), fusion des anciennes sauvegardes |
 | 20-controles | joystick, clavier, glisser caméra |
+| 20b-landes | les Landes d'Ombrelune (`LANDES`, relief `landH`, `buildLandes`, portails, vol par les crêtes, peuplement `LANDES_POP`, carte de la région) |
 | 21-boucle | `update(dt)`, `loop()`, `startGame()`, puis la séquence de construction du monde |
 | 22-appli | plein écran, écran qui reste allumé, enregistrement du mode hors-ligne |
+| 22b-partie-test | partie de test niveau 50 (`?test` dans l'adresse), sauvegarde normale mise de côté |
 
 Autres : `src/styles.css`, `src/body.html` (HUD/modales + balises `<script>` Three.js en CDN),
 `src/head.html`, `src/tail.html`, `src/static/` (icône, manifeste, `sw.js` : copiés tels quels dans
@@ -97,6 +100,9 @@ Le décor a son propre hasard (`dkr()`) : ne pas y utiliser `srand()`, qui déca
   Créatures (09b) : modèle chargé à la première apparition. Sons (12b) : après le premier geste (audio).
 - Pièges Three.js r128 : `THREE.SkeletonUtils.clone()` pour copier un personnage animé ; matériau
   `skinning:true` ; textures des modèles en `LinearEncoding` (le jeu n'utilise pas sRGB, sinon trop sombre).
+- Apprenti(e) : fabriqué par le jeu (05c) à partir du personnage articulé, pas de fichier ; `makeHuman0`
+  = makeHuman d'origine, `APPR_NOBAKE` retarde la fusion des morceaux le temps d'ajouter robe, écharpe…
+  Univers original : école de magie, mais pas de maisons, blasons ou personnages d'une autre œuvre.
 - Personnages : pack « RPG Character Pack » (style peint, textures). Le joueur a d'abord trouvé le pack
   « Ultimate Animated Character » moins beau : ne pas y revenir sans lui demander. Morceaux fusionnés par
   texture, teinte par PNJ (`MDL_PERSO`), un seul fichier d'animations partagé (même squelette de 32 os).
@@ -120,7 +126,10 @@ ligne neutralise tout le reste de la ligne sans erreur visible. Dans une ligne e
 
 ## Repères techniques
 
-- Monde : disque de rayon ~92, `gh(x,z)` = hauteur du sol. Zones `S.zone` : `monde`, `donjon`
+- Monde : vallée = disque de rayon ~92 ; Landes d'Ombrelune = disque de rayon ~168 centré sur x=2000
+  (même zone « monde » : `gh()` passe par `landH()` quand x > 1500 ; limites dans `pushOut` et `flyPush`).
+  Un nouveau fichier qui construit du monde doit se charger AVANT 21-boucle (ordre alphabétique : `20b-…`).
+  `gh(x,z)` = hauteur du sol. Zones `S.zone` : `monde`, `donjon`
   (z≈-700), intérieurs `salle`/`biblio_int`/`auberge`/`grotte` (z=700).
 - Séquence de construction (fin de 21-boucle) : `markStatic(); buildWorld(); buildWorld4();
   buildRift(); buildBosquet(); buildRack(); mergeStatic(); buildWorld2(); buildWorld3();

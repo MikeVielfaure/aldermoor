@@ -37,7 +37,7 @@ function dismount(silent){if(!FLY.on)return;FLY.on=false;FLY.down=false;if(FLY.m
 function flyPush(o,prev){const py=player.y;for(const c of COLS){if(c.lake||c.off)continue;const top=c.h!==undefined?c.h:(c.fh||(c.tree?7.6*c.tree.s:6.5));if(py>top-0.3)continue;
   if(c.r!==undefined){const dx=o.x-c.x,dz=o.z-c.z,m=c.r+0.45;if(Math.abs(dx)>m||Math.abs(dz)>m)continue;const d=Math.hypot(dx,dz);if(d<m){if(d<1e-4)o.x+=m;else{o.x=c.x+dx/d*m;o.z=c.z+dz/d*m;}}}
   else{const dx=o.x-c.x,dz=o.z-c.z,px=c.hw+0.45-Math.abs(dx),pz=c.hd+0.45-Math.abs(dz);if(px>0&&pz>0){if(px<pz)o.x+=(dx>=0?1:-1)*px;else o.z+=(dz>=0?1:-1)*pz;}}}
- const d=Math.hypot(o.x,o.z);if(d>90){o.x*=90/d;o.z*=90/d;}if(gh(o.x,o.z)+0.25>py){o.x=prev.x;o.z=prev.z;}}
+ if(o.x>1500){const dx=o.x-2000,d=Math.hypot(dx,o.z);if(d>166){o.x=2000+dx*166/d;o.z*=166/d;}}else{const d=Math.hypot(o.x,o.z);if(d>90){o.x*=90/d;o.z*=90/d;}} /* vallée ou Landes (20b) */if(gh(o.x,o.z)+0.25>py){o.x=prev.x;o.z=prev.z;}}
 function flyVert(dt){const up=jumpHeld||keys.Space,down=FLY.down||keys.KeyX||keys.ControlLeft;let tv=up?7.5:down?-8.5:Math.sin(performance.now()/450)*0.3;if(player.y>46&&tv>0)tv=0;player.vy+=(tv-player.vy)*Math.min(1,dt*4);}
 function flyPose(dt){const P=player.H.p,sp=Math.hypot(player.vx,player.vz);
  P.lL.g.rotation.x=-1.25;P.lR.g.rotation.x=-1.25;P.lL.k.rotation.x=1.45;P.lR.k.rotation.x=1.45;P.lL.g.rotation.z=-0.12;P.lR.g.rotation.z=0.12;P.hips.position.y=0.86;P.spine.rotation.x=0.18+Math.min(0.25,sp*0.015);

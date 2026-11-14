@@ -18,6 +18,12 @@
 - Décor automatique par recettes (11c) : Moulin, Marais, Ruines, Cercle, Hauteurs, Observatoire,
   Bibliothèque, Forêt, Serres ; bords de chemins garnis.
 
+## Fait en v15 (novembre 2026)
+- Ressources CC0 réelles (`src/assets`, ≈ 12 Mo), avec retour automatique à la version faite par le
+  code si un fichier manque : personnages animés Quaternius (joueur et PNJ recolorés), 12 créatures
+  animées, 36 objets meublant la Grande Salle, la Bibliothèque, l'Auberge, la Grotte et l'arène,
+  vrais effets sonores, 8 musiques selon le lieu et l'heure, ambiances (oiseaux, grillons, feu, rivière, vent).
+
 ## Demandé par le joueur
 - **Métiers** (il a validé la liste) : Alchimiste (potions rares, vente), Dresseur (créatures
   apprivoisées / familier), Enchanteur (améliorer balai et objets), Chasseur de failles (contrats
@@ -29,7 +35,9 @@
 ## Idées de décor pour la suite
 - Décor automatique aussi pour les intérieurs (étagères, tonneaux, bougies selon le type de pièce).
 - Rendre les étals du marché utiles (acheter/vendre : lien avec le métier d'Alchimiste).
-- Parchemins, coffres et créatures (07-entites) gardent leur ancien aspect.
+- Parchemins et coffres gardent leur ancien aspect (le pack d'objets a un coffre et des parchemins).
+- Packs en réserve : maisons modulaires (village médiéval), personnages RPG (clerc, moine…), kits Kenney
+  (nature, ville, mobilier, cimetière, donjon) : voir `assets/INVENTAIRE.md`.
 
 ## Constats des tests (à améliorer)
 - La Faille : vagues 1-3 trop faciles, boss trop brutal → montée plus progressive.
@@ -41,7 +49,8 @@
   chargées (cour, arène) : à surveiller sur un téléphone modeste.
 
 ## Jamais vérifié en conditions réelles
-- Le son (créé sans pouvoir l'écouter), la fluidité sur un vrai téléphone.
+- Le son (choisi et réglé sans pouvoir l'écouter : volumes des effets, musiques et ambiances à ajuster à l'oreille),
+- Le temps de chargement des ressources en 4G (≈ 12 Mo, chargées en arrière-plan), la fluidité sur un vrai téléphone.
 - Le MJ IA avec une vraie clé : la connexion à Anthropic est vérifiée (une fausse clé est bien
   refusée) et tout le reste est testé avec un faux SDK, mais aucun vrai échange n'a encore eu lieu.
 - La publication GitHub Pages et l'installation sur téléphone (le dépôt était privé, Pages inactif).

@@ -13,8 +13,12 @@ sons et musiques OpenGameArt via `bash tools/oga.sh <page>` (n'accepte que le CC
 
 | Dossier | Contenu | Usage prévu |
 |---|---|---|
+| `quaternius-animated-characters` | Ultimate Animated Character Pack : 50 personnages (sorcier, sorcière, elfe, chef, ouvrier, villageois…) sans texture, couleurs par matériau, 17 animations communes (même squelette) | **utilisé** : joueur et PNJ (`src/assets/persos`) |
+| `quaternius-rpg-characters` | RPG Character Pack : sorcier, clerc, moine, rôdeur, voleur, guerrier (textures, 11-15 animations) | réserve (duellistes, élèves) |
+| `quaternius-fantasy-props` | Fantasy Props MegaKit (version gratuite) : 94 objets — chaudron, potions, grimoires, parchemins, bougies, chandelier, bibliothèque, coffre, enclume… | **utilisé** : 36 objets dans `src/assets/objets/objets.glb` (intérieurs, arène) |
+| `quaternius-medieval-village` | Medieval Village MegaKit : 176 pièces de maisons modulaires (murs, toits, balcons, escaliers) | réserve (nouvelles maisons) |
 | `kenney-mini-characters-1` | 43 modèles .glb, dont 20 personnages (≈ 770 triangles, 240 Ko) avec 32 animations : repos, marche, course, saut, chute, ramasser, lancer main droite, attaque, interaction, oui/non, mort | joueur et PNJ (chapeau et robe de sorcier ajoutés par le jeu) |
-| `quaternius-cute-monsters` | 21 monstres « mignons » .gltf (≈ 1 000 à 1 800 triangles) : repos, marche, morsure, coup reçu, mort, saut, danse ; vol pour chauve-souris, abeille, dragon, Cthulhu | créatures (fantôme → esprits d'ombre, champignon → farfadets, yéti → lutins de givre, démon → étincelles sauvages, cyclope → golem…) |
+| `quaternius-cute-monsters` | **utilisé** (12 dans `src/assets/creatures`) : 21 monstres « mignons » .gltf (≈ 1 000 à 1 800 triangles) : repos, marche, morsure, coup reçu, mort, saut, danse ; vol pour chauve-souris, abeille, dragon, Cthulhu | créatures (fantôme → esprits d'ombre, champignon → farfadets, yéti → lutins de givre, démon → étincelles sauvages, cyclope → golem…) |
 | `quaternius-medieval-dungeon` | 26 objets .obj : livres, livre ouvert, chandeliers, bougie, coffres, fiole, tapis, os, barreaux, colonnes, entrées | intérieurs, souterrains, coffres |
 | `kenney-nature-kit` | 329 éléments : arbres, rochers, fleurs, champignons, souches, ponts, clôtures, tentes, feu de camp… | décor automatique |
 | `kenney-fantasy-town-kit` | 167 éléments : murs, toits, fontaines, puits, étals, charrettes, lanternes… | village, marché |
@@ -54,11 +58,14 @@ sons et musiques OpenGameArt via `bash tools/oga.sh <page>` (n'accepte que le CC
 | `oga-calm-and-simple-title-music` | kosmo-the-cat | écran d'accueil |
 | `oga-battle-theme-b-for-rpg` | cynicmusic | duels, Faille |
 
-## Pas récupéré (à télécharger à la main si on en veut)
+## Utilisé dans le jeu (src/assets, ≈ 10 Mo)
 
-Les deux « mégakits » récents de Quaternius sont sur itch.io (page « payez ce que vous voulez », 0 € possible) :
-`quaternius.itch.io/fantasy-props-megakit` (chaudrons, potions, grimoires…) et
-`quaternius.itch.io/medieval-village-megakit`. Les dézipper dans `assets/brut/quaternius-<nom>/`.
+- `persos/` : sorcier, sorcière, elfe, forestier, aubergiste, meunier + `animations.glb` partagé.
+- `objets/objets.glb` : 36 objets (textures 512 px WebP partagées, sans relief) — 2,1 Mo.
+- `creatures/` : fantôme, champignon, yéti, démon, chauve-souris, cyclope, crabe, alien, arbre, crâne, dragon, abeille.
+- `sons/` (+ `sons.json`) : 29 groupes d'effets ; `musique/` : 8 musiques (jour, village, nuit, auberge, salle, duel, grotte, titre) et 5 ambiances (oiseaux, grillons, feu, rivière, vent).
+
+Les deux mégakits itch.io de Quaternius (objets fantasy, village médiéval) ont été ajoutés à la main le 2026-11-14.
 
 ## Avant d'intégrer
 

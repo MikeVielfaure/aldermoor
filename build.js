@@ -18,9 +18,11 @@ let html=out;
 if(test)html=html.split('\n').filter(l=>!l.includes('manifest.webmanifest')&&!l.includes('icone-')).join('\n'); // pas d'icône ni de manifeste dans le build de test
 if(test){ // les tests utilisent les copies locales de Three.js (tests/vendor) : pas besoin d'internet
   html=html.replace('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','../vendor/three.min.js')
-           .replace(/https:\/\/cdn\.jsdelivr\.net\/npm\/three@0\.128\.0\/examples\/js\/(?:shaders|postprocessing)\//g,'../vendor/');
+           .replace(/https:\/\/cdn\.jsdelivr\.net\/npm\/three@0\.128\.0\/examples\/js\/(?:shaders|postprocessing|loaders|utils)\//g,'../vendor/');
 }
 const dest=test?R('tests','.tmp','index.html'):R('dist','index.html');
 fs.mkdirSync(path.dirname(dest),{recursive:true});fs.writeFileSync(dest,html);
+{const cp=(a,b)=>{if(!fs.existsSync(a))return;fs.mkdirSync(b,{recursive:true});for(const f of fs.readdirSync(a)){const s=path.join(a,f),d=path.join(b,f);if(fs.statSync(s).isDirectory())cp(s,d);else fs.copyFileSync(s,d);}};
+ cp(R('src','assets'),path.join(path.dirname(dest),'assets'));} // modèles, sons (préparés par tools/assets.mjs)
 if(!test){const st=R('src','static');for(const f of fs.readdirSync(st))fs.copyFileSync(path.join(st,f),R('dist',f));} // icône, manifeste, mode hors-ligne (hébergement web)
 console.log((test?'test':'dist')+' -> '+path.relative(__dirname,dest)+' ('+Math.round(out.length/1024)+' Ko, '+js.length+' modules)');

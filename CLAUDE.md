@@ -1,13 +1,18 @@
 # Aldermoor — Académie des Arcanes
 
 RPG de sorcier 3D pour navigateur (mobile d'abord), univers original, monde ouvert sans fil rouge,
-avec un maître du jeu (MJ) IA. Three.js r128, JavaScript sans framework, aucun asset externe
-(textures peintes sur canvas, sons synthétisés en WebAudio). Le joueur est francophone : tout le
-texte du jeu et les réponses au joueur sont en français, simples et courtes.
+avec un maître du jeu (MJ) IA. Three.js r128, JavaScript sans framework. Le jeu se suffit à lui-même
+(textures peintes sur canvas, sons synthétisés en WebAudio, personnages faits par le code) et
+s'enrichit de ressources CC0 quand elles sont disponibles (`src/assets` : personnages et créatures
+animés, sons, musiques). Règle : si un fichier manque, le jeu retombe sur la version faite par le code
+(c'est le cas dans un artifact claude.ai). Le joueur est francophone : tout le texte du jeu et les
+réponses au joueur sont en français, simples et courtes.
 
 ## Commandes
 
-- `npm run build` : assemble `src/` → `dist/index.html` (un seul fichier autonome, c'est le jeu).
+- `npm run build` : assemble `src/` → `dist/index.html` (le jeu) et copie `src/assets` → `dist/assets`.
+- `node tools/assets.mjs [persos|creatures|objets|sons|tout]` : prépare les ressources depuis les packs bruts
+  `assets/brut/` (non versionnés, voir `assets/INVENTAIRE.md`) vers `src/assets` (versionné).
 - `npm run check` : build + vérification de syntaxe (rapide, à lancer après chaque modification).
 - `npm test` : un bot joue une partie complète dans Chrome sans écran (≈5 min). Doit finir par
   `OK` et `ERR []`. Nécessite `npm install` (puppeteer). Sinon `CHROME_PATH=/chemin/chrome npm test`.
@@ -37,15 +42,19 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 03-rendu | renderer, particules GPU (`PA` additif, `PN` normal, `PW` météo), lumières, collisions `COLS`/`pushOut` |
 | 04-monde | `buildWorld()` : terrain (`terrainH`, `gh(x,z)`), château, tours, village, lac, arbres, herbe |
 | 05-personnages | `makeHuman()`, `animHuman()` (personnages articulés) |
+| 05b-modeles | chargeur glTF `mdlLoad`, personnages 3D Quaternius (`MDL`, `mdlDress`, `mdlAnim`, couleurs `persoColor`, modèle par PNJ `MDL_PERSO`) |
 | 06-objets-plantes | objets physiques `PROPS` (caisses, tonneaux…), plantes |
 | 07-entites | `ENT` : parchemins, événements, créatures, coffres (`addEnt`, `removeEnt`) |
 | 08-sorts | `castSpell`, projectiles `PROJ`, `impact`, `doZone`, `doUtil`, `elemHit` (effets sur le monde) |
 | 09-monde-interactif | potions, météo, énigmes (braseros, sceaux), coffres, souterrain, nage, routines des PNJ |
+| 09b-creatures-modeles | créatures 3D (modèle choisi par nom puis par élément : `CREA_NOMS`, `CREA_ELEM`), animation `creaTick` |
 | 10-relief-interieurs | plateau, falaises, rivière, cascade, intérieurs (`ZONES`, `enterZone`), bloom, reflets |
 | 11-textures-vegetation | textures canvas `TX`, matériau triplanaire `triMat`, arbres instanciés `TREEV`, `leafMat` |
 | 11b-decor | kit de décor `dkAt`/`dBox`/`dCyl`/`dSph`/`dTri` (fusion par matériau, couleurs par sommet), maison à colombages `house()`, étals, charrette, panneaux, `buildDecor()` (habillage des lieux, forêt lointaine) |
+| 11d-objets3d | objets 3D Quaternius (`objets.glb`) placés par recettes dans les intérieurs et près de l'arène (`o3Plan`, `o3Wall`, `o3Ring`), fusionnés par matériau et par lieu (`o3Build`) |
 | 11c-decor-auto | décor automatique : catalogue `DECOR_KIT`, recettes `DECOR_STYLES`, style de chaque lieu `LOC_STYLE`, `autoDecor()`, bords de chemins `decorPathsides()` |
 | 12-perf-son-duels-carte | fusion statique `mergeStatic`, culling `cullAll`, audio `AU`/`SFX`/musique, duels `DUEL`, carte, options |
+| 12b-sons-reels | vrais sons par-dessus la synthèse (`SMP`, `smpPlay`, `smpSfx`), musique par ambiance `smpMusic`, boucles d'ambiance `smpAmb` |
 | 13-visee-camera | ciblage `AIM` (verrouillage, point visé), `castTarget`, `aimShot`, gestes tactiles, zoom |
 | 13b-camera-interieurs | caméra des lieux clos `inCam()` (plafond, murs, meubles, champ de vision), noms qui s'effacent de près `nearFade()` |
 | 14-lieux-… | Moulin du Ru, Marais des Lucioles, Ruines d'Ysmer (oracle, gardiens, crypte) |
@@ -79,6 +88,22 @@ Le décor a son propre hasard (`dkr()`) : ne pas y utiliser `srand()`, qui déca
 (`DECOR_STYLES`), et `autoPlace()` trouve seul les places libres. Pour un nouvel objet : une fonction
 `dXxx(x,z,ry)` dans le kit, puis une ligne dans `DECOR_KIT` (avec `col:false` s'il n'a pas de collision).
 `DECOR_LOG` indique ce qui a été posé (utile dans les tests).
+
+## Ressources externes (src/assets)
+
+- Préparées par `tools/assets.mjs` (+ `tools/sons.mjs`) : modèles en `.glb` sans animations inutiles,
+  textures 256 px, sons en `.mp3` mono. Total visé ≤ 15-20 Mo. Toutes CC0 (sources : `assets/INVENTAIRE.md`).
+- Chargement asynchrone : rien n'attend les fichiers. Personnages (05b) : habillés quand `MDL.ready`.
+  Créatures (09b) : modèle chargé à la première apparition. Sons (12b) : après le premier geste (audio).
+- Pièges Three.js r128 : `THREE.SkeletonUtils.clone()` pour copier un personnage animé ; matériau
+  `skinning:true` ; textures des modèles en `LinearEncoding` (le jeu n'utilise pas sRGB, sinon trop sombre).
+- Personnages : les 7 matériaux d'origine sont fusionnés en un (attribut `slot` + couleurs par sommet)
+  et recolorés d'après l'apparence du PNJ (`persoColor`). Un seul fichier d'animations partagé.
+- Objets (11d) : à l'échelle réelle (mètres), couleurs par sommet en entiers normalisés : r128 ne les
+  convertit pas dans `getX()`, diviser par 65535 (sinon tout devient blanc). Collisions ajoutées seulement
+  quand les objets s'affichent. `setTimeout(o3Start,0)` : le module se charge avant `ZG` (12).
+- Tests : `tests/lib.js` lance Chrome avec `--allow-file-access-from-files` ; les modèles mettent 2-3 s à
+  charger chacun dans ce Chrome sans carte graphique, attendre `MDL.ready` / `e.data.M` avant de vérifier.
 
 ## Sorts
 

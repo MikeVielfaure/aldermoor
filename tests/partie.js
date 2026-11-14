@@ -23,7 +23,7 @@ for(let i=0;i<30;i++){await ev(`(()=>{mana=999;for(const k in CD)CD[k]=0;player.
 for(const z of ['salle','biblio_int','auberge','grotte']){await ev(`enterZone("${z}")`);await sl(900);await ev('bot.run(1)');await ev(`exitZone()`);await sl(900);await ev('bot.run(0.5)');}
 await ev('S.puz.seals.open=true;syncPuzzles()');await ev('enterDungeon()');await sl(900);await ev('bot.run(2)');await ev('exitDungeon()');await sl(900);await ev('bot.run(0.5)');
 // duel full: golem; fight smart (circle strafe around opponent)
-await ev('bot.tp(-19.2+1.4,30.2)');await ev('findFocus();interact()');await sl(300);const pk=await p.$$('#pick .pk');await pk[0].click();await sl(2600);
+await ev('bot.tp(-19.2+1.4,30.2)');await ev('findFocus();interact()');await sl(300);const pk=await p.$$('#pick .pk');await pk[0].click();for(let w=0;w<40&&!(await ev('!!DUEL&&DUEL.phase==="fight"'));w++)await sl(500); // l'intro du duel prend 2,5 à 5 s selon la machine
 let res=null;for(let i=0;i<120;i++){res=await ev(`(()=>{if(!DUEL)return 'none';const e=DUEL.e;const dx=e.x-player.x,dz=e.z-player.z,d=Math.hypot(dx,dz);camYaw=Math.atan2(dx,dz);player.ry=camYaw;keys.KeyD=true;keys.KeyW=d>7;keys.KeyS=d<4;mana=999;for(const k in CD)CD[k]=0;player.cd=0;castSlot(0);for(let k=0;k<10;k++){update(0.033);tick5(0.033);}if(Math.random()<0.2)jump();return [DUEL.phase,DUEL.ohp,DUEL.php];})()`);if(res==='none'||res[0]==='end')break;}
 await ev('keys.KeyD=keys.KeyW=keys.KeyS=false;for(let k=0;k<120;k++){update(0.033);tick5(0.033);}');
 console.log('duel result',res,await ev('[!!DUEL,S.duels]'));

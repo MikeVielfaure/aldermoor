@@ -6,3 +6,5 @@ tests/.tmp/
 
 # packs bruts téléchargés (lourds) : seuls les fichiers retenus et optimisés vont dans le jeu
 assets/brut/
+# copie de src/assets faite par le build (le workflow GitHub Pages la refait)
+dist/assets/

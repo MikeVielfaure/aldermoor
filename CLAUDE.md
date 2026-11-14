@@ -61,7 +61,7 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 13b-camera-interieurs | caméra des lieux clos `inCam()` (plafond, murs, meubles, champ de vision), noms qui s'effacent de près `nearFade()` |
 | 14-lieux-… | Moulin du Ru, Marais des Lucioles, Ruines d'Ysmer (oracle, gardiens, crypte) |
 | 15-balai-… | balai `FLY`, course d'anneaux `RACE`, objets magiques `OBJS`, Faille à vagues `WAVE`, karma, quête de l'Oubli, Bosquet |
-| 16-jeux-sorts-… | jeux de sorts A/B (`swapSets`), viseur libre (`freeAim`), réglages `AIMO` |
+| 16-jeux-sorts-… | 3 jeux de 5 sorts A/B/C (`S.sets`, `S.slots` = le jeu actif, même tableau ; `swapSets`, `setUse`), viseur libre (`freeAim`), réglages `AIMO` |
 | 17-ui | HUD, dialogues (`openDlg`, `send`), grimoire/journal (`renderBook`) |
 | 18-maitre-du-jeu | prompt du MJ (`RULES`, `worldCtx`, `buildPrompt`), `applyActions`, MJ de secours `fallbackGM` |
 | 18b-mj-cle | MJ IA avec la clé Claude du joueur (`mjInit`, `mjCall`, panneau `openMjk`), hors artifact |
@@ -70,6 +70,7 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 20-controles | joystick, clavier, glisser caméra |
 | 20b-landes | les Landes d'Ombrelune (`LANDES`, relief `landH`, `buildLandes`, portails, vol par les crêtes, peuplement `LANDES_POP`, carte de la région) |
 | 20c-dragon-legendes | boss Ignivor (`BOSS`, `dragonAI`, `dragonHit`, PV du joueur `hurtPlayer`, barre `#bossbar`), 4 sorts légendaires (`LEG_SP`, effets `castDemanti`/`castEtoiles`/`castGardien`/`castSouffle`, pupitres `LEG_PUP`), arbre-gardien allié `ALLY` |
+| 20d-critiques-garde | coups critiques (`CRITNOW` dans `pow()`, `p.crit` des projectiles, `critFx`, primes), 4 sorts de garde (`GARDE_SP`, `castGarde`, murs temporaires `WALLS` ajoutés à `COLS`, égide `AEGIS` qui renvoie les tirs) |
 | 21-boucle | `update(dt)`, `loop()`, `startGame()`, puis la séquence de construction du monde |
 | 22-appli | plein écran, écran qui reste allumé, enregistrement du mode hors-ligne |
 | 22b-partie-test | partie de test niveau 50 (`?test` dans l'adresse), sauvegarde normale mise de côté |
@@ -117,7 +118,10 @@ Le décor a son propre hasard (`dkr()`) : ne pas y utiliser `srand()`, qui déca
 
 ## Sorts
 
-Sorts légendaires (20c) : `special` + `legend:true`, coût et recharge propres (`sp.cost`, `sp.cd`), effets dans
+HUD : boutons du haut en icônes (`.tbtns`), mana dans `#manabox`, messages `#feed` ; règles « téléphone en paysage »
+en fin de `styles.css` (`@media (orientation:landscape) and (max-height:560px)`). Vérifier en 844×390 ET 390×844.
+
+Sorts légendaires (20c) et de garde (20d) : `special` + `legend:true`, coût et recharge propres (`sp.cost`, `sp.cd`), effets dans
 les enrobages de `doTrait`/`doZone`/`doUtil`. Créature volante en boss : `D.y` = hauteur du centre du corps
 au-dessus du sol (c'est ce que visent les sorts), le modèle est décalé en conséquence.
 

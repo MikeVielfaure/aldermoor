@@ -5,7 +5,7 @@ window.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;keys[
  if(e.code==='KeyE'||e.code==='KeyF')interact();
  if(e.code==='Space'){e.preventDefault();if(!e.repeat){jumpHeld=true;jump();}}
  if(e.code==='Enter'){e.preventDefault();openDlg({mode:'act'});setTimeout(()=>$('#dlg-in').focus(),50);}
- if(/^Digit[1-4]$/.test(e.code)){castSlot(+e.code.slice(5)-1);}});
+ if(/^Digit[1-5]$/.test(e.code)){castSlot(+e.code.slice(5)-1);}});
 window.addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='Space')jumpHeld=false;});
 window.addEventListener('keydown',e=>{if(e.code==='Escape'){closeDlg();$('#book').classList.add('hidden');}});
 const anyModal=()=>!$('#dlg').classList.contains('hidden')||!$('#book').classList.contains('hidden')||!$('#night').classList.contains('hidden')||!$('#pick').classList.contains('hidden')||!$('#map').classList.contains('hidden')||!$('#opts').classList.contains('hidden')||!$('#mjk').classList.contains('hidden');

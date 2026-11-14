@@ -3,22 +3,20 @@
 <canvas id="c"></canvas>
 
 <div id="top" class="ui hidden">
-  <div class="card" id="info"><div id="i-time"></div><div id="i-loc"></div><div id="i-rank"></div><div id="i-lvl"></div><div class="bar" id="xp-bar"><i></i></div><div class="bar" id="mana-bar"><i></i></div></div>
-  <div class="tbtns"><button id="b-book" class="rbtn">Grimoire</button><button id="b-jour" class="rbtn">Journal</button><button id="b-mj" class="rbtn" style="color:#ffc6ef;border-color:rgba(255,122,224,.55)">MJ ✦</button><div class="row"><button id="b-map" class="rbtn ic" aria-label="Carte">🗺</button><button id="b-opt" class="rbtn ic" aria-label="Options">⚙</button></div><div class="row"><button id="b-obj" class="rbtn ic hidden" aria-label="Objets">🎒</button><button id="b-broom" class="rbtn ic hidden" aria-label="Balai">🧹</button></div><div id="ai-badge">MJ : connexion…</div></div>
+  <div class="card" id="info"><div id="i-time"></div><div id="i-loc"></div><div id="i-rank"></div><div class="bar" id="xp-bar"><i></i></div><div id="i-lvl"></div></div>
+  <div class="tbtns"><button id="b-book" class="rbtn ic" aria-label="Grimoire">📖</button><button id="b-jour" class="rbtn ic" aria-label="Journal">📜</button><button id="b-mj" class="rbtn ic" aria-label="Maître du Jeu">MJ</button><button id="b-map" class="rbtn ic" aria-label="Carte">🗺</button><button id="b-opt" class="rbtn ic" aria-label="Options">⚙</button><button id="b-obj" class="rbtn ic hidden" aria-label="Objets">🎒</button><button id="b-broom" class="rbtn ic hidden" aria-label="Balai">🧹</button><div id="ai-badge">MJ : connexion…</div></div>
 </div>
 <div id="tracker" class="ui card hidden"><div id="arrow">▲</div><div><div id="tr-q"></div><div id="tr-s"></div></div></div>
 <div id="feed" class="ui"></div>
 <div id="duel" class="ui hidden"><div class="du"><span id="du-pn"></span><div class="hb" id="du-p"><i></i></div></div><div class="vs">⚔</div><div class="du"><span id="du-on"></span><div class="hb" id="du-o"><i></i></div><div id="du-w"></div></div></div>
 <div id="wave" class="ui hidden"><div id="w-t"></div><div id="w-hpw" class="hb"><i></i></div></div><div id="banner" class="ui hidden"></div><div id="hurt"></div><div id="xhair" class="hidden"><i></i></div><div id="fps" class="ui hidden"></div>
+<div id="manabox" class="ui hidden"><div class="bar" id="mana-bar"><i></i></div><span id="mana-n"></span></div>
 <div id="joy-zone" class="ui hidden"><div id="joy"><div id="knob"></div></div></div>
 <div id="ctrls" class="ui hidden">
   <div id="hint" class="hidden"></div>
   <button id="b-act" class="cbtn">Agir</button><button id="b-down" class="cbtn hidden"><span style="font-size:20px">⬇</span>Descendre</button>
   <button id="b-set" class="cbtn"><span>⇄</span><small>A</small></button><button id="b-jump" class="cbtn"><span style="font-size:20px">⤒</span>Saut</button>
-  <button class="cbtn slot" data-s="0" style="right:126px;bottom:11px"></button>
-  <button class="cbtn slot" data-s="1" style="right:110px;bottom:69px"></button>
-  <button class="cbtn slot" data-s="2" style="right:69px;bottom:110px"></button>
-  <button class="cbtn slot" data-s="3" style="right:11px;bottom:126px"></button>
+  <button class="cbtn slot" data-s="0"></button><button class="cbtn slot" data-s="1"></button><button class="cbtn slot" data-s="2"></button><button class="cbtn slot" data-s="3"></button><button class="cbtn slot" data-s="4"></button>
 </div>
 
 <div id="dlg" class="modal hidden">
@@ -48,7 +46,7 @@
     <button class="ghost hidden" id="b-cont">Continuer</button>
     <button class="ghost" id="b-q">Graphismes : élevés</button>
     <button class="ghost hidden" id="b-mjkey">Maître du Jeu IA : brancher ma clé Claude</button>
-    <div class="keys">Mobile : joystick à gauche, glisse à droite pour tourner la caméra.<br>Clavier : ZQSD/WASD · souris pour la caméra · 1 à 4 lancer les sorts · Espace sauter · E agir · Entrée MJ · Maj courir<br><span id="mj-note"></span></div>
+    <div class="keys">Mobile : joystick à gauche, glisse à droite pour tourner la caméra.<br>Clavier : ZQSD/WASD · souris pour la caméra · 1 à 5 lancer les sorts · T changer de jeu de sorts · Espace sauter · E agir · Entrée MJ · Maj courir<br><span id="mj-note"></span></div>
   </div>
 </div>
 

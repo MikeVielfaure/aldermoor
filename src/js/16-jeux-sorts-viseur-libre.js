@@ -1,15 +1,24 @@
 /* ================= ÉTAPE 9 : JEUX DE SORTS A/B, VISÉE LIBRE, RÉGLAGES DE VISÉE ================= */
 if(AIMO.assist===undefined)AIMO.assist=true;if(AIMO.duelLock===undefined)AIMO.duelLock=true;
-/* ---- deux jeux de 4 sorts ---- */
-function ensureSets(){if(!Array.isArray(S.slotsAlt))S.slotsAlt=[null,null,null,null];S.slotsAlt=S.slotsAlt.slice(0,4).map(id=>S.spells.some(x=>x.id===id)?id:null);while(S.slotsAlt.length<4)S.slotsAlt.push(null);if(S.setIdx!==1)S.setIdx=0;}
-function swapSets(silent){ensureSets();const a=S.slots;S.slots=S.slotsAlt;S.slotsAlt=a;S.setIdx=S.setIdx?0:1;renderSlots();updSetBtn();sfx('click');
+/* ---- trois jeux de 5 sorts (A, B, C) ----
+   S.sets = [A,B,C] ; S.slots est TOUJOURS le jeu actif (même tableau que S.sets[S.setIdx]).
+   Anciennes sauvegardes : S.slots + S.slotsAlt (jeux A/B de 4) sont repris tels quels. */
+const SET_N=['A','B','C'];
+function ensureSets(){const fix=a=>{a=(Array.isArray(a)?a:[]).slice(0,5).map(id=>S.spells.some(x=>x.id===id)?id:null);while(a.length<5)a.push(null);return a;};
+ if(![0,1,2].includes(S.setIdx))S.setIdx=0;
+ if(!Array.isArray(S.sets)||S.sets.length!==3){const o=S.slotsAlt;S.sets=S.setIdx===1?[o,S.slots,null]:[S.slots,o,null];}
+ S.sets=S.sets.map(fix);S.sets[S.setIdx]=fix(S.slots);S.slots=S.sets[S.setIdx];delete S.slotsAlt;}
+function setUse(i){ensureSets();S.setIdx=i;S.slots=S.sets[i];renderSlots();updSetBtn();sfx('click');}
+/* ⇄ : passe au jeu suivant qui contient des sorts (les jeux vides sont sautés) */
+function swapSets(silent){ensureSets();let nx=-1;for(let k=1;k<3;k++){const j=(S.setIdx+k)%3;if(S.sets[j].some(Boolean)){nx=j;break;}}const empty=nx<0;if(empty)nx=(S.setIdx+1)%3;
+ setUse(nx);if(!silent)banner('Jeu de sorts '+SET_N[nx],S.slots.filter(Boolean).map(id=>(S.spells.find(x=>x.id===id)||{}).name).filter(Boolean).slice(0,5).join(' · ')||'vide');
  document.querySelectorAll('.slot').forEach((b,i)=>{b.classList.remove('flip');void b.offsetWidth;b.style.animationDelay=(i*0.04)+'s';b.classList.add('flip');});
- if(!silent&&!S.slots.some(Boolean)&&!S.seenSetB){S.seenSetB=1;say('🔀 Jeu de sorts <b>B</b> : il est vide. Ouvre le Grimoire › Sorts pour y placer d’autres sorts. Le bouton ⇄ te fait revenir au jeu A.','sys');}
+ if(!silent&&empty&&!S.seenSetB){S.seenSetB=1;say('🔀 Jeu de sorts <b>'+SET_N[nx]+'</b> : il est vide. Ouvre le Grimoire › Sorts pour y placer d’autres sorts. Tu as 3 jeux : A, B et C.','sys');}
  if(!$('#book').classList.contains('hidden'))renderBook();save();}
-function updSetBtn(){const b=$('#b-set');if(!b)return;b.innerHTML='<span>⇄</span><small>'+(S.setIdx?'B':'A')+'</small>';b.classList.toggle('alt',!!S.setIdx);}
+function updSetBtn(){const b=$('#b-set');if(!b)return;b.innerHTML='<span>⇄</span><small>'+SET_N[S.setIdx||0]+'</small>';b.classList.toggle('alt',!!S.setIdx);}
 $('#b-set').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(started&&!anyModal())swapSets();});
 window.addEventListener('keydown',e=>{if(e.code==='KeyT'&&started&&!anyModal()&&e.target.tagName!=='INPUT')swapSets();});
-document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-set]');if(!t)return;const want=+t.dataset.set;if(want!==(S.setIdx||0))swapSets(true);});
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-set]');if(!t)return;const want=+t.dataset.set;if(want!==(S.setIdx||0)){setUse(want);if(!$('#book').classList.contains('hidden'))renderBook();save();}});
 /* ---- visée libre : le viseur suit la caméra, haut et bas compris ---- */
 const XH={y:0.4,pt:null,t:0,over:null};
 function freeAim(){const now=performance.now();if(XH.pt&&now-XH.t<40)return XH.pt;XH.t=now;

@@ -1,22 +1,22 @@
 /* ================= UI ================= */
-function say(t,type){const f=$('#feed');const d=document.createElement('div');d.className='msg'+(type?' '+type:'');d.innerHTML=t;f.appendChild(d);while(f.children.length>4)f.removeChild(f.firstChild);setTimeout(()=>{d.style.opacity=0;setTimeout(()=>d.remove(),700);},type==='gm'?9000:6000);}
+function say(t,type){const f=$('#feed');const d=document.createElement('div');d.className='msg'+(type?' '+type:'');d.innerHTML=t;f.appendChild(d);while(f.children.length>3)f.removeChild(f.firstChild);setTimeout(()=>{d.style.opacity=0;setTimeout(()=>d.remove(),700);},type==='gm'?8000:5000);}
 let aiState='pending',SAMPLE=null,aiUsed=false;
-function aiBadge(){const b=$('#ai-badge');if(aiState==='on'){b.textContent='MJ : IA Claude ✦';b.style.cursor='pointer';b.classList.add('on');}else if(aiState==='off'){b.textContent='MJ : classique';b.classList.remove('on');}else b.textContent='MJ : connexion…';}
+function aiBadge(){const b=$('#ai-badge');$('#b-mj').classList.toggle('on',aiState==='on');if(aiState==='on'){b.textContent='MJ : IA Claude ✦';b.style.cursor='pointer';b.classList.add('on');}else if(aiState==='off'){b.textContent='MJ : classique';b.classList.remove('on');}else b.textContent='MJ : connexion…';}
 setTimeout(mjInit,0); // MJ IA : artifact claude.ai, sinon clé du joueur (18b-mj-cle), sinon MJ classique
 function updateHUD(){
  $('#i-time').textContent='Jour '+S.day+' · '+fmtTime(S.time)+' · '+(S.zone!=='monde'?'🕯':WEATHERS[(S.weather||{w:'clair'}).w].ic);
  $('#i-loc').textContent=(S.zone!=='monde'?ZONES[S.zone].n:S.locId?LOCBY[S.locId].name:'Sur les chemins')+(player.swim?' · 🏊 '+(BUFF.phoque?'':'froid '+Math.floor(player.cold||0)+'/13'):'');
- const L=lvl();$('#i-rank').textContent=rankOf(L).n+' · niveau '+L;
- const into=S.xp%100;$('#i-lvl').textContent=into+'/100 XP · '+Math.floor(mana)+'/'+manaMax()+' mana'+(Object.keys(BUFF).length?' · 🧪 '+Object.keys(BUFF).map(k=>POTIONS[k].n.split(' ').pop()+' '+Math.ceil(BUFF[k])+'s').join(', '):'');
+ const L=lvl();$('#i-rank').textContent=rankOf(L).n+' · niv. '+L;
+ const into=S.xp%100;$('#i-lvl').textContent=(Object.keys(BUFF).length?'🧪 '+Object.keys(BUFF).map(k=>POTIONS[k].n.split(' ').pop()+' '+Math.ceil(BUFF[k])+'s').join(', '):'');
  $('#xp-bar i').style.width=into+'%';
- const f=ptsFree();const bh='Grimoire'+(f>0?'<span class="pts">'+f+'</span>':'');if($('#b-book').innerHTML!==bh)$('#b-book').innerHTML=bh;
+ const f=ptsFree();const bh='📖'+(f>0?'<span class="pts">'+f+'</span>':'');if($('#b-book').innerHTML!==bh)$('#b-book').innerHTML=bh;
  renderSlots();
 }
-function renderSlots(){const n=rankOf(lvl()).slots;document.querySelectorAll('.slot').forEach(b=>{const i=+b.dataset.s;const sp=i<n?S.spells.find(s=>s.id===S.slots[i]):null;const key=i>=n?'L':sp?sp.id:'E';if(b.dataset.k===key)return;b.dataset.k=key;
- if(i>=n){b.className='cbtn slot empty';b.innerHTML='<span class="ic">🔒</span><span class="nm">'+RANKS.find(r=>r.slots>i).n+'</span>';b.style.borderColor='';b.style.boxShadow='';}
+function renderSlots(){const n=rankOf(lvl()).slots;document.querySelectorAll('.slot').forEach(b=>{const i=+b.dataset.s;const sp=i<n?S.spells.find(s=>s.id===S.slots[i]):null;const key=i>n?'H':i>=n?'L':sp?sp.id:'E';if(b.dataset.k===key)return;b.dataset.k=key;
+ b.classList.toggle('hidden',i>n);if(i>=n){b.className='cbtn slot empty'+(i>n?' hidden':'');b.innerHTML='<span class="ic">🔒</span><span class="nm">'+RANKS.find(r=>r.slots>i).n+'</span>';b.style.borderColor='';b.style.boxShadow='';}
  else if(!sp){b.className='cbtn slot empty';b.innerHTML='<span class="k">'+(i+1)+'</span><span class="ic">+</span><span class="nm">vide</span>';b.style.borderColor='';b.style.boxShadow='';}
  else{const c=hex(ELEM[sp.el].c);b.className='cbtn slot';b.innerHTML='<div class="cd"></div><span class="k">'+(i+1)+'</span><span class="ic" style="color:'+c+'">'+FORMS[sp.form].ic+'</span><span class="nm">'+esc(sp.name)+'</span>';b.style.borderColor=c;b.style.boxShadow='0 0 12px '+c+'44';}});}
-function updSlotsFast(){const now=performance.now()/1000;$('#mana-bar i').style.width=(mana/manaMax()*100).toFixed(1)+'%';const n=rankOf(lvl()).slots;
+function updSlotsFast(){const now=performance.now()/1000;$('#mana-bar i').style.width=(mana/manaMax()*100).toFixed(1)+'%';{const t=Math.floor(mana)+'';const m=$('#mana-n');if(m.textContent!==t)m.textContent=t;}const n=rankOf(lvl()).slots;
  document.querySelectorAll('.slot').forEach(b=>{const i=+b.dataset.s;if(i>=n)return;const sp=S.spells.find(s=>s.id===S.slots[i]);if(!sp)return;const cd=b.querySelector('.cd');const rem=(CD[sp.id]||0)-now,tot=spellCd(sp);
   if(cd)cd.style.background=rem>0?'conic-gradient(rgba(0,0,0,.62) '+(rem/tot*360).toFixed(0)+'deg, transparent 0)':'none';b.classList.toggle('low',mana<spellCost(sp));});}
 function curStep(q){return q.steps[q.cur];}
@@ -77,11 +77,11 @@ function renderBook(){
  $('#book-tabs').querySelectorAll('.tab').forEach(b=>b.onclick=()=>{bookTab=b.dataset.t;renderBook();});
  let h='';const n=rankOf(lvl()).slots;
  if(bookTab==='sorts'){
-  h='<div class="setbar"><span>Jeu de sorts :</span><button data-set="0" class="'+(S.setIdx?'':'on')+'">A</button><button data-set="1" class="'+(S.setIdx?'on':'')+'">B</button><span class="mu">⇄ en jeu pour basculer</span></div><div class="mu" style="margin-bottom:6px">Tu modifies le jeu <b>'+(S.setIdx?'B':'A')+'</b>. Place tes sorts dans les emplacements 1 à 4 (boutons sous chaque sort). Rang <b>'+rankOf(lvl()).n+'</b> : '+n+' emplacement'+(n>1?'s':'')+' actif'+(n>1?'s':'')+'. Chaque élément existe en 3 formes : ➶ Attaque, ◎ Zone, ✧ Utilitaire. Retrouver un sort que tu connais déjà le fait monter de rang (II, III) : moins cher, plus rapide, plus fort.</div>';
+  h='<div class="setbar"><span>Jeu de sorts :</span>'+SET_N.map((L,i)=>'<button data-set="'+i+'" class="'+((S.setIdx||0)===i?'on':'')+'">'+L+'</button>').join('')+'<span class="mu">⇄ en jeu pour basculer</span></div><div class="mu" style="margin-bottom:6px">Tu modifies le jeu <b>'+SET_N[S.setIdx||0]+'</b>. Place tes sorts dans les emplacements 1 à 5 (boutons sous chaque sort). Rang <b>'+rankOf(lvl()).n+'</b> : '+n+' emplacement'+(n>1?'s':'')+' actif'+(n>1?'s':'')+'. Chaque élément existe en 3 formes : ➶ Attaque, ◎ Zone, ✧ Utilitaire. Retrouver un sort que tu connais déjà le fait monter de rang (II, III) : moins cher, plus rapide, plus fort.</div>';
   ELS.forEach(el=>{const list=S.spells.filter(s=>s.el===el);if(!list.length)return;const ml=mLvl(el),xp=(S.mastery[el]||0)%30;
    h+='<div class="sec" style="display:flex;align-items:center;gap:7px"><span class="dot" style="background:'+hex(ELEM[el].c)+'"></span>'+ELEM[el].n+'<span class="badge">maîtrise '+ml+'/10</span></div><div class="mbar"><i style="width:'+(ml>=10?100:xp/30*100)+'%;background:'+hex(ELEM[el].c)+'"></i></div>';
    ['trait','zone','util'].forEach(f=>list.filter(s=>s.form===f).forEach(s=>{const si=S.slots.indexOf(s.id);
-    h+='<div class="it'+(si>=0&&si<n?' sel':'')+'"><h4>'+esc(s.name)+'<span class="badge">'+FORMS[f].ic+' '+FORMS[f].n+'</span>'+(spRank(s)>1?'<span class="badge" style="color:var(--gold)">rang '+RANK_N[spRank(s)]+'</span>':'')+'</h4><i>« '+esc(s.inc)+' »</i> <span class="mu">· '+spellCost(s)+' mana · recharge '+spellCd(s)+' s</span><div>'+esc(s.desc)+'</div><div class="fx">Effet : '+esc(fxOf(s))+'</div><div class="slotpick"><span class="mu">Emplacement :</span>'+[0,1,2,3].map(i=>'<button data-as="'+esc(s.id)+'" data-slot="'+i+'" class="'+(si===i?'on':'')+'"'+(i>=n?' disabled':'')+'>'+(i>=n?'🔒':(i+1))+'</button>').join('')+'</div></div>';}));});
+    h+='<div class="it'+(si>=0&&si<n?' sel':'')+'"><h4>'+esc(s.name)+'<span class="badge">'+FORMS[f].ic+' '+FORMS[f].n+'</span>'+(spRank(s)>1?'<span class="badge" style="color:var(--gold)">rang '+RANK_N[spRank(s)]+'</span>':'')+'</h4><i>« '+esc(s.inc)+' »</i> <span class="mu">· '+spellCost(s)+' mana · recharge '+spellCd(s)+' s</span><div>'+esc(s.desc)+'</div><div class="fx">Effet : '+esc(fxOf(s))+'</div><div class="slotpick"><span class="mu">Emplacement :</span>'+[0,1,2,3,4].map(i=>'<button data-as="'+esc(s.id)+'" data-slot="'+i+'" class="'+(si===i?'on':'')+'"'+(i>=n?' disabled':'')+'>'+(i>=n?'🔒':(i+1))+'</button>').join('')+'</div></div>';}));});
   const missEl=ELS.filter(e=>!S.spells.some(s=>s.el===e));if(missEl.length)h+='<div class="sec">Éléments encore inconnus</div><div class="mu">'+missEl.map(e=>ELEM[e].n).join(' · ')+'</div>';
   const missF=[];ELS.forEach(e=>{if(S.spells.some(s=>s.el===e))['zone','util'].forEach(f=>{if(!S.spells.some(s=>s.el===e&&s.form===f))missF.push(ELEM[e].n+' '+FORMS[f].n.toLowerCase());});});
   if(missF.length)h+='<div class="sec">Formes à découvrir</div><div class="mu">'+missF.join(' · ')+'<br>Cherche les parchemins, suis les cours ou demande aux professeurs.</div>';}

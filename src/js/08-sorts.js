@@ -184,7 +184,7 @@ function updProj(dt){PROJ=PROJ.filter(p=>{if(p.ht)homeProj(p,dt);p.life-=dt;p.t+
  if(!hit&&o.y<=gh(o.x,o.z)+0.12)hit=true;
  if(!hit&&hitsSolid(o.x,o.z))hit=true;
  if(!hit&&o.y<1.6&&['glace','eau','nature','feu'].includes(p.el)&&inWater({x:o.x,z:o.z})&&!onIce({x:o.x,z:o.z})&&(!p.tp||Math.hypot(o.x-p.tp.x,o.z-p.tp.z)<1.3||o.y<0.15))hit=true;
- if(hit||p.life<=0){scene.remove(p.o);impact(p.el,o.x,Math.max(0.1,o.y),o.z,hitC);return false;}return true;});}
+ if(hit||p.life<=0){scene.remove(p.o);CRITNOW=!!p.crit;try{impact(p.el,o.x,Math.max(0.1,o.y),o.z,hitC);}finally{CRITNOW=false;}return false;}return true;});}
 function floatText(t,color){const l=label('« '+t+' »',color,3.2);l.position.set(player.x,player.y+2.6,player.z);scene.add(l);FT.push({l,t:0});}
 let FT=[];function updFT(dt){FT=FT.filter(f=>{f.t+=dt;f.l.position.y+=dt*0.6;f.l.material.opacity=Math.max(0,1-f.t/1.4);if(f.t>1.4){scene.remove(f.l);f.l.material.map.dispose();f.l.material.dispose();return false;}return true;});}
 

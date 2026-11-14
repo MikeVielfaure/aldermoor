@@ -142,7 +142,7 @@ $('#b-sleep').onclick=async()=>{$('#night').classList.add('hidden');S.day++;S.ti
 
 /* ---------- démarrage ---------- */
 function startGame(state,fresh){S=migrate(state);started=true;mana=manaMax();
- ['#top','#joy-zone','#ctrls'].forEach(s=>$(s).classList.remove('hidden'));$('#start').classList.add('hidden');
+ ['#top','#joy-zone','#ctrls','#manabox'].forEach(s=>$(s).classList.remove('hidden'));$('#start').classList.add('hidden');
  buildCharacters();makeBeacon();buildProps();initWorld2();
  if(fresh){planCourses();chron('Arrivée de '+S.name+' à Aldermoor.');
   say('Bienvenue à Aldermoor, <b>'+esc(S.name)+'</b>. Ici, personne ne te dira quoi faire.','gm');

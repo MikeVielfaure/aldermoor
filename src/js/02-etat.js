@@ -1,6 +1,6 @@
 /* ================= ÉTAT ================= */
 let S={time:17.5*60};
-function newState(name){return {v:1,name:name||'Apprenti',day:1,time:8*60,xp:0,spells:[{...POOL[0],id:'etincelle'}],sel:0,talents:{},mastery:{},combos:[],slots:['etincelle',null,null,null],quests:[],done:[],chron:[],track:null,courses:[],npcLoc:{},locId:null};}
+function newState(name){return {v:1,name:name||'Apprenti',day:1,time:8*60,xp:0,spells:[{...POOL[0],id:'etincelle'}],sel:0,talents:{},mastery:{},combos:[],slots:['etincelle',null,null,null,null],quests:[],done:[],chron:[],track:null,courses:[],npcLoc:{},locId:null};}
 const SAVE_KEY='aldermoor-save-v1';
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){}}
 function load(){try{const t=localStorage.getItem(SAVE_KEY);return t?JSON.parse(t):null;}catch(e){return null;}}
@@ -15,13 +15,14 @@ const ptsTotal=()=>lvl()-1+(S.relics||0)+ELS.reduce((a,e)=>a+Math.floor(mLvl(e)/
 const ptsSpent=()=>Object.values(S.talents||{}).reduce((a,b)=>a+b,0);
 const ptsFree=()=>ptsTotal()-ptsSpent();
 let CAST_K=1; // rang du sort en cours de lancement (19b-sorts-uniques)
-const pow=el=>(1+0.25*tal(el+'_pow')+0.03*mLvl(el))*wMul(el)*(BUFF.puissance?1.3:1)*karmaMul(el)*CAST_K;
+let CRITNOW=false; // un coup critique est en cours : sort sous sa forme majeure (20d-critiques-garde)
+const pow=el=>(1+0.25*tal(el+'_pow')+0.03*mLvl(el))*wMul(el)*(BUFF.puissance?1.3:1)*karmaMul(el)*CAST_K*(CRITNOW?1.4:1);
 const manaMax=()=>100+25*tal('reserve');
 const manaRegen=()=>9*(1+0.3*tal('flux'))*(lvl()>=15?1.5:1)*(typeof player!=='undefined'&&player.grounded&&player.spd<0.05&&!FLY.on?1.8:1); // immobile : méditation
 function migrate(s){s.inv=s.inv||{};s.rep=s.rep||{};s.zone='monde';s.talents=s.talents||{};s.mastery=s.mastery||{};s.combos=s.combos||[];
  s.spells.forEach(sp=>{const p=POOL.find(x=>x.name.toLowerCase()===String(sp.name).toLowerCase());if(p){sp.form=p.form;sp.desc=p.desc;sp.inc=p.inc;}if(!FORMS[sp.form])sp.form='trait';if(!sp.id)sp.id=String(sp.name).toLowerCase().replace(/[^a-zà-ÿ0-9]+/g,'-');});
  if(!Array.isArray(s.slots))s.slots=[];
- s.slots=s.slots.slice(0,4).map(id=>s.spells.some(x=>x.id===id)?id:null);while(s.slots.length<4)s.slots.push(null);
+ s.slots=s.slots.slice(0,5).map(id=>s.spells.some(x=>x.id===id)?id:null);while(s.slots.length<5)s.slots.push(null);
  for(let i=0;i<4;i++){if(s.slots[i])continue;const used=s.spells.filter(x=>s.slots.includes(x.id));const cand=s.spells.filter(x=>!s.slots.includes(x.id));if(!cand.length)break;const c=cand.find(x=>!used.some(u=>u.el===x.el))||cand.find(x=>!used.some(u=>u.form===x.form))||cand[0];s.slots[i]=c.id;}
  return s;}
 function gainXP(n){const before=lvl();const rb=rankOf(before);S.xp+=n;

@@ -44,6 +44,19 @@
   Appel du gardien au Bosquet, Souffle du dragon en battant Ignivor), indices dans le Grimoire.
 - Partie de test : jeu B = les 4 sorts légendaires.
 
+## Fait en v19 (novembre 2026)
+- Écran revu (surtout le téléphone en paysage) : boutons du haut en icônes sur une ligne, infos compactes,
+  mana à part (au-dessus du joystick, ou en bas au centre en paysage), messages sur le côté ou en bas,
+  2 à la fois en paysage. Emplacements verrouillés masqués sauf le prochain.
+- 3 jeux de sorts (A, B, C) de 5 emplacements (Archimage : 5). ⇄ saute les jeux vides.
+- Coups critiques (~10 %, plus avec la maîtrise) : forme majeure du sort (projectile doré guidé,
+  zone plus large), dégâts ×2 (×1,5 sur Ignivor, dont les PV passent à 128 pour compenser, et en duel) ;
+  créature achevée par un critique = prime (XP, parfois un ingrédient).
+- 4 sorts de garde, un par duel gagné : Rempart de pierre, Égide miroir (renvoie les tirs des duellistes,
+  se brise après 2 boules de feu d'Ignivor), Haie de ronces, Mur d'eau.
+- Démantibulus agit en duel (30 %, puis 10 %) ; Souffle du dragon plus long (17 m) et plus large.
+- Ignivor se tourne enfin vers le joueur (un commentaire mal placé l'en empêchait).
+
 ## Idées proposées par le joueur, pas encore faites
 - Acheter un terrain, l'aménager, y faire pousser des plantes (demande une monnaie et des achats).
 - D'autres invocations, d'autres séries rares.
@@ -75,7 +88,6 @@
 
 ## Constats des tests (à améliorer)
 - La Faille : vagues 1-3 trop faciles, boss trop brutal → montée plus progressive.
-- Mana : limite surtout les combats longs → recharge en restant immobile ou sur coup critique.
 - Idée : maintenir un bouton de sort pour le charger (plus puissant).
 - « Là où je regarde » + aide désactivée ne peut pas toucher en hauteur (0 %) : à masquer ou corriger.
 - Un toucher très court en tournant la caméra peut poser un « point visé » involontaire.

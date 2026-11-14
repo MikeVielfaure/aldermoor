@@ -36,12 +36,17 @@ function castDemanti(sp){const [dx,dz]=fwd(),e=legTarget('arcane',30),tp=new THR
  flash(tp.x,tp.y,tp.z,0xff7ae0,3,0.4);sfx('cast','arcane','zone',player.x,player.z);
  setTimeout(()=>{SHAKE=Math.max(SHAKE,0.6);HITSTOP=Math.max(HITSTOP,0.08);shockRing(tx,tz,0xff7ae0,4);sfx('impact','arcane',tx,tz);
   for(let i=0;i<60;i++){const a=Math.random()*TAU,b=rnd(-0.4,1),v=rnd(3,9);PA.emit(tx,ty,tz,Math.cos(a)*v,b*v+2,Math.sin(a)*v,i%2?0xff7ae0:0xf3cf7a,rnd(.3,.6),0.05,rnd(.6,1.2),6,1);}
-  if(e&&ENT.includes(e)){if(e.data.dragon)dragonHit(e,'arcane',14);else{debris(e.x,ty,e.z,ELEM[e.data.look].c,14);floatAt(e.x,e.z,'DÉMANTIBULÉ !','#ff9ae8');killCreature(e);}}
+  if(e&&ENT.includes(e)){if(e.data.dragon)dragonHit(e,'arcane',14);else if(e.data.duel){demantiDuel(e,ty);}else{debris(e.x,ty,e.z,ELEM[e.data.look].c,14);floatAt(e.x,e.z,'DÉMANTIBULÉ !','#ff9ae8');killCreature(e);}}
   PROPS.forEach(p=>{const d=Math.hypot(p.x-tx,p.z-tz);if(p.dead<=0&&d<4.5){if(d<1.6&&p.type!=='rock'){debris(p.x,p.y,p.z,0x8a6a42,6);p.dead=40;p.g.visible=false;}else{p.vx+=(p.x-tx)/(d||1)*12;p.vz+=(p.z-tz)/(d||1)*12;p.vy=7;}}});},260);}
+/* en duel, l'adversaire n'est pas détruit : le bouclier vole en éclats et il perd 30 % de ses PV (10 % les fois suivantes) */
+function demantiDuel(e,ty){if(!DUEL||DUEL.e!==e||DUEL.phase!=='fight')return;if(DUEL.shield>0){DUEL.shield=0;floatAt(e.x,e.z,'Bouclier brisé !','#bfe8ff');}
+ const first=!DUEL.demanti;DUEL.demanti=(DUEL.demanti||0)+1;const dmg=Math.round(Math.max(first?22:9,DUEL.omax*(first?0.3:0.1)));DUEL.ohp-=dmg;if(!first&&DUEL.demanti===2)say('🛡 '+esc(DUEL.d.name)+' a appris à parer le Démantibulus : il fait moins mal maintenant.','sys');debris(e.x,ty,e.z,ELEM[DUEL.d.el].c,10);floatAt(e.x,e.z,'DÉMANTIBULÉ ! -'+dmg,'#ff9ae8');
+ const D=e.data;D.frozen=1.6;const d=Math.hypot(e.x-player.x,e.z-player.z)||1;D.kx+=(e.x-player.x)/d*9;D.kz+=(e.z-player.z)/d*9;if(D.H)D.H.cast=0;DUEL.wind=0;DUEL.wu=null;
+ duelHUD();if(DUEL.ohp<=0)duelEnd(true);}
 function castEtoiles(sp){const pts=[];ENT.forEach(e=>{if(e.kind==='creature'&&!e.data.calme&&Math.hypot(e.x-player.x,e.z-player.z)<18)pts.push([e.x,e.z]);});
  while(pts.length<10){const a=Math.random()*TAU,r=rnd(3,13);pts.push([player.x+Math.cos(a)*r,player.z+Math.sin(a)*r]);}
  pts.slice(0,12).forEach(([x,z],i)=>METEORS.push({x:x+rnd(-1,1),z:z+rnd(-1,1),t:-i*0.28,y0:28,o:null}));flash(player.x,player.y+3,player.z,0xfff1a0,3,1);say('🌠 Le ciel répond à ton appel…','sys');}
-function castSouffle(sp){const [dx,dz]=fwd();const e=legTarget('feu',12);if(e)player.ry=Math.atan2(e.x-player.x,e.z-player.z);SHAKE=Math.max(SHAKE,0.25);BREATH.push({t:1.3,hit:{}});}
+function castSouffle(sp){const [dx,dz]=fwd();const e=legTarget('feu',17);if(e)player.ry=Math.atan2(e.x-player.x,e.z-player.z);SHAKE=Math.max(SHAKE,0.25);BREATH.push({t:1.3,hit:{}});}
 const BREATH=[];
 function castGardien(sp){if(ALLY){ALLY.t=45;say('🌳 Ton gardien reprend des forces.','sys');return;}
  const [dx,dz]=fwd(),x=player.x+dx*2.2,z=player.z+dz*2.2;const g=new THREE.Group();g.position.set(x,gh(x,z),z);scene.add(g);const gl=glow(0x9cff8a,2.4,0.4);gl.position.y=1.2;g.add(gl);
@@ -74,10 +79,10 @@ function buildLegendes(){const C=LANDES.c,P=[['demantibulus',C.x-50,C.z+95],['et
 const BOSS={on:false,e:null,php:100,pmax:100,at:0,n:0,fb:[],phase:1,calmT:0,minions:false,hurtT:0};
 const nidXZ=()=>({x:LANDES.c.x+120,z:LANDES.c.z+15});
 function dragonSpawn(){if(BOSS.e&&ENT.includes(BOSS.e))return;if(S.dragonMort&&S.day<S.dragonMort+3)return;const N=nidXZ();
- const e=spawnCreatureAt(N.x,N.z,'Ignivor, la vouivre ancestrale','glace','feu',120,{dragon:true,scale:3.2,hpMax:120});e.ttl=Infinity;e.data.loc='landes_nid';BOSS.e=e;}
-function bossHud(show){let d=$('#bossbar');if(!d){d=document.createElement('div');d.id='bossbar';d.className='ui';d.style.cssText='position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 64px);transform:translateX(-50%);width:min(78vw,420px);z-index:6;text-align:center;font:600 12px Inter,sans-serif;color:#ffe6c0;text-shadow:0 1px 3px #000;pointer-events:none';
+ const e=spawnCreatureAt(N.x,N.z,'Ignivor, la vouivre ancestrale','glace','feu',128,{dragon:true,scale:3.2,hpMax:128});e.ttl=Infinity;e.data.loc='landes_nid';BOSS.e=e;}
+function bossHud(show){let d=$('#bossbar');if(!d){d=document.createElement('div');d.id='bossbar';
   d.innerHTML='<div>🐉 Ignivor, la vouivre ancestrale</div><div style="height:9px;background:rgba(0,0,0,.5);border-radius:5px;overflow:hidden;margin:3px 0 6px"><i id="bb-d" style="display:block;height:100%;width:100%;background:linear-gradient(90deg,#ff5a1e,#ffb43a)"></i></div><div style="height:7px;background:rgba(0,0,0,.5);border-radius:4px;overflow:hidden;width:70%;margin:0 auto"><i id="bb-p" style="display:block;height:100%;width:100%;background:linear-gradient(90deg,#4ad06a,#b8ff8a)"></i></div><div id="bb-t" style="margin-top:2px;font-size:11px"></div>';document.body.appendChild(d);}
- d.style.display=show?'block':'none';}
+ d.style.display=show?'block':'none';document.body.classList.toggle('boss',!!show);}
 function bossHudUpd(){const e=BOSS.e;if(!e)return;$('#bb-d').style.width=Math.max(0,e.data.hp/e.data.hpMax*100)+'%';$('#bb-p').style.width=Math.max(0,BOSS.php/BOSS.pmax*100)+'%';$('#bb-t').textContent='Toi : '+Math.ceil(BOSS.php)+' PV · insensible au Feu, craint la Glace';}
 function dragonStart(){if(BOSS.on)return;BOSS.on=true;BOSS.pmax=100+2*Math.min(50,lvl());BOSS.php=BOSS.pmax;BOSS.at=2;BOSS.n=0;BOSS.phase=1;BOSS.minions=false;
  if(FLY.on)dismount(true);banner('Ignivor s’éveille !','La vouivre ancestrale défend son nid');sfx('gong');SHAKE=Math.max(SHAKE,0.8);bossHud(true);bossHudUpd();
@@ -99,7 +104,7 @@ function dragonEnd(e){if(!ENT.includes(e))return;BOSS.on=false;bossHud(false);BO
 function dragonAI(e,dt){const D=e.data,N=nidXZ(),t=(e.t||0);const dp=Math.hypot(player.x-N.x,player.z-N.z);
  if(!BOSS.on&&dp<24&&!FLY.on)dragonStart();if(BOSS.on&&dp>48){dragonReset();say('🐉 Ignivor regagne son nid. Elle t’attendra…','sys');}
  const a=t*(BOSS.on?0.55:0.25),R=BOSS.on?11:7,x=N.x+Math.cos(a)*R,z=N.z+Math.sin(a)*R;e.x+=(x-e.x)*Math.min(1,dt*2);e.z+=(z-e.z)*Math.min(1,dt*2);
- const gy=gh(e.x,e.z),cy=(BOSS.on?6.5:4.5)+Math.sin(t*1.7)*0.6;D.y=cy;e.obj.position.set(e.x,gy+cy-4.6,e.z);const hy=gy+cy; // centre du corps = cible des sortse.obj.rotation.y=BOSS.on?Math.atan2(player.x-e.x,player.z-e.z):a+Math.PI/2;
+ const gy=gh(e.x,e.z),cy=(BOSS.on?6.5:4.5)+Math.sin(t*1.7)*0.6;D.y=cy;e.obj.position.set(e.x,gy+cy-4.6,e.z);const hy=gy+cy; /* centre du corps = cible des sorts */e.obj.rotation.y=BOSS.on?Math.atan2(player.x-e.x,player.z-e.z):a+Math.PI/2;
  if(!BOSS.on){if(BOSS.php<BOSS.pmax)BOSS.php=Math.min(BOSS.pmax,BOSS.php+dt*10);return;}
  if(D.hp<D.hpMax*0.5&&BOSS.phase===1){BOSS.phase=2;say('🐉 Ignivor rugit et appelle ses diablotins !','gm');sfx('gong');for(let i=0;i<3;i++){const b=Math.random()*TAU;spawnCreatureAt(N.x+Math.cos(b)*6,N.z+Math.sin(b)*6,'Diablotins verts','eau','feu',2);}}
  BOSS.hurtT-=dt;if(BOSS.hurtT<0)BOSS.php=Math.min(BOSS.pmax,BOSS.php+dt*2);
@@ -118,10 +123,10 @@ function legTick(dt){if(!started)return;
    if(typeof elemHit==='function')elemHit('lumiere',M.x,M.z,3);}}
  // souffles de feu (le joueur ou Ignivor)
  for(let i=BREATH.length-1;i>=0;i--){const B=BREATH[i];B.t-=dt;const src=B.dragon&&ENT.includes(B.dragon)?B.dragon:null;
-  const ox=src?src.x:player.x,oz=src?src.z:player.z,oy=src?gh(src.x,src.z)+src.data.y-0.6:player.y+1.4,yaw=src?Math.atan2(player.x-ox,player.z-oz):player.ry,dx=Math.sin(yaw),dz=Math.cos(yaw),len=src?13:10;
-  for(let j=0;j<6;j++){const s=rnd(0.5,1),sp=rnd(-0.32,0.32),vx=(dx*Math.cos(sp)-dz*Math.sin(sp))*len*1.6,vz=(dz*Math.cos(sp)+dx*Math.sin(sp))*len*1.6;PA.emit(ox+dx,oy,oz+dz,vx*s,src?-3:rnd(-0.5,1),vz*s,Math.random()<0.5?0xff6a1e:0xffc040,rnd(.5,1),0.2,rnd(.4,.65),-1,0.6);}
+  const ox=src?src.x:player.x,oz=src?src.z:player.z,oy=src?gh(src.x,src.z)+src.data.y-0.6:player.y+1.4,yaw=src?Math.atan2(player.x-ox,player.z-oz):player.ry,dx=Math.sin(yaw),dz=Math.cos(yaw),len=src?13:17,spr=src?0.32:0.6;
+  for(let j=0;j<(src?6:11);j++){const s=rnd(0.5,1),sp=rnd(-spr,spr),vx=(dx*Math.cos(sp)-dz*Math.sin(sp))*len*1.6,vz=(dz*Math.cos(sp)+dx*Math.sin(sp))*len*1.6;PA.emit(ox+dx,oy,oz+dz,vx*s,src?-3:rnd(-0.5,1),vz*s,Math.random()<0.5?0xff6a1e:0xffc040,rnd(.5,1),0.2,rnd(.4,.65),-1,0.6);}
   if(src){const vx=player.x-ox,vz=player.z-oz,d=Math.hypot(vx,vz),c=(vx*dx+vz*dz)/(d||1);if(d<len&&c>0.88)hurtPlayer(16*dt);}
-  else ENT.slice().forEach(e=>{if(e.kind!=='creature'||B.hit[e.id]>=2)return;const vx=e.x-ox,vz=e.z-oz,d=Math.hypot(vx,vz),c=(vx*dx+vz*dz)/(d||1);if(d<len&&c>0.82&&Math.random()<dt*4){B.hit[e.id]=(B.hit[e.id]||0)+1;hurtCreature(e,'feu',ox,oz);}});
+  else ENT.slice().forEach(e=>{if(e.kind!=='creature'||B.hit[e.id]>=2)return;const vx=e.x-ox,vz=e.z-oz,d=Math.hypot(vx,vz),c=(vx*dx+vz*dz)/(d||1);if(d<len&&(c>0.6||d<2.5)&&Math.random()<dt*4){B.hit[e.id]=(B.hit[e.id]||0)+1;hurtCreature(e,'feu',ox,oz);}});
   if(!src&&Math.random()<dt*3&&typeof elemHit==='function')elemHit('feu',ox+dx*rnd(3,len),oz+dz*rnd(3,len),2);
   if(B.t<=0)BREATH.splice(i,1);}
  // boules de feu d'Ignivor

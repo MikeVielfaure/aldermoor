@@ -35,13 +35,13 @@ function rankUp(known,from){const r=spRank(known);
 {const _d=spellCd;spellCd=function(sp){return Math.round(_d.apply(this,arguments)*(1-0.15*(spRank(sp)-1))*100)/100;};}
 {const _cs=castSpell;castSpell=function(sp){CAST_K=1+0.15*(spRank(sp)-1);try{return _cs.apply(this,arguments);}finally{CAST_K=1;}};}
 // sauvegardes : les doublons deviennent des rangs (le sort placé dans un emplacement est gardé en priorité)
-function mergeDupSpells(s){if(!s||!Array.isArray(s.spells))return 0;const slotted=new Set([].concat(s.slots||[],s.slotsAlt||[]).filter(Boolean));
+function mergeDupSpells(s){if(!s||!Array.isArray(s.spells))return 0;const slotted=new Set([].concat(s.slots||[],s.slotsAlt||[],...(Array.isArray(s.sets)?s.sets:[]).map(a=>a||[])).filter(Boolean));
  const keep=new Map(),drop={};
  s.spells.slice().sort((a,b)=>(slotted.has(b.id)?1:0)-(slotted.has(a.id)?1:0)).forEach(sp=>{const k=spKey(sp),K=keep.get(k);
   if(!K){keep.set(k,sp);sp.rank=clamp(sp.rank||1,1,RANK_MAX);}else{K.rank=Math.min(RANK_MAX,spRank(K)+spRank(sp));drop[sp.id]=K.id;}});
  const n=Object.keys(drop).length;if(!n)return 0;
  s.spells=s.spells.filter(sp=>!drop[sp.id]);
  const remap=arr=>{const seen=new Set();return (arr||[]).map(id=>{const v=drop[id]||id;if(!v||seen.has(v))return null;seen.add(v);return v;});};
- s.slots=remap(s.slots);if(Array.isArray(s.slotsAlt))s.slotsAlt=remap(s.slotsAlt);return n;}
+ s.slots=remap(s.slots);if(Array.isArray(s.slotsAlt))s.slotsAlt=remap(s.slotsAlt);if(Array.isArray(s.sets))s.sets=s.sets.map(remap);return n;}
 {const _m=migrate;migrate=function(s){s=_m.apply(this,arguments);const n=mergeDupSpells(s);
   if(n)setTimeout(()=>say('✦ Ton grimoire a été rangé : '+n+' sort'+(n>1?'s':'')+' en double '+(n>1?'sont devenus':'est devenu')+' des rangs (II, III) de sorts que tu connais. Moins de sorts, mais plus forts.','gm'),2500);return s;};}

@@ -66,7 +66,7 @@ const TAL_GEN=[
  {id:'agil',n:'Agilité',max:2,d:'+10 % de vitesse par rang ; au rang 2 : double saut.'},
  {id:'conc',n:'Concentration',max:2,d:'−15 % de coût en mana par rang.'}
 ];
-const RANKS=[{min:1,n:'Apprenti',slots:2},{min:5,n:'Adepte',slots:3},{min:10,n:'Mage',slots:4},{min:15,n:'Archimage',slots:4}];
+const RANKS=[{min:1,n:'Apprenti',slots:2},{min:5,n:'Adepte',slots:3},{min:10,n:'Mage',slots:4},{min:15,n:'Archimage',slots:5}];
 const LOCS=[
  {id:'cour',name:'Grande Cour',x:0,z:2,r:11,spot:{x:3.9,z:5}},
  {id:'chateau',name:'Château d’Aldermoor',x:0,z:-35,r:12,spot:{x:0,z:-32}},

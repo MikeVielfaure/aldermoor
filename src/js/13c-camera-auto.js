@@ -20,9 +20,11 @@ function camAutoTick(dt){if(!started||anyModal()||TALK||CAMA.mode===0)return;con
  // combat : la menace hostile la plus proche, si elle sort du champ de vision
  let turned=false;
  if(CAMA.mode===2&&calm>1.2&&!(AIM.lock&&AIMO.follow)&&S.zone==='monde'){CAMA.tT-=dt;if(CAMA.tT<=0){CAMA.tT=0.25;let best=null,bd=14;
-   for(const e of ENT){if(e.kind!=='creature'||e.data.calme||e.data.duel)continue;const d=Math.hypot(e.x-player.x,e.z-player.z);if(d<bd){bd=d;best=e;}}CAMA.threat=best;}
+   for(const e of ENT){if(e.kind!=='creature'||e.data.calme||e.data.duel)continue;const d=Math.hypot(e.x-player.x,e.z-player.z);if(d<bd){bd=d;best=e;}}
+   if(typeof BOSS!=='undefined'&&BOSS.on&&BOSS.e&&ENT.includes(BOSS.e))best=BOSS.e;CAMA.threat=best;} // boss : priorité à Ignivor
   const e=CAMA.threat;if(e&&ENT.includes(e)){const want=Math.atan2(e.x-player.x,e.z-player.z),d=angDiff(want,camYaw),cone=0.55;
-   if(Math.abs(d)>cone){camYaw+=(d-Math.sign(d)*cone)*Math.min(1,dt*2.4);turned=true;}}}
+   if(Math.abs(d)>cone){camYaw+=(d-Math.sign(d)*cone)*Math.min(1,dt*2.4);turned=true;}
+   if(e.data.dragon)camPitch+=(0.1-camPitch)*Math.min(1,dt*1.5);}} // on lève les yeux vers le dragon
  // suivi des déplacements
  if(!turned&&moving&&calm>0.8&&!(AIM.lock&&AIMO.follow)){const fx=Math.sin(camYaw),fz=Math.cos(camYaw),mx=fx*iy-fz*ix,mz=fz*iy+fx*ix,head=Math.atan2(mx,mz),d=angDiff(head,camYaw);
   if(Math.abs(d)<2.2){const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95,k=(FLY.on?1.8:run?1.0:0.7)*Math.min(1,Math.abs(ix)*1.6+0.15);camYaw+=d*Math.min(1,dt*k);}}

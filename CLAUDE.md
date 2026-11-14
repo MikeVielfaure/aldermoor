@@ -69,6 +69,7 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 19b-sorts-uniques | un sort par élément × forme ; un doublon fait monter de rang (`rankUp`, `spRank`, `CAST_K`), fusion des anciennes sauvegardes |
 | 20-controles | joystick, clavier, glisser caméra |
 | 20b-landes | les Landes d'Ombrelune (`LANDES`, relief `landH`, `buildLandes`, portails, vol par les crêtes, peuplement `LANDES_POP`, carte de la région) |
+| 20c-dragon-legendes | boss Ignivor (`BOSS`, `dragonAI`, `dragonHit`, PV du joueur `hurtPlayer`, barre `#bossbar`), 4 sorts légendaires (`LEG_SP`, effets `castDemanti`/`castEtoiles`/`castGardien`/`castSouffle`, pupitres `LEG_PUP`), arbre-gardien allié `ALLY` |
 | 21-boucle | `update(dt)`, `loop()`, `startGame()`, puis la séquence de construction du monde |
 | 22-appli | plein écran, écran qui reste allumé, enregistrement du mode hors-ligne |
 | 22b-partie-test | partie de test niveau 50 (`?test` dans l'adresse), sauvegarde normale mise de côté |
@@ -115,6 +116,10 @@ Le décor a son propre hasard (`dkr()`) : ne pas y utiliser `srand()`, qui déca
   charger chacun dans ce Chrome sans carte graphique, attendre `MDL.ready` / `e.data.M` avant de vérifier.
 
 ## Sorts
+
+Sorts légendaires (20c) : `special` + `legend:true`, coût et recharge propres (`sp.cost`, `sp.cd`), effets dans
+les enrobages de `doTrait`/`doZone`/`doUtil`. Créature volante en boss : `D.y` = hauteur du centre du corps
+au-dessus du sol (c'est ce que visent les sorts), le modèle est décalé en conséquence.
 
 Un seul sort par élément et par forme (8 × 3) : apprendre un sort dont l'élément ET la forme sont
 déjà connus le fait monter de rang (II, III : −15 % de mana et de recharge, +15 % de puissance par rang).

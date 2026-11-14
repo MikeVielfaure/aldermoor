@@ -109,7 +109,7 @@ function updEnts(dt){const t=performance.now()/1000;
    if(e.data.title.match(/[Ii]ncendie|[Rr]onces/))fireAt(e.x+rnd(-1,1),0.4,e.z+rnd(-1,1),0.7,1);
    if(e.data.title.match(/[Bb]rume/)&&Math.random()<0.5)PN.emit(e.x+rnd(-3,3),rnd(0.2,1.5),e.z+rnd(-3,3),rnd(-.2,.2),0,rnd(-.2,.2),0xd8dde8,1.5,2.5,rnd(2,3),0,0.2,0.35);
    if(e.data.title.match(/[Oo]mbre/)&&Math.random()<0.4)PN.emit(e.x+rnd(-2,2),rnd(0.2,1.5),e.z+rnd(-2,2),0,0.2,0,0x0d0618,1,1.6,1.5,0,0.2,0.6);}
-  else if(e.kind==='creature'){const D=e.data;if(D.duel){duelAI(e,dt*ef());return;}if(D.wave){waveAI(e,dt);return;}
+  else if(e.kind==='creature'){const D=e.data;if(D.duel){duelAI(e,dt*ef());return;}if(D.wave){waveAI(e,dt);return;}if(D.dragon){dragonAI(e,dt);return;}
    if(D.frozen>0){D.frozen-=dt;D.core.material.color.setHex(0xcff4ff);if(Math.random()<dt*6)PA.emit(e.x,D.y,e.z,rnd(-.3,.3),rnd(0,.5),rnd(-.3,.3),0xffffff,0.15,0.03,0.6,0,0);}
    else D.core.material.color.setHex(ELEM[D.look].c);
    if(D.burn>0){D.burn-=dt;fireAt(e.x,D.y,e.z,0.4,1);D.bt=(D.bt||0)+dt;if(D.bt>1.5){D.bt=0;D.hp-=1;if(D.hp<=0){killCreature(e);return;}}}

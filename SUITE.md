@@ -37,6 +37,17 @@
 - Méditation : immobile au sol, le mana revient 80 % plus vite.
 - 5 quêtes du MJ classique dans les Landes (vouivre, pierres chantantes, lac, fleur de givre, cerfs).
 
+## Fait en v18 (novembre 2026)
+- Boss Ignivor, la vouivre ancestrale (Nid de la Vouivre) : barre de vie, PV du joueur pendant le combat,
+  boules de feu, souffle, 2e phase avec diablotins ; insensible au feu, craint la glace ; revient 3 jours après.
+- Série de 4 sorts légendaires à découvrir (Démantibulus, Pluie d'étoiles la nuit au sommet du pic,
+  Appel du gardien au Bosquet, Souffle du dragon en battant Ignivor), indices dans le Grimoire.
+- Partie de test : jeu B = les 4 sorts légendaires.
+
+## Idées proposées par le joueur, pas encore faites
+- Acheter un terrain, l'aménager, y faire pousser des plantes (demande une monnaie et des achats).
+- D'autres invocations, d'autres séries rares.
+
 ## En attente d'une décision du joueur
 - Personnages modulaires Quaternius (zips déposés le 2026-11-14 dans assets/brut, décompressés dans
   zip-modular-a / zip-modular-b) : maquette faite (apprentie en robe noire, apprenti à capuche), rien

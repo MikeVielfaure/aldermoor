@@ -1,3 +1,4 @@
+let CAMD=8,CAMPS=0.38; // caméra : distance et inclinaison lissées
 /* ================= BOUCLE ================= */
 let started=false,fastT=0,last=performance.now(),ambT=40,saveT=0,hudT=0,focT=0,waterT=0;
 const cTopD=new THREE.Color(0x3f86e0),cBotD=new THREE.Color(0xc4e0f6),cTopN=new THREE.Color(0x050818),cBotN=new THREE.Color(0x141c3c),cDusk=new THREE.Color(0xf0905a),tTop=new THREE.Color(),tBot=new THREE.Color();
@@ -62,8 +63,10 @@ function update(dt){
  fastT+=dt;if(fastT>0.08){fastT=0;updSlotsFast();}
  ambientAnim(dt,t);lighting();
  const zn=S.zone,inD=zn==='donjon';let cp=camPitch,dist=8*CAMZ;let la=0;if(zn!=='monde'){inCam(zn);cp=IC[0];dist=IC[1];la=IC[2];}fovTo(zn!=='monde'&&!TALK?IC[3]:FOV0,dt);/* lieux clos : voir 13b-camera-interieurs */if(zn==='monde'){const sx=-Math.sin(camYaw)*Math.cos(cp),sz=-Math.cos(camYaw)*Math.cos(cp);for(let d=1.2;d<=dist;d+=0.4){const x=player.x+sx*d,z=player.z+sz*d;let hit=false;for(const c of COLS){if(c.lake||c.off||(c.h!==undefined&&c.h<player.y+1.9))continue;if(c.r!==undefined){const rr=c.tree?c.r+0.5:c.r+0.3;if(Math.abs(x-c.x)<rr&&Math.abs(z-c.z)<rr&&Math.hypot(x-c.x,z-c.z)<rr){hit=true;break;}}else if(Math.abs(x-c.x)<c.hw+0.3&&Math.abs(z-c.z)<c.hd+0.3){hit=true;break;}}if(hit){dist=Math.max(zn==='monde'?2.6:2,d-0.4);break;}}}if(zn==='monde'){let dd=camClear(Math.max(cp,0.12),dist);if(dd<4.2&&cp>=0.12){for(const up of [0.18,0.36]){const c2=Math.min(1.1,cp+up),d2=camClear(c2,dist);if(d2>dd+1.0){cp=c2;dd=d2;if(d2>=4.2)break;}}}dist=Math.max(1.15,dd);}
+ /* caméra en orbite : l'angle suit le doigt tout de suite, seule la distance est lissée (elle se rapproche d'un coup devant un obstacle, s'éloigne en douceur) ; avant, la position glissait en ligne droite et coupait à travers le joueur quand on tournait vite */
+ if(!TALK){if(dist<CAMD-0.01)CAMD=dist;else CAMD+=(dist-CAMD)*Math.min(1,dt*2.5);dist=CAMD;CAMPS+=(cp-CAMPS)*Math.min(1,dt*12);cp=CAMPS;}
  const cls=zn==='monde'?Math.max(0,3.6-dist):0;const cx=player.x-Math.sin(camYaw)*Math.cos(cp)*dist,cz=player.z-Math.cos(camYaw)*Math.cos(cp)*dist,cy=player.y+1.7+Math.sin(cp)*dist+cls*0.55;
- if(TALK)talkCam(dt);else{const so=AIM.side*0.8,sox=-Math.cos(camYaw)*so,soz=Math.sin(camYaw)*so;TV.set(cx+sox,zn==='monde'?Math.max(cy,gh(cx+sox,cz+soz)+1.0):cy,cz+soz);camera.position.lerp(TV,Math.min(1,dt*8));if(zn==='monde'){const gq=gh(camera.position.x,camera.position.z)+0.6;if(camera.position.y<gq)camera.position.y=gq;}camera.lookAt(player.x+sox+Math.sin(camYaw)*la,player.y+1.6+cls*0.3,player.z+soz+Math.cos(camYaw)*la);}
+ if(TALK)talkCam(dt);else{const so=AIM.side*0.8,sox=-Math.cos(camYaw)*so,soz=Math.sin(camYaw)*so;TV.set(cx+sox,zn==='monde'?Math.max(cy,gh(cx+sox,cz+soz)+1.0):cy,cz+soz);camera.position.lerp(TV,Math.min(1,dt*22));if(zn==='monde'){const gq=gh(camera.position.x,camera.position.z)+0.6;if(camera.position.y<gq)camera.position.y=gq;}camera.lookAt(player.x+sox+Math.sin(camYaw)*la,player.y+1.6+cls*0.3,player.z+soz+Math.cos(camYaw)*la);}
 }
 function ambientAnim(dt,t){
  

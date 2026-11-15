@@ -35,7 +35,9 @@ function cbarFor(e){let B=CBAR.get(e);if(B)return B;const c=document.createEleme
   return _r.apply(this,arguments);};}
 // Démantibulus réduit en miettes : pas de cadavre
 {const _k=killCreature;killCreature=function(e){if(e&&e.data&&e.data.hp>0)e.data.nocorpse=true;return _k.apply(this,arguments);};}
-function vieTick(dt){if(!started)return;if(!VIE.init){VIE.init=1;VIE.hp=vieMax();}
+function vieTick(dt){if(!started)return;
+ /* chute plumée après un saut du balai en plein vol (15-balai : toggleBroom) */
+ if(player.feather){if(player.grounded||FLY.on||player.swim)player.feather=0;else{if(player.vy<-6.5)player.vy=-6.5;if(Math.random()<dt*20)PA.emit(player.x+rnd(-.5,.5),player.y+rnd(0,1.5),player.z+rnd(-.5,.5),rnd(-.3,.3),rnd(.5,1.5),rnd(-.3,.3),0xfff4d8,0.22,0.05,0.7,0,1);}}if(!VIE.init){VIE.init=1;VIE.hp=vieMax();}
  // vie : morsures, retour au calme
  {const m=vieMax();if(m>VIE.max)VIE.hp+=m-VIE.max;VIE.max=m;}if(VIE.hp>VIE.max)VIE.hp=VIE.max;
  if(!vieBusy()&&S.zone==='monde'&&!FLY.on){for(const e of ENT){if(e.kind!=='creature')continue;const D=e.data;if(D.calme||D.duel||D.wave||D.dragon||D.frozen>0||D.confused>0)continue;

@@ -67,6 +67,12 @@
 - Potion de soin (Pétale enchanté + Champignon lunaire).
 - Créatures : barre de vie une fois touchées, animation de mort. PNJ : s'arrêtent et se tournent vers le joueur.
 
+## Fait en v22 (novembre 2026)
+- Caméra en orbite (plus de « coupe » à travers le joueur en tournant vite), geste vif = rotation accélérée,
+  doigt perdu (appel, changement d'appli) libéré ; caméra automatique un peu plus réactive.
+- Balai : on peut sauter du balai en plein vol (chute plumée) et y remonter en l'air.
+- Visée plus longue : 24 m à pied, 30 m en vol (et cibles au sol visées depuis le ciel), verrouillage 42 m.
+
 ## Monde réaliste (souhait du joueur, 2026-11-15)
 - Le joueur précise : « réaliste mais que ça reste un jeu » ; garder le style actuel et le soigner.
 - itch.io bloque les téléchargements automatiques (Cloudflare) : le joueur peut déposer les packs dans assets/brut.

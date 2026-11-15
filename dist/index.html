@@ -2799,12 +2799,12 @@ function tgCands(el,all){const out=[];
   const RU=S.puz.ruines;if(RU&&!RU.open)GUARD.forEach((g,i)=>{if(!RU.on[i]&&(all||RU.els[i]===el))out.push({kind:'guard',ref:g,pri:0.9});});}
  return out;}
 function autoTarget(el,dx,dz,creaOnly){let best=null,bs=1e9;for(const c of tgCands(el,false)){if(creaOnly&&c.kind!=='crea')continue;const p=tgPos(c);const vx=p.x-player.x,vz=p.z-player.z,d=Math.hypot(vx,vz);
-  if(d<0.6||d>(c.kind==='crea'?18:15))continue;const cs=(vx*dx+vz*dz)/d;if(cs<0.55)continue;if(Math.abs(p.y-(player.y+1.4))>9)continue;const sc=d*(1+2.2*(1-cs))*c.pri;if(sc<bs){bs=sc;best=Object.assign(p,{ref:c.ref,kind:c.kind});}}return best;}
+  if(d<0.6||d>(c.kind==='crea'?(FLY.on?30:24):18))continue;const cs=(vx*dx+vz*dz)/d;if(cs<0.55)continue;if(Math.abs(p.y-(player.y+1.4))>(FLY.on?32:9))continue;const sc=d*(1+2.2*(1-cs))*c.pri;if(sc<bs){bs=sc;best=Object.assign(p,{ref:c.ref,kind:c.kind});}}return best;}
 function legacyTarget(el,dx,dz){let best=null,bd=18;ENT.forEach(e=>{if(e.kind!=='creature')return;const vx=e.x-player.x,vz=e.z-player.z,d=Math.hypot(vx,vz);if(d<bd&&(vx*dx+vz*dz)/d>0.5){bd=d;best=e;}});
  if(best)return {x:best.x,z:best.z,y:0,legacy:1};if(el==='arcane'){let bd2=14,bp=null;PROPS.forEach(p=>{if(p.dead>0)return;const vx=p.x-player.x,vz=p.z-player.z,d=Math.hypot(vx,vz);if(d<bd2&&(vx*dx+vz*dz)/d>0.6){bd2=d;bp=p;}});if(bp)return {x:bp.x,z:bp.z,y:0,legacy:1};}return null;}
 function castTarget(el,dx,dz,util){if(AIMO.legacy)return util?null:legacyTarget(el,dx,dz);
- if(AIM.lock){if(tgAlive(AIM.lock)&&AIM.lockZone===S.zone){const p=tgPos(AIM.lock);if(Math.hypot(p.x-player.x,p.z-player.z)<32)return Object.assign(p,{ref:AIM.lock.ref,kind:AIM.lock.kind});}else AIM.lock=null;}
- if(AIM.pt){const p=AIM.pt,d=Math.hypot(p.x-player.x,p.z-player.z);if(d<32&&d>0.8)return {x:p.x,y:p.y+0.15,z:p.z,gy:p.y,kind:'pt'};}
+ if(AIM.lock){if(tgAlive(AIM.lock)&&AIM.lockZone===S.zone){const p=tgPos(AIM.lock);if(Math.hypot(p.x-player.x,p.z-player.z)<42)return Object.assign(p,{ref:AIM.lock.ref,kind:AIM.lock.kind});}else AIM.lock=null;}
+ if(AIM.pt){const p=AIM.pt,d=Math.hypot(p.x-player.x,p.z-player.z);if(d<42&&d>0.8)return {x:p.x,y:p.y+0.15,z:p.z,gy:p.y,kind:'pt'};}
  return util?null:autoTarget(el,dx,dz,false);}
 function utilPt(max){const p=AIM.pt;if(!p)return null;return Math.hypot(p.x-player.x,p.z-player.z)<=max?p:null;}
 function utilDist(max){const p=AIM.pt;if(!p)return max;const d=Math.hypot(p.x-player.x,p.z-player.z);return d<=max*1.4?d:max;}
@@ -2829,7 +2829,7 @@ const TAP={id:null,x:0,y:0,t:0,last:0,lx:0,ly:0,ms:450,dbl:420},PINCH={on:false,
 const RC=new THREE.Raycaster(),NDC=new THREE.Vector2(),PV=new THREE.Vector3();
 function groundPick(x,y){NDC.set(x/window.innerWidth*2-1,-(y/window.innerHeight)*2+1);RC.setFromCamera(NDC,camera);const o=RC.ray.origin,d=RC.ray.direction;
  const hAt=(px,pz)=>{let h=gy0(px,pz);if(S.zone==='monde'&&inLake({x:px,z:pz}))h=Math.max(h,0.06);return h;};
- for(let t=0.6;t<72;t+=0.4){const px=o.x+d.x*t,py=o.y+d.y*t,pz=o.z+d.z*t;if(py<=hAt(px,pz)){let a=t-0.4,b=t;for(let k=0;k<7;k++){const m=(a+b)/2;if(o.y+d.y*m<=hAt(o.x+d.x*m,o.z+d.z*m))b=m;else a=m;}
+ for(let t=0.6;t<90;t+=0.5){const px=o.x+d.x*t,py=o.y+d.y*t,pz=o.z+d.z*t;if(py<=hAt(px,pz)){let a=t-0.4,b=t;for(let k=0;k<7;k++){const m=(a+b)/2;if(o.y+d.y*m<=hAt(o.x+d.x*m,o.z+d.z*m))b=m;else a=m;}
    const hx=o.x+d.x*b,hz=o.z+d.z*b;return {x:hx,y:hAt(hx,hz),z:hz};}}return null;}
 function scr(x,y,z){PV.set(x,y,z).project(camera);if(PV.z>1||PV.z<-1)return null;return [(PV.x+1)/2*window.innerWidth,(1-PV.y)/2*window.innerHeight];}
 function recenter(){AIM.rc=0.7;AIM.nudge={yaw:player.ry,t:0.7};sfx('click');}
@@ -2837,12 +2837,12 @@ function onTap(x,y){if(!started||anyModal())return;const now=performance.now();
  if(now-TAP.last<TAP.dbl&&Math.hypot(x-TAP.lx,y-TAP.ly)<50){TAP.last=0;recenter();return;}TAP.last=now;TAP.lx=x;TAP.ly=y;if(!AIMO.tap)return;
  let best=null,bd=1e9;
  for(const n of npcs){if(n.sleep||n.inDuel||!n.obj.visible)continue;const dw=Math.hypot(n.x-player.x,n.z-player.z);if(dw>5)continue;const s=scr(n.x,gy0(n.x,n.z)+1.1,n.z);if(!s)continue;const dp=Math.hypot(s[0]-x,s[1]-y);if(dp<60&&dp<bd){bd=dp;best={npc:n};}}
- const H=window.innerHeight;for(const c of tgCands(S.lastEl||'arcane',true)){const p=tgPos(c);const dw=Math.hypot(p.x-player.x,p.z-player.z);if(dw>32)continue;const s=scr(p.x,p.y,p.z);if(!s)continue;
+ const H=window.innerHeight;for(const c of tgCands(S.lastEl||'arcane',true)){const p=tgPos(c);const dw=Math.hypot(p.x-player.x,p.z-player.z);if(dw>42)continue;const s=scr(p.x,p.y,p.z);if(!s)continue;
   const dc=camera.position.distanceTo(PV.set(p.x,p.y,p.z));const rp=clamp(p.rad*H/(dc+0.5)*0.9,30,95);const dp=Math.hypot(s[0]-x,s[1]-y);if(dp<rp&&dp*c.pri<bd){bd=dp*c.pri;best=c;}}
  if(best&&best.npc){focus={t:'npc',n:best.npc};interact();return;}
  if(best){if(AIM.lock&&AIM.lock.ref===best.ref){AIM.lock=null;sfx('click');return;}AIM.lock={kind:best.kind,ref:best.ref};AIM.lockZone=S.zone;AIM.pt=null;sfx('lock');
   if(!S.seenLock){S.seenLock=1;say('🎯 <b>Cible verrouillée</b> : tes sorts filent vers elle et la caméra la garde en vue. Touche-la à nouveau pour la libérer. Touche le sol pour viser un point, touche deux fois pour recentrer la caméra.','sys');}return;}
- const g=groundPick(x,y);if(g&&Math.hypot(g.x-player.x,g.z-player.z)<30){AIM.pt=g;AIM.ptT=8;AIM.lock=null;sfx('lock');if(!S.seenPt){S.seenPt=1;say('📍 <b>Point visé</b> : ton prochain sort part vers ce point (le pas d’ombre t’y téléporte, le champignon y pousse…).','sys');}}
+ const g=groundPick(x,y);if(g&&Math.hypot(g.x-player.x,g.z-player.z)<42){AIM.pt=g;AIM.ptT=8;AIM.lock=null;sfx('lock');if(!S.seenPt){S.seenPt=1;say('📍 <b>Point visé</b> : ton prochain sort part vers ce point (le pas d’ombre t’y téléporte, le champignon y pousse…).','sys');}}
  else{AIM.lock=null;AIM.pt=null;}}
 canvas.addEventListener('pointerdown',e=>{if(!started)return;if(drag.id===null){TAP.id=e.pointerId;TAP.x=e.clientX;TAP.y=e.clientY;TAP.t=performance.now();}
  else if(!PINCH.on&&e.pointerId!==drag.id){PINCH.on=true;PINCH.id=e.pointerId;PINCH.x=e.clientX;PINCH.y=e.clientY;PINCH.d0=Math.hypot(e.clientX-drag.x,e.clientY-drag.y)||1;PINCH.z0=CAMZ;TAP.id=null;}});
@@ -2860,8 +2860,8 @@ window.addEventListener('keydown',e=>{if(!started||anyModal()||e.target.tagName=
 function placeMk(m,p,size,rot,op){if(!p){m.visible=false;return;}m.visible=true;m.position.set(p.x,p.gy+0.08,p.z);m.scale.set(size,1,size);m.rotation.y=rot;if(op!=null)m.material.opacity=op;}
 function aimTick(dt){if(!MK.soft)makeMarkers();const t=performance.now()/1000;
  if(AIM.lock&&(!tgAlive(AIM.lock)||AIM.lockZone!==S.zone)){AIM.lock=null;}
- if(AIM.lock){const p=tgPos(AIM.lock);if(Math.hypot(p.x-player.x,p.z-player.z)>34)AIM.lock=null;}
- if(AIM.pt){AIM.ptT-=dt;if(AIM.ptT<=0||Math.hypot(AIM.pt.x-player.x,AIM.pt.z-player.z)>34)AIM.pt=null;}
+ if(AIM.lock){const p=tgPos(AIM.lock);if(Math.hypot(p.x-player.x,p.z-player.z)>45)AIM.lock=null;}
+ if(AIM.pt){AIM.ptT-=dt;if(AIM.ptT<=0||Math.hypot(AIM.pt.x-player.x,AIM.pt.z-player.z)>45)AIM.pt=null;}
  AIM.t-=dt;if(AIM.t<=0){AIM.t=0.12;const yaw=AIMO.mode==='camera'?camYaw:player.ry;const s=(!AIM.lock&&!AIM.pt&&!AIMO.legacy)?autoTarget(S.lastEl||'arcane',Math.sin(yaw),Math.cos(yaw),true):null;AIM.soft=s?{kind:s.kind,ref:s.ref}:null;}
  const lp=AIM.lock?tgPos(AIM.lock):null,sp=AIM.soft&&tgAlive(AIM.soft)?tgPos(AIM.soft):null;
  placeMk(MK.lock,lp,lp?lp.rad*2.6*(1+0.06*Math.sin(t*5)):1,t*1.1,0.95);placeMk(MK.soft,lp?null:sp,sp?sp.rad*2.4:1,-t*0.6,0.35+0.1*Math.sin(t*3));
@@ -2933,11 +2933,11 @@ function camAutoTick(dt){if(!started||anyModal()||TALK||CAMA.mode===0)return;con
    for(const e of ENT){if(e.kind!=='creature'||e.data.calme||e.data.duel)continue;const d=Math.hypot(e.x-player.x,e.z-player.z);if(d<bd){bd=d;best=e;}}
    if(typeof BOSS!=='undefined'&&BOSS.on&&BOSS.e&&ENT.includes(BOSS.e))best=BOSS.e;CAMA.threat=best;} // boss : priorité à Ignivor
   const e=CAMA.threat;if(e&&ENT.includes(e)){const want=Math.atan2(e.x-player.x,e.z-player.z),d=angDiff(want,camYaw),cone=0.55;
-   if(Math.abs(d)>cone){camYaw+=(d-Math.sign(d)*cone)*Math.min(1,dt*2.4);turned=true;}
+   if(Math.abs(d)>cone){camYaw+=(d-Math.sign(d)*cone)*Math.min(1,dt*3.2);turned=true;}
    if(e.data.dragon)camPitch+=(0.1-camPitch)*Math.min(1,dt*1.5);}} // on lève les yeux vers le dragon
  // suivi des déplacements
  if(!turned&&moving&&calm>0.8&&!(AIM.lock&&AIMO.follow)){const fx=Math.sin(camYaw),fz=Math.cos(camYaw),mx=fx*iy-fz*ix,mz=fz*iy+fx*ix,head=Math.atan2(mx,mz),d=angDiff(head,camYaw);
-  if(Math.abs(d)<2.2){const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95,k=(FLY.on?1.8:run?1.0:0.7)*Math.min(1,Math.abs(ix)*1.6+0.15);camYaw+=d*Math.min(1,dt*k);}}
+  if(Math.abs(d)<2.2){const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95,k=(FLY.on?2.3:run?1.35:0.95)*Math.min(1,Math.abs(ix)*1.6+0.15);camYaw+=d*Math.min(1,dt*k);}}
  // inclinaison : retour doux vers une vue normale en marchant
  if(moving&&calm>2.5&&!FLY.on){const want=S.zone==='monde'?0.38:0.32;camPitch+=(want-camPitch)*Math.min(1,dt*0.8);}}
 {const _at=aimTick;aimTick=function(dt){const r=_at.apply(this,arguments);try{camAutoTick(dt);}catch(e){}return r;};}
@@ -3093,7 +3093,7 @@ const FLY={on:false,t:0,down:false,bank:0,mesh:null};
 function makeBroomMesh(){const g=new THREE.Group();const wood=mat(0x6a4424,{roughness:0.8});const st=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.045,2.1,8),wood);st.rotation.x=Math.PI/2;st.position.z=0.15;g.add(st);
  const br=new THREE.Mesh(new THREE.ConeGeometry(0.24,0.85,14,1,true),mat(0xc8a050,{roughness:1,side:THREE.DoubleSide}));br.rotation.x=Math.PI/2;br.position.z=-1.2;g.add(br);
  [-0.82,-0.95].forEach(z=>{const b=new THREE.Mesh(new THREE.TorusGeometry(0.075,0.022,6,12),mat(0xd4af37,{metalness:0.6,roughness:0.4}));b.position.z=z;g.add(b);});g.traverse(o=>{if(o.isMesh)o.castShadow=true;});return g;}
-function toggleBroom(){if(FLY.on){if(player.y-gh(player.x,player.z)>3){say('Pose-toi d’abord (⬇) avant de descendre du balai.','sys');return;}dismount();return;}
+function toggleBroom(){if(FLY.on){const h=player.y-gh(player.x,player.z);dismount();if(h>2.5){player.feather=1;player.vy=Math.min(player.vy,1);if(!S.seenFeather){S.seenFeather=1;say('🪶 Tu sautes du balai ! Une magie de plume ralentit ta chute. Touche 🧹 pour y remonter en plein vol.','sys');}}return;}
  if(S.zone!=='monde'){say('Pas de balai à l’intérieur !','sys');return;}if(DUEL||WAVE){say('Pas de balai pendant un combat.','sys');return;}if(player.swim){say('Sors de l’eau d’abord.','sys');return;}
  FLY.on=true;FLY.t=0;player.vy=6;player.grounded=false;if(!FLY.mesh){FLY.mesh=makeBroomMesh();FLY.mesh.position.set(0,0.82,0);player.H.root.add(FLY.mesh);}FLY.mesh.visible=true;player.H.root.children.forEach(o=>{if(o.geometry&&o.geometry.type==='RingGeometry')o.visible=false;});sfx('whoosh',player.x,player.z);
  for(let i=0;i<30;i++){const a=Math.random()*TAU;PA.emit(player.x+Math.cos(a)*0.6,player.y+0.3,player.z+Math.sin(a)*0.6,Math.cos(a)*3,rnd(0.5,2),Math.sin(a)*3,0xf3cf7a,0.25,0.05,0.7,0,1.5);}
@@ -3797,7 +3797,10 @@ function joyMove(e){const r=joyEl.getBoundingClientRect();let dx=e.clientX-(r.le
 $('#joy-zone').addEventListener('pointerdown',e=>{if(joy.id!==null)return;joy.id=e.pointerId;joyMove(e);e.preventDefault();});
 const drag={id:null,x:0,y:0};
 canvas.addEventListener('pointerdown',e=>{if(drag.id!==null)return;drag.id=e.pointerId;drag.x=e.clientX;drag.y=e.clientY;});
-window.addEventListener('pointermove',e=>{if(e.pointerId===joy.id)joyMove(e);else if(e.pointerId===drag.id){if(!PINCH.on){camYaw-=(e.clientX-drag.x)*0.006*AIMO.sens;camPitch=clamp(camPitch+(e.clientY-drag.y)*0.003*AIMO.sens,-0.3,1.2);}drag.x=e.clientX;drag.y=e.clientY;}});
+window.addEventListener('pointermove',e=>{if(e.pointerId===joy.id)joyMove(e);else if(e.pointerId===drag.id){const mx=e.clientX-drag.x,my=e.clientY-drag.y;/* un saut énorme = événement perdu : on l'ignore ; un geste vif tourne plus (accélération) */if(!PINCH.on&&Math.abs(mx)<260&&Math.abs(my)<260){const ax=1+Math.min(1.1,Math.abs(mx)/32),ay=1+Math.min(0.8,Math.abs(my)/40);camYaw-=mx*0.0068*AIMO.sens*ax;camPitch=clamp(camPitch+my*0.0034*AIMO.sens*ay,-0.35,1.25);}drag.x=e.clientX;drag.y=e.clientY;}});
+/* doigt « perdu » (appel, notification, changement d'appli) : on libère joystick et caméra */
+function ctrlReset(){joy.id=null;joy.x=joy.y=0;knob.style.transform='';drag.id=null;if(typeof PINCH!=='undefined'){PINCH.on=false;PINCH.id=null;}}
+window.addEventListener('blur',ctrlReset);document.addEventListener('visibilitychange',()=>{if(document.hidden)ctrlReset();});
 function up(e){if(e.pointerId===joy.id){joy.id=null;joy.x=joy.y=0;knob.style.transform='';}if(e.pointerId===drag.id)drag.id=null;}
 window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);
 function btn(id,fn){$(id).addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(started&&!anyModal())fn();});}
@@ -4246,7 +4249,9 @@ function cbarFor(e){let B=CBAR.get(e);if(B)return B;const c=document.createEleme
   return _r.apply(this,arguments);};}
 // Démantibulus réduit en miettes : pas de cadavre
 {const _k=killCreature;killCreature=function(e){if(e&&e.data&&e.data.hp>0)e.data.nocorpse=true;return _k.apply(this,arguments);};}
-function vieTick(dt){if(!started)return;if(!VIE.init){VIE.init=1;VIE.hp=vieMax();}
+function vieTick(dt){if(!started)return;
+ /* chute plumée après un saut du balai en plein vol (15-balai : toggleBroom) */
+ if(player.feather){if(player.grounded||FLY.on||player.swim)player.feather=0;else{if(player.vy<-6.5)player.vy=-6.5;if(Math.random()<dt*20)PA.emit(player.x+rnd(-.5,.5),player.y+rnd(0,1.5),player.z+rnd(-.5,.5),rnd(-.3,.3),rnd(.5,1.5),rnd(-.3,.3),0xfff4d8,0.22,0.05,0.7,0,1);}}if(!VIE.init){VIE.init=1;VIE.hp=vieMax();}
  // vie : morsures, retour au calme
  {const m=vieMax();if(m>VIE.max)VIE.hp+=m-VIE.max;VIE.max=m;}if(VIE.hp>VIE.max)VIE.hp=VIE.max;
  if(!vieBusy()&&S.zone==='monde'&&!FLY.on){for(const e of ENT){if(e.kind!=='creature')continue;const D=e.data;if(D.calme||D.duel||D.wave||D.dragon||D.frozen>0||D.confused>0)continue;
@@ -4269,6 +4274,7 @@ function vieTick(dt){if(!started)return;if(!VIE.init){VIE.init=1;VIE.hp=vieMax()
 // fenêtre du personnage : la vie
 {const _r=renderBook;renderBook=function(){_r.apply(this,arguments);if(bookTab!=='perso')return;const it=$('#book-body').querySelectorAll('.it')[1];if(!it)return;const d=document.createElement('div');
   d.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span class="mu">Vie</span><b>'+Math.ceil(VIE.hp)+' / '+VIE.max+'</b></div>';it.insertBefore(d.firstChild,it.children[2]||null);};}
+let CAMD=8,CAMPS=0.38; // caméra : distance et inclinaison lissées
 /* ================= BOUCLE ================= */
 let started=false,fastT=0,last=performance.now(),ambT=40,saveT=0,hudT=0,focT=0,waterT=0;
 const cTopD=new THREE.Color(0x3f86e0),cBotD=new THREE.Color(0xc4e0f6),cTopN=new THREE.Color(0x050818),cBotN=new THREE.Color(0x141c3c),cDusk=new THREE.Color(0xf0905a),tTop=new THREE.Color(),tBot=new THREE.Color();
@@ -4333,8 +4339,10 @@ function update(dt){
  fastT+=dt;if(fastT>0.08){fastT=0;updSlotsFast();}
  ambientAnim(dt,t);lighting();
  const zn=S.zone,inD=zn==='donjon';let cp=camPitch,dist=8*CAMZ;let la=0;if(zn!=='monde'){inCam(zn);cp=IC[0];dist=IC[1];la=IC[2];}fovTo(zn!=='monde'&&!TALK?IC[3]:FOV0,dt);/* lieux clos : voir 13b-camera-interieurs */if(zn==='monde'){const sx=-Math.sin(camYaw)*Math.cos(cp),sz=-Math.cos(camYaw)*Math.cos(cp);for(let d=1.2;d<=dist;d+=0.4){const x=player.x+sx*d,z=player.z+sz*d;let hit=false;for(const c of COLS){if(c.lake||c.off||(c.h!==undefined&&c.h<player.y+1.9))continue;if(c.r!==undefined){const rr=c.tree?c.r+0.5:c.r+0.3;if(Math.abs(x-c.x)<rr&&Math.abs(z-c.z)<rr&&Math.hypot(x-c.x,z-c.z)<rr){hit=true;break;}}else if(Math.abs(x-c.x)<c.hw+0.3&&Math.abs(z-c.z)<c.hd+0.3){hit=true;break;}}if(hit){dist=Math.max(zn==='monde'?2.6:2,d-0.4);break;}}}if(zn==='monde'){let dd=camClear(Math.max(cp,0.12),dist);if(dd<4.2&&cp>=0.12){for(const up of [0.18,0.36]){const c2=Math.min(1.1,cp+up),d2=camClear(c2,dist);if(d2>dd+1.0){cp=c2;dd=d2;if(d2>=4.2)break;}}}dist=Math.max(1.15,dd);}
+ /* caméra en orbite : l'angle suit le doigt tout de suite, seule la distance est lissée (elle se rapproche d'un coup devant un obstacle, s'éloigne en douceur) ; avant, la position glissait en ligne droite et coupait à travers le joueur quand on tournait vite */
+ if(!TALK){if(dist<CAMD-0.01)CAMD=dist;else CAMD+=(dist-CAMD)*Math.min(1,dt*2.5);dist=CAMD;CAMPS+=(cp-CAMPS)*Math.min(1,dt*12);cp=CAMPS;}
  const cls=zn==='monde'?Math.max(0,3.6-dist):0;const cx=player.x-Math.sin(camYaw)*Math.cos(cp)*dist,cz=player.z-Math.cos(camYaw)*Math.cos(cp)*dist,cy=player.y+1.7+Math.sin(cp)*dist+cls*0.55;
- if(TALK)talkCam(dt);else{const so=AIM.side*0.8,sox=-Math.cos(camYaw)*so,soz=Math.sin(camYaw)*so;TV.set(cx+sox,zn==='monde'?Math.max(cy,gh(cx+sox,cz+soz)+1.0):cy,cz+soz);camera.position.lerp(TV,Math.min(1,dt*8));if(zn==='monde'){const gq=gh(camera.position.x,camera.position.z)+0.6;if(camera.position.y<gq)camera.position.y=gq;}camera.lookAt(player.x+sox+Math.sin(camYaw)*la,player.y+1.6+cls*0.3,player.z+soz+Math.cos(camYaw)*la);}
+ if(TALK)talkCam(dt);else{const so=AIM.side*0.8,sox=-Math.cos(camYaw)*so,soz=Math.sin(camYaw)*so;TV.set(cx+sox,zn==='monde'?Math.max(cy,gh(cx+sox,cz+soz)+1.0):cy,cz+soz);camera.position.lerp(TV,Math.min(1,dt*22));if(zn==='monde'){const gq=gh(camera.position.x,camera.position.z)+0.6;if(camera.position.y<gq)camera.position.y=gq;}camera.lookAt(player.x+sox+Math.sin(camYaw)*la,player.y+1.6+cls*0.3,player.z+soz+Math.cos(camYaw)*la);}
 }
 function ambientAnim(dt,t){
  

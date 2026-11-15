@@ -23,11 +23,11 @@ function camAutoTick(dt){if(!started||anyModal()||TALK||CAMA.mode===0)return;con
    for(const e of ENT){if(e.kind!=='creature'||e.data.calme||e.data.duel)continue;const d=Math.hypot(e.x-player.x,e.z-player.z);if(d<bd){bd=d;best=e;}}
    if(typeof BOSS!=='undefined'&&BOSS.on&&BOSS.e&&ENT.includes(BOSS.e))best=BOSS.e;CAMA.threat=best;} // boss : priorité à Ignivor
   const e=CAMA.threat;if(e&&ENT.includes(e)){const want=Math.atan2(e.x-player.x,e.z-player.z),d=angDiff(want,camYaw),cone=0.55;
-   if(Math.abs(d)>cone){camYaw+=(d-Math.sign(d)*cone)*Math.min(1,dt*2.4);turned=true;}
+   if(Math.abs(d)>cone){camYaw+=(d-Math.sign(d)*cone)*Math.min(1,dt*3.2);turned=true;}
    if(e.data.dragon)camPitch+=(0.1-camPitch)*Math.min(1,dt*1.5);}} // on lève les yeux vers le dragon
  // suivi des déplacements
  if(!turned&&moving&&calm>0.8&&!(AIM.lock&&AIMO.follow)){const fx=Math.sin(camYaw),fz=Math.cos(camYaw),mx=fx*iy-fz*ix,mz=fz*iy+fx*ix,head=Math.atan2(mx,mz),d=angDiff(head,camYaw);
-  if(Math.abs(d)<2.2){const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95,k=(FLY.on?1.8:run?1.0:0.7)*Math.min(1,Math.abs(ix)*1.6+0.15);camYaw+=d*Math.min(1,dt*k);}}
+  if(Math.abs(d)<2.2){const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95,k=(FLY.on?2.3:run?1.35:0.95)*Math.min(1,Math.abs(ix)*1.6+0.15);camYaw+=d*Math.min(1,dt*k);}}
  // inclinaison : retour doux vers une vue normale en marchant
  if(moving&&calm>2.5&&!FLY.on){const want=S.zone==='monde'?0.38:0.32;camPitch+=(want-camPitch)*Math.min(1,dt*0.8);}}
 {const _at=aimTick;aimTick=function(dt){const r=_at.apply(this,arguments);try{camAutoTick(dt);}catch(e){}return r;};}

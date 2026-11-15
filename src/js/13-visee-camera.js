@@ -34,12 +34,12 @@ function tgCands(el,all){const out=[];
   const RU=S.puz.ruines;if(RU&&!RU.open)GUARD.forEach((g,i)=>{if(!RU.on[i]&&(all||RU.els[i]===el))out.push({kind:'guard',ref:g,pri:0.9});});}
  return out;}
 function autoTarget(el,dx,dz,creaOnly){let best=null,bs=1e9;for(const c of tgCands(el,false)){if(creaOnly&&c.kind!=='crea')continue;const p=tgPos(c);const vx=p.x-player.x,vz=p.z-player.z,d=Math.hypot(vx,vz);
-  if(d<0.6||d>(c.kind==='crea'?18:15))continue;const cs=(vx*dx+vz*dz)/d;if(cs<0.55)continue;if(Math.abs(p.y-(player.y+1.4))>9)continue;const sc=d*(1+2.2*(1-cs))*c.pri;if(sc<bs){bs=sc;best=Object.assign(p,{ref:c.ref,kind:c.kind});}}return best;}
+  if(d<0.6||d>(c.kind==='crea'?(FLY.on?30:24):18))continue;const cs=(vx*dx+vz*dz)/d;if(cs<0.55)continue;if(Math.abs(p.y-(player.y+1.4))>(FLY.on?32:9))continue;const sc=d*(1+2.2*(1-cs))*c.pri;if(sc<bs){bs=sc;best=Object.assign(p,{ref:c.ref,kind:c.kind});}}return best;}
 function legacyTarget(el,dx,dz){let best=null,bd=18;ENT.forEach(e=>{if(e.kind!=='creature')return;const vx=e.x-player.x,vz=e.z-player.z,d=Math.hypot(vx,vz);if(d<bd&&(vx*dx+vz*dz)/d>0.5){bd=d;best=e;}});
  if(best)return {x:best.x,z:best.z,y:0,legacy:1};if(el==='arcane'){let bd2=14,bp=null;PROPS.forEach(p=>{if(p.dead>0)return;const vx=p.x-player.x,vz=p.z-player.z,d=Math.hypot(vx,vz);if(d<bd2&&(vx*dx+vz*dz)/d>0.6){bd2=d;bp=p;}});if(bp)return {x:bp.x,z:bp.z,y:0,legacy:1};}return null;}
 function castTarget(el,dx,dz,util){if(AIMO.legacy)return util?null:legacyTarget(el,dx,dz);
- if(AIM.lock){if(tgAlive(AIM.lock)&&AIM.lockZone===S.zone){const p=tgPos(AIM.lock);if(Math.hypot(p.x-player.x,p.z-player.z)<32)return Object.assign(p,{ref:AIM.lock.ref,kind:AIM.lock.kind});}else AIM.lock=null;}
- if(AIM.pt){const p=AIM.pt,d=Math.hypot(p.x-player.x,p.z-player.z);if(d<32&&d>0.8)return {x:p.x,y:p.y+0.15,z:p.z,gy:p.y,kind:'pt'};}
+ if(AIM.lock){if(tgAlive(AIM.lock)&&AIM.lockZone===S.zone){const p=tgPos(AIM.lock);if(Math.hypot(p.x-player.x,p.z-player.z)<42)return Object.assign(p,{ref:AIM.lock.ref,kind:AIM.lock.kind});}else AIM.lock=null;}
+ if(AIM.pt){const p=AIM.pt,d=Math.hypot(p.x-player.x,p.z-player.z);if(d<42&&d>0.8)return {x:p.x,y:p.y+0.15,z:p.z,gy:p.y,kind:'pt'};}
  return util?null:autoTarget(el,dx,dz,false);}
 function utilPt(max){const p=AIM.pt;if(!p)return null;return Math.hypot(p.x-player.x,p.z-player.z)<=max?p:null;}
 function utilDist(max){const p=AIM.pt;if(!p)return max;const d=Math.hypot(p.x-player.x,p.z-player.z);return d<=max*1.4?d:max;}
@@ -64,7 +64,7 @@ const TAP={id:null,x:0,y:0,t:0,last:0,lx:0,ly:0,ms:450,dbl:420},PINCH={on:false,
 const RC=new THREE.Raycaster(),NDC=new THREE.Vector2(),PV=new THREE.Vector3();
 function groundPick(x,y){NDC.set(x/window.innerWidth*2-1,-(y/window.innerHeight)*2+1);RC.setFromCamera(NDC,camera);const o=RC.ray.origin,d=RC.ray.direction;
  const hAt=(px,pz)=>{let h=gy0(px,pz);if(S.zone==='monde'&&inLake({x:px,z:pz}))h=Math.max(h,0.06);return h;};
- for(let t=0.6;t<72;t+=0.4){const px=o.x+d.x*t,py=o.y+d.y*t,pz=o.z+d.z*t;if(py<=hAt(px,pz)){let a=t-0.4,b=t;for(let k=0;k<7;k++){const m=(a+b)/2;if(o.y+d.y*m<=hAt(o.x+d.x*m,o.z+d.z*m))b=m;else a=m;}
+ for(let t=0.6;t<90;t+=0.5){const px=o.x+d.x*t,py=o.y+d.y*t,pz=o.z+d.z*t;if(py<=hAt(px,pz)){let a=t-0.4,b=t;for(let k=0;k<7;k++){const m=(a+b)/2;if(o.y+d.y*m<=hAt(o.x+d.x*m,o.z+d.z*m))b=m;else a=m;}
    const hx=o.x+d.x*b,hz=o.z+d.z*b;return {x:hx,y:hAt(hx,hz),z:hz};}}return null;}
 function scr(x,y,z){PV.set(x,y,z).project(camera);if(PV.z>1||PV.z<-1)return null;return [(PV.x+1)/2*window.innerWidth,(1-PV.y)/2*window.innerHeight];}
 function recenter(){AIM.rc=0.7;AIM.nudge={yaw:player.ry,t:0.7};sfx('click');}
@@ -72,12 +72,12 @@ function onTap(x,y){if(!started||anyModal())return;const now=performance.now();
  if(now-TAP.last<TAP.dbl&&Math.hypot(x-TAP.lx,y-TAP.ly)<50){TAP.last=0;recenter();return;}TAP.last=now;TAP.lx=x;TAP.ly=y;if(!AIMO.tap)return;
  let best=null,bd=1e9;
  for(const n of npcs){if(n.sleep||n.inDuel||!n.obj.visible)continue;const dw=Math.hypot(n.x-player.x,n.z-player.z);if(dw>5)continue;const s=scr(n.x,gy0(n.x,n.z)+1.1,n.z);if(!s)continue;const dp=Math.hypot(s[0]-x,s[1]-y);if(dp<60&&dp<bd){bd=dp;best={npc:n};}}
- const H=window.innerHeight;for(const c of tgCands(S.lastEl||'arcane',true)){const p=tgPos(c);const dw=Math.hypot(p.x-player.x,p.z-player.z);if(dw>32)continue;const s=scr(p.x,p.y,p.z);if(!s)continue;
+ const H=window.innerHeight;for(const c of tgCands(S.lastEl||'arcane',true)){const p=tgPos(c);const dw=Math.hypot(p.x-player.x,p.z-player.z);if(dw>42)continue;const s=scr(p.x,p.y,p.z);if(!s)continue;
   const dc=camera.position.distanceTo(PV.set(p.x,p.y,p.z));const rp=clamp(p.rad*H/(dc+0.5)*0.9,30,95);const dp=Math.hypot(s[0]-x,s[1]-y);if(dp<rp&&dp*c.pri<bd){bd=dp*c.pri;best=c;}}
  if(best&&best.npc){focus={t:'npc',n:best.npc};interact();return;}
  if(best){if(AIM.lock&&AIM.lock.ref===best.ref){AIM.lock=null;sfx('click');return;}AIM.lock={kind:best.kind,ref:best.ref};AIM.lockZone=S.zone;AIM.pt=null;sfx('lock');
   if(!S.seenLock){S.seenLock=1;say('🎯 <b>Cible verrouillée</b> : tes sorts filent vers elle et la caméra la garde en vue. Touche-la à nouveau pour la libérer. Touche le sol pour viser un point, touche deux fois pour recentrer la caméra.','sys');}return;}
- const g=groundPick(x,y);if(g&&Math.hypot(g.x-player.x,g.z-player.z)<30){AIM.pt=g;AIM.ptT=8;AIM.lock=null;sfx('lock');if(!S.seenPt){S.seenPt=1;say('📍 <b>Point visé</b> : ton prochain sort part vers ce point (le pas d’ombre t’y téléporte, le champignon y pousse…).','sys');}}
+ const g=groundPick(x,y);if(g&&Math.hypot(g.x-player.x,g.z-player.z)<42){AIM.pt=g;AIM.ptT=8;AIM.lock=null;sfx('lock');if(!S.seenPt){S.seenPt=1;say('📍 <b>Point visé</b> : ton prochain sort part vers ce point (le pas d’ombre t’y téléporte, le champignon y pousse…).','sys');}}
  else{AIM.lock=null;AIM.pt=null;}}
 canvas.addEventListener('pointerdown',e=>{if(!started)return;if(drag.id===null){TAP.id=e.pointerId;TAP.x=e.clientX;TAP.y=e.clientY;TAP.t=performance.now();}
  else if(!PINCH.on&&e.pointerId!==drag.id){PINCH.on=true;PINCH.id=e.pointerId;PINCH.x=e.clientX;PINCH.y=e.clientY;PINCH.d0=Math.hypot(e.clientX-drag.x,e.clientY-drag.y)||1;PINCH.z0=CAMZ;TAP.id=null;}});
@@ -95,8 +95,8 @@ window.addEventListener('keydown',e=>{if(!started||anyModal()||e.target.tagName=
 function placeMk(m,p,size,rot,op){if(!p){m.visible=false;return;}m.visible=true;m.position.set(p.x,p.gy+0.08,p.z);m.scale.set(size,1,size);m.rotation.y=rot;if(op!=null)m.material.opacity=op;}
 function aimTick(dt){if(!MK.soft)makeMarkers();const t=performance.now()/1000;
  if(AIM.lock&&(!tgAlive(AIM.lock)||AIM.lockZone!==S.zone)){AIM.lock=null;}
- if(AIM.lock){const p=tgPos(AIM.lock);if(Math.hypot(p.x-player.x,p.z-player.z)>34)AIM.lock=null;}
- if(AIM.pt){AIM.ptT-=dt;if(AIM.ptT<=0||Math.hypot(AIM.pt.x-player.x,AIM.pt.z-player.z)>34)AIM.pt=null;}
+ if(AIM.lock){const p=tgPos(AIM.lock);if(Math.hypot(p.x-player.x,p.z-player.z)>45)AIM.lock=null;}
+ if(AIM.pt){AIM.ptT-=dt;if(AIM.ptT<=0||Math.hypot(AIM.pt.x-player.x,AIM.pt.z-player.z)>45)AIM.pt=null;}
  AIM.t-=dt;if(AIM.t<=0){AIM.t=0.12;const yaw=AIMO.mode==='camera'?camYaw:player.ry;const s=(!AIM.lock&&!AIM.pt&&!AIMO.legacy)?autoTarget(S.lastEl||'arcane',Math.sin(yaw),Math.cos(yaw),true):null;AIM.soft=s?{kind:s.kind,ref:s.ref}:null;}
  const lp=AIM.lock?tgPos(AIM.lock):null,sp=AIM.soft&&tgAlive(AIM.soft)?tgPos(AIM.soft):null;
  placeMk(MK.lock,lp,lp?lp.rad*2.6*(1+0.06*Math.sin(t*5)):1,t*1.1,0.95);placeMk(MK.soft,lp?null:sp,sp?sp.rad*2.4:1,-t*0.6,0.35+0.1*Math.sin(t*3));

@@ -72,6 +72,7 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 20c-dragon-legendes | boss Ignivor (`BOSS`, `dragonAI`, `dragonHit`, PV du joueur `hurtPlayer`, barre `#bossbar`), 4 sorts légendaires (`LEG_SP`, effets `castDemanti`/`castEtoiles`/`castGardien`/`castSouffle`, pupitres `LEG_PUP`), arbre-gardien allié `ALLY` |
 | 20d-critiques-garde | coups critiques (`CRITNOW` dans `pow()`, `p.crit` des projectiles, `critFx`, primes), 4 sorts de garde (`GARDE_SP`, `castGarde`, murs temporaires `WALLS` ajoutés à `COLS`, égide `AEGIS` qui renvoie les tirs) |
 | 20e-vie-creatures | vie du joueur `VIE` (`vieHurt`, `vieFaint`, barre `#viebox`), potion de soin, barres de vie des créatures `CBAR`, mort animée `CORPSES` (enrobage de `removeEnt`), PNJ qui se tournent vers le joueur |
+| 20f-iles-celestes | Îles du Miroir-Ciel (`ILES`, courants `VENTS`, cristaux `CRIST`, Autel des Vents → `S.elan`), île = entrée COLS avec `bot` (dessous), coups plus sensibles |
 | 21-boucle | `update(dt)`, `loop()`, `startGame()`, puis la séquence de construction du monde |
 | 22-appli | plein écran, écran qui reste allumé, enregistrement du mode hors-ligne |
 | 22b-partie-test | partie de test niveau 50 (`?test` dans l'adresse), sauvegarde normale mise de côté |

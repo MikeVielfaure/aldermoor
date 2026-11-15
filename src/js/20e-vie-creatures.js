@@ -71,7 +71,7 @@ function creaShoot(e){const D=e.data,c=ELEM[D.look].c,oy=gh(e.x,e.z)+(D.y||1.2)*
  const lead=0.35,tx=player.x+player.vx*lead,tz=player.z+player.vz*lead,ty=player.y+1,L=Math.hypot(tx-e.x,ty-oy,tz-e.z)||1,sp=11;
  CSHOT.push({o,x:e.x,y:oy,z:e.z,vx:(tx-e.x)/L*sp,vy:(ty-oy)/L*sp,vz:(tz-e.z)/L*sp,life:2.2,el:D.look,dmg:e.x>1500?9:6});sfx('cast',D.look,'trait',e.x,e.z);}
 /* obstacle pour un projectile : comme hitsSolid, mais un objet bas (banc, muret) laisse passer ce qui vole au-dessus */
-function shotSolid(x,y,z){for(const c of COLS){if(c.lake||c.off)continue;if(c.h!==undefined&&y>c.h)continue;if(c.r!==undefined){if(Math.abs(x-c.x)<c.r&&Math.abs(z-c.z)<c.r&&Math.hypot(x-c.x,z-c.z)<c.r)return true;}else if(Math.abs(x-c.x)<c.hw&&Math.abs(z-c.z)<c.hd)return true;}return false;}
+function shotSolid(x,y,z){for(const c of COLS){if(c.lake||c.off||(c.bot!==undefined&&y<c.bot))continue;if(c.h!==undefined&&y>c.h)continue;if(c.r!==undefined){if(Math.abs(x-c.x)<c.r&&Math.abs(z-c.z)<c.r&&Math.hypot(x-c.x,z-c.z)<c.r)return true;}else if(Math.abs(x-c.x)<c.hw&&Math.abs(z-c.z)<c.hd)return true;}return false;}
 function combatTick(dt){if(!started)return;
  for(const e of ENT){if(e.kind!=='creature')continue;const D=e.data;if(D.duel||D.wave||D.dragon)continue;
   // animaux paisibles : fuite quand ils ont mal

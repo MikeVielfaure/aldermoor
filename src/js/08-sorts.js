@@ -1,13 +1,13 @@
 /* ================= SORTS : PROJECTILES & EFFETS ================= */
 let PROJ=[];
 const PDEF={
- arcane:{spd:24,life:1.0,grav:0,vy:0,core:'ball',sz:1.0},
- feu:{spd:22,life:1.1,grav:0,vy:0,core:'ball',sz:1.4},
- glace:{spd:34,life:0.8,grav:0,vy:0,core:'shard',sz:1},
- eau:{spd:16,life:1.8,grav:13,vy:5.5,core:'ball',sz:1.1},
- nature:{spd:14,life:1.8,grav:15,vy:6.5,core:'ball',sz:0.7},
- lumiere:{spd:13,life:0.85,grav:0,vy:0.6,core:'ball',sz:1.6},
- ombre:{spd:15,life:1.0,grav:0,vy:0,core:'ball',sz:1.3}
+ arcane:{spd:31,life:1.0,grav:0,vy:0,core:'ball',sz:1.0},
+ feu:{spd:29,life:1.1,grav:0,vy:0,core:'ball',sz:1.4},
+ glace:{spd:42,life:0.8,grav:0,vy:0,core:'shard',sz:1},
+ eau:{spd:20,life:1.8,grav:13,vy:5.5,core:'ball',sz:1.1},
+ nature:{spd:18,life:1.8,grav:15,vy:6.5,core:'ball',sz:0.7},
+ lumiere:{spd:17,life:0.85,grav:0,vy:0.6,core:'ball',sz:1.6},
+ ombre:{spd:20,life:1.0,grav:0,vy:0,core:'ball',sz:1.3}
 };
 const coreMats={};const coreMat=el=>coreMats[el]||(coreMats[el]=basic(el==='ombre'?0x2a1040:ELEM[el].c));
 const CD={};let mana=100,waterWalk=0,stealth=0,jumpHeld=false;

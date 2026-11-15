@@ -3094,7 +3094,7 @@ function makeBroomMesh(){const g=new THREE.Group();const wood=mat(0x6a4424,{roug
  const br=new THREE.Mesh(new THREE.ConeGeometry(0.24,0.85,14,1,true),mat(0xc8a050,{roughness:1,side:THREE.DoubleSide}));br.rotation.x=Math.PI/2;br.position.z=-1.2;g.add(br);
  [-0.82,-0.95].forEach(z=>{const b=new THREE.Mesh(new THREE.TorusGeometry(0.075,0.022,6,12),mat(0xd4af37,{metalness:0.6,roughness:0.4}));b.position.z=z;g.add(b);});g.traverse(o=>{if(o.isMesh)o.castShadow=true;});return g;}
 function toggleBroom(){if(FLY.on){const h=player.y-gh(player.x,player.z);dismount();if(h>2.5){player.feather=1;player.vy=Math.min(player.vy,1);if(!S.seenFeather){S.seenFeather=1;say('🪶 Tu sautes du balai ! Une magie de plume ralentit ta chute. Touche 🧹 pour y remonter en plein vol.','sys');}}return;}
- if(S.zone!=='monde'){say('Pas de balai à l’intérieur !','sys');return;}if(DUEL||WAVE){say('Pas de balai pendant un combat.','sys');return;}if(player.swim){say('Sors de l’eau d’abord.','sys');return;}
+ if(S.zone!=='monde'){say('Pas de balai à l’intérieur !','sys');return;}if(DUEL||WAVE){say('Pas de balai dans l’arène : c’est un duel !','sys');return;}/* partout ailleurs, même en plein saut, en chute ou dans l’eau */if(player.swim){player.swim=false;player.y=Math.max(player.y,0.3);}player.feather=0;
  FLY.on=true;FLY.t=0;player.vy=6;player.grounded=false;if(!FLY.mesh){FLY.mesh=makeBroomMesh();FLY.mesh.position.set(0,0.82,0);player.H.root.add(FLY.mesh);}FLY.mesh.visible=true;player.H.root.children.forEach(o=>{if(o.geometry&&o.geometry.type==='RingGeometry')o.visible=false;});sfx('whoosh',player.x,player.z);
  for(let i=0;i<30;i++){const a=Math.random()*TAU;PA.emit(player.x+Math.cos(a)*0.6,player.y+0.3,player.z+Math.sin(a)*0.6,Math.cos(a)*3,rnd(0.5,2),Math.sin(a)*3,0xf3cf7a,0.25,0.05,0.7,0,1.5);}
  $('#b-act').classList.add('hidden');$('#b-down').classList.remove('hidden');$('#b-jump').innerHTML='<span style="font-size:20px">⤒</span>Monter';updObjBtns();
@@ -3252,7 +3252,7 @@ function tick8(dt){if(!started)return;if(WAVE&&WAVE.phase!=='end')mana=Math.min(
  if(lvl()>=3&&!S.seenBroom){S.seenBroom=1;say('🧹 Niveau 3 : tu as le droit de voler ! Une <b>remise à balais</b> t’attend entre la Grande Cour et le château.','gm');}}
 function preRender(){if(SHAKE>0&&started){SHAKE=Math.max(0,SHAKE-0.016*2.2);const k=SHAKE*0.35;SHV.set(rnd(-k,k),rnd(-k,k),rnd(-k,k));camera.position.add(SHV);}else SHV.set(0,0,0);}
 function postRender(){camera.position.sub(SHV);SHV.set(0,0,0);}
-$('#b-obj').onclick=()=>{if(started&&!anyModal()){sfx('click');objMenu();}};$('#b-broom').onclick=()=>{if(started&&!anyModal())toggleBroom();};
+$('#b-obj').onclick=()=>{if(started&&!anyModal()){sfx('click');objMenu();}};/* au toucher (pointerdown) et non au clic : un clic ne part pas si un autre doigt tient le joystick */$('#b-broom').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(started&&!anyModal())toggleBroom();});
 $('#b-down').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();FLY.down=true;});['pointerup','pointercancel','pointerleave'].forEach(ev=>$('#b-down').addEventListener(ev,()=>{FLY.down=false;}));
 window.addEventListener('keydown',e=>{if(!started||anyModal()||e.target.tagName==='INPUT')return;if(e.code==='KeyB'&&hasObj('balai'))toggleBroom();if(e.code==='KeyI'&&S.objs&&Object.keys(S.objs).length)objMenu();});
 {const _j8=jump;jump=function(){if(FLY.on)return;return _j8.apply(this,arguments);};}

@@ -77,6 +77,9 @@
 - Murs de garde : hauteur comptée depuis le sol (on les traversait dans les Landes), 3,6 m (impossible à sauter).
   Mur d'eau traversable à pied ; Glace → mur de glace solide (+12 s) ; Feu → fonte / vapeur ; ronces qui brûlent.
 
+- Balai : bouton 🧹 au toucher (marche avec un doigt sur le joystick), sortie en plein saut, en chute plumée
+  et depuis l'eau ; seuls les intérieurs et les arènes (duel, Faille) l'interdisent.
+
 ## À discuter : enchantements (proposé au joueur le 2026-11-15)
 - Enchanter ses sorts de garde (ignifuge, durée, épines…) et ses objets, avec des ingrédients et des essences,
   sur une table d'enchantement (métier d'Enchanteur déjà souhaité).

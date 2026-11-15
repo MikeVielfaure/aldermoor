@@ -4132,7 +4132,7 @@ const GARDE_SP={
  rempart:{name:'Rempart de pierre',inc:'Murus Saxeus',el:'nature',cost:28,cd:12,desc:'Des rochers jaillissent du sol devant toi et bouchent le passage pendant 12 s. Ils arrêtent créatures et projectiles.'},
  egide:{name:'Égide miroir',inc:'Speculum Aegis',el:'arcane',cost:35,cd:18,desc:'Une bulle miroitante t’entoure 5 s : elle arrête les projectiles et renvoie ceux des duellistes vers leur lanceur.'},
  ronces:{name:'Haie de ronces',inc:'Saepes Spinarum',el:'nature',cost:30,cd:16,desc:'Des arbres épineux poussent en cercle autour de toi (une sortie dans ton dos) pendant 12 s. Qui s’y frotte est blessé et entravé.'},
- maree:{name:'Mur d’eau',inc:'Murus Aquae',el:'eau',cost:26,cd:12,desc:'Une vague se dresse devant toi pendant 8 s : elle éteint les flammes, arrête les projectiles et repousse les créatures.'}};
+ maree:{name:'Mur d’eau',inc:'Murus Aquae',el:'eau',cost:26,cd:12,desc:'Une vague se dresse devant toi pendant 8 s : tu la traverses, mais elle arrête les tirs et repousse les créatures. Un sort de Glace la change en mur de glace solide ; le feu le fait fondre.'}};
 const GARDE_ORD=['rempart','egide','ronces','maree'];
 const gardeSpell=k=>{const G=GARDE_SP[k];return {name:G.name,inc:G.inc,el:G.el,form:'util',desc:G.desc,special:'g-'+k,legend:true,garde:true,cost:G.cost,cd:G.cd,id:'garde-'+k};};
 const gardeHas=k=>S&&S.spells&&S.spells.some(s=>s.special==='g-'+k);
@@ -4143,17 +4143,17 @@ function gardeLearn(k){if(gardeHas(k))return;const sp=gardeSpell(k);learnSpell(s
 {const _u=doUtil;doUtil=function(sp){if(sp&&sp.garde){const k=sp.special.slice(2);return castGarde(k);}return _u.apply(this,arguments);};}
 const WALLS=[];let AEGIS=null;
 const WGEO={rock:new THREE.DodecahedronGeometry(0.85,0),cone:new THREE.ConeGeometry(0.55,2.3,6),trunk:new THREE.CylinderGeometry(0.12,0.16,0.7,6),thorn:new THREE.ConeGeometry(0.06,0.4,4)};
-function wallAdd(kind,pieces,life,extra){const W=Object.assign({kind,pieces,t:0,life},extra||{});pieces.forEach(P=>{P.col={x:P.x,z:P.z,r:P.r,h:P.h,garde:true};COLS.push(P.col);});WALLS.push(W);return W;}
+function wallAdd(kind,pieces,life,extra){const W=Object.assign({kind,pieces,t:0,life},extra||{});/* hauteur ABSOLUE (pushOut la compare à player.y) : avant, dans les Landes où le sol est haut, on traversait les murs. Le mur d'eau se traverse à pied (pas dans COLS) tant qu'il n'est pas gelé. */pieces.forEach(P=>{P.col={x:P.x,z:P.z,r:P.r,h:gh(P.x,P.z)+P.h,garde:true};if(kind!=='maree')COLS.push(P.col);});WALLS.push(W);return W;}
 function wallFree(W){W.pieces.forEach(P=>{const i=COLS.indexOf(P.col);if(i>=0)COLS.splice(i,1);if(P.o)scene.remove(P.o);});if(W.o)scene.remove(W.o);}
 function wallLine(dist,n,gap){const [dx,dz]=fwd(),px=-dz,pz=dx,cx=player.x+dx*dist,cz=player.z+dz*dist,pts=[];for(let i=0;i<n;i++){const s=(i-(n-1)/2)*gap;pts.push({x:cx+px*s,z:cz+pz*s});}return {pts,cx,cz,yaw:Math.atan2(dx,dz)};}
 function castGarde(k){
  if(k==='rempart'){const L=wallLine(3,7,1.15);const pieces=L.pts.map((p,i)=>{const o=new THREE.Mesh(WGEO.rock,mat(i%2?0x8a8478:0x777064,{flatShading:true,roughness:0.95}));const s=rnd(0.85,1.15);o.scale.set(s,rnd(1.3,1.7),s);o.rotation.set(rnd(-.3,.3),Math.random()*TAU,rnd(-.3,.3));o.castShadow=true;o.position.set(p.x,gh(p.x,p.z)-2,p.z);scene.add(o);
-   for(let j=0;j<8;j++)PN.emit(p.x+rnd(-.6,.6),gh(p.x,p.z)+0.2,p.z+rnd(-.6,.6),rnd(-1.5,1.5),rnd(1,3),rnd(-1.5,1.5),0x6a5a44,0.4,0.7,rnd(.6,1.1),5,0.6,0.85);return {x:p.x,z:p.z,r:0.7,h:2.2,o,y0:gh(p.x,p.z)};});
+   for(let j=0;j<8;j++)PN.emit(p.x+rnd(-.6,.6),gh(p.x,p.z)+0.2,p.z+rnd(-.6,.6),rnd(-1.5,1.5),rnd(1,3),rnd(-1.5,1.5),0x6a5a44,0.4,0.7,rnd(.6,1.1),5,0.6,0.85);return {x:p.x,z:p.z,r:0.7,h:3.6,o,y0:gh(p.x,p.z)};});
   wallAdd('rempart',pieces,12);SHAKE=Math.max(SHAKE,0.45);sfx('impact','nature',L.cx,L.cz);say('🪨 Un <b>rempart de pierre</b> jaillit du sol !','sys');}
  else if(k==='ronces'){const pieces=[];const n=13,R=3.3;for(let i=0;i<n;i++){const a=player.ry+Math.PI*(-0.83+1.66*i/(n-1)),x=player.x+Math.sin(a)*R,z=player.z+Math.cos(a)*R;
    const g=new THREE.Group();const t=new THREE.Mesh(WGEO.trunk,mat(0x4a3424));t.position.y=0.35;g.add(t);const c=new THREE.Mesh(WGEO.cone,mat(i%2?0x2f5a2a:0x3a6a30,{flatShading:true}));c.position.y=1.6;c.castShadow=true;g.add(c);
    for(let j=0;j<5;j++){const th=new THREE.Mesh(WGEO.thorn,mat(0xd8c89a));const b=Math.random()*TAU;th.position.set(Math.cos(b)*0.42,rnd(0.9,2),Math.sin(b)*0.42);th.rotation.set(0,0,0);th.lookAt(Math.cos(b)*2,th.position.y,Math.sin(b)*2);th.rotateX(Math.PI/2);g.add(th);}
-   g.position.set(x,gh(x,z),z);g.scale.setScalar(0.01);g.rotation.y=Math.random()*TAU;scene.add(g);pieces.push({x,z,r:0.62,h:2.6,o:g,y0:gh(x,z),grow:true});}
+   g.position.set(x,gh(x,z),z);g.scale.setScalar(0.01);g.rotation.y=Math.random()*TAU;scene.add(g);pieces.push({x,z,r:0.62,h:3.6,o:g,y0:gh(x,z),grow:true});}
   wallAdd('ronces',pieces,12,{hurt:{}});ring(player.x,player.z,0x6fe36f,R+0.5,0.8);sfx('cast','nature','zone',player.x,player.z);say('🌲 Une <b>haie de ronces</b> pousse autour de toi.','sys');}
  else if(k==='maree'){const L=wallLine(2.6,7,1.1);const g=new THREE.Group();g.position.set(L.cx,gh(L.cx,L.cz),L.cz);g.rotation.y=L.yaw;
   const w=new THREE.Mesh(new THREE.PlaneGeometry(8,3.4,16,4),new THREE.MeshStandardMaterial({color:0x3a9ad8,emissive:0x0a3a6a,transparent:true,opacity:0.0,roughness:0.15,metalness:0.2,side:THREE.DoubleSide,depthWrite:false}));w.position.y=1.7;g.add(w);
@@ -4166,10 +4166,27 @@ function castGarde(k){
 function reflectTo(p,el,tgt){const o=p.o.position;if(!tgt||!ENT.includes(tgt)){burst(o.x,o.y,o.z,ELEM[el].c,10,3);scene.remove(p.o);return;}
  const ty=gh(tgt.x,tgt.z)+(tgt.data.y||1),dx=tgt.x-o.x,dy=ty-o.y,dz=tgt.z-o.z,L=Math.hypot(dx,dy,dz)||1,sp=18;
  PROJ.push({o:p.o,el,vx:dx/L*sp,vy:dy/L*sp,vz:dz/L*sp,life:2.5,grav:0,c:ELEM[el].c,light:null,t:0,ht:{kind:'crea',ref:tgt},tp:null});flash(o.x,o.y,o.z,0xff9ae8,2,0.25);floatAt(player.x,player.z,'Renvoyé !','#ff9ae8');}
+/* ---------- les éléments contre les murs ----------
+   Glace sur le mur d'eau → mur de glace solide (+12 s) ; Feu sur la glace → elle fond (redevient de l'eau, 5 s) ;
+   Feu sur l'eau → vapeur (−3 s) ; Feu sur les ronces → elles brûlent (2,5 s, blessent les créatures autour). */
+function wallFreeze(W){if(W.kind!=='maree')return;W.kind='glace';W.life=W.t+Math.max(4,W.life-W.t)+12;W.pieces.forEach(P=>{if(COLS.indexOf(P.col)<0)COLS.push(P.col);});
+ const m=W.w.material;m.color.setHex(0xd8f6ff);m.emissive.setHex(0x2a5a7a);m.roughness=0.08;m.metalness=0.5;floatAt(W.cx,W.cz,'❄ Mur de glace !','#cfefff');sfx('impact','glace',W.cx,W.cz);SHAKE=Math.max(SHAKE,0.2);
+ for(let i=0;i<50;i++){const s=rnd(-4,4),x=W.cx+Math.cos(W.yaw)*s,z=W.cz-Math.sin(W.yaw)*s;PA.emit(x,gh(x,z)+rnd(0.2,3.3),z,rnd(-.6,.6),rnd(-.2,.6),rnd(-.6,.6),0xffffff,rnd(.2,.4),0.05,rnd(.5,1),0,1);}}
+function wallMelt(W){if(W.kind!=='glace')return;W.kind='maree';W.life=Math.min(W.life,W.t+5);W.pieces.forEach(P=>{const i=COLS.indexOf(P.col);if(i>=0)COLS.splice(i,1);});
+ const m=W.w.material;m.color.setHex(0x3a9ad8);m.emissive.setHex(0x0a3a6a);m.roughness=0.15;m.metalness=0.2;floatAt(W.cx,W.cz,'La glace fond…','#ffd0a0');wallSteam(W,30);}
+function wallSteam(W,n){for(let i=0;i<n;i++){const s=rnd(-4,4),x=W.cx+Math.cos(W.yaw)*s,z=W.cz-Math.sin(W.yaw)*s;PN.emit(x,gh(x,z)+rnd(0.5,3),z,rnd(-.4,.4),rnd(1,2.5),rnd(-.4,.4),0xeeeeee,0.6,1.6,rnd(1,1.8),-0.4,0.6,0.5);}}
+function wallElem(el,x,z,r){for(const W of WALLS.slice()){if(W.t>W.life||!W.pieces.some(P=>Math.hypot(P.x-x,P.z-z)<r+1.2))continue;
+  if(W.kind==='maree'&&el==='glace')wallFreeze(W);
+  else if(W.kind==='glace'&&el==='feu')wallMelt(W);
+  else if(W.kind==='maree'&&el==='feu'){W.life-=3;wallSteam(W,20);floatAt(W.cx,W.cz,'Vapeur…','#eeeeee');}
+  else if(W.kind==='ronces'&&el==='feu'&&!W.burning){W.burning=1;W.life=Math.min(W.life,W.t+2.5);floatAt(player.x,player.z,'🔥 Les ronces brûlent !','#ffb070');}}}
+{const _eh=elemHit;elemHit=function(el,x,z,r){const res=_eh.apply(this,arguments);try{wallElem(el,x,z,r||2);}catch(e){console.error(e);}return res;};}
 function inWall(x,y,z,pad){for(const W of WALLS)for(const P of W.pieces){if(Math.hypot(x-P.x,z-P.z)<P.r+(pad||0)&&y<gh(P.x,P.z)+P.h+0.3)return W;}return null;}
 function gardeTick(dt){if(!started)return;
  for(let i=WALLS.length-1;i>=0;i--){const W=WALLS[i];W.t+=dt;const end=W.life-W.t,rise=Math.min(1,W.t/0.35),sink=end<0.6?Math.max(0,end/0.6):1;
   W.pieces.forEach(P=>{if(!P.o)return;if(P.grow){P.o.scale.setScalar(Math.max(0.01,Math.min(1,W.t/0.5)*sink));}else P.o.position.y=P.y0-2+2.5*rise*sink;});
+  if(W.kind==='glace'){W.w.material.opacity=0.85*sink;if(Math.random()<dt*6){const s=rnd(-4,4),x=W.cx+Math.cos(W.yaw)*s,z=W.cz-Math.sin(W.yaw)*s;PA.emit(x,gh(x,z)+rnd(0.3,3.3),z,0,0.2,0,0xffffff,0.25,0.05,0.5,0,1);}}
+  if(W.burning){W.pieces.forEach(P=>{if(Math.random()<dt*25)fireAt(P.x,gh(P.x,P.z)+rnd(0.5,2.2),P.z,0.9,1);});W.bt=(W.bt||0)-dt;if(W.bt<=0){W.bt=0.5;for(const e of ENT){if(e.kind!=='creature'||e.data.calme||e.data.duel||e.data.dragon)continue;if(W.pieces.some(P=>Math.hypot(e.x-P.x,e.z-P.z)<2.2))hurtCreature(e,'feu',e.x,e.z);}}}
   if(W.kind==='maree'){W.w.material.opacity=0.55*rise*sink;const a=W.w.geometry.attributes.position;for(let j=0;j<a.count;j++){const x=a.getX(j),y=a.getY(j);a.setZ(j,Math.sin(x*1.3+W.t*4+y)*0.18);}a.needsUpdate=true;
    if(Math.random()<0.7){const s=rnd(-4,4),x=W.cx+Math.cos(W.yaw)*s,z=W.cz-Math.sin(W.yaw)*s;PA.emit(x,gh(x,z)+rnd(2.6,3.4),z,rnd(-.5,.5),rnd(0.5,2),rnd(-.5,.5),0xcfefff,rnd(.25,.45),0.05,rnd(.4,.8),6,1);}}
   // les créatures ne passent pas ; ronces : piquent ; eau : repousse
@@ -4177,8 +4194,13 @@ function gardeTick(dt){if(!started)return;
      if(W.kind==='ronces'&&!e.data.calme&&(W.hurt[e.id]||0)<W.t-1){W.hurt[e.id]=W.t;hurtCreature(e,'nature',P.x,P.z);if(ENT.includes(e))e.data.rooted=2;}
      if(W.kind==='maree'){e.data.kx=(e.data.kx||0)+dx/(d||1)*6;e.data.kz=(e.data.kz||0)+dz/(d||1)*6;}}}}
   if(end<=0){wallFree(W);WALLS.splice(i,1);}}
+ // un sort de Glace qui traverse le mur d'eau le gèle ; les tirs ennemis ne traversent pas l'eau
+ for(const W of WALLS){if(W.kind!=='maree')continue;for(const p of PROJ){if(p.el!=='glace')continue;const o=p.o.position;if(W.pieces.some(P=>Math.hypot(o.x-P.x,o.z-P.z)<P.r+0.3&&o.y<gh(P.x,P.z)+P.h)){wallFreeze(W);break;}}}
+ {const inMaree=o=>{const W=inWall(o.x,o.y,o.z,0.1);return W&&W.kind==='maree';};
+  if(typeof DPROJ!=='undefined'&&DPROJ.length&&WALLS.length)DPROJ=DPROJ.filter(p=>{if(!inMaree(p.o.position))return true;burst(p.o.position.x,p.o.position.y,p.o.position.z,0xbfe8ff,10,3);scene.remove(p.o);return false;});
+  if(typeof WPROJ!=='undefined'&&WPROJ.length&&WALLS.length)WPROJ=WPROJ.filter(p=>{if(!inMaree(p.o.position))return true;burst(p.o.position.x,p.o.position.y,p.o.position.z,0xbfe8ff,10,3);scene.remove(p.o);return false;});}
  // projectiles ennemis arrêtés par les murs (les boules de feu d'Ignivor passent au-dessus si elles arrivent de haut)
- if(WALLS.length)for(let i=BOSS.fb.length-1;i>=0;i--){const f=BOSS.fb[i];if(f.dl>0)continue;const W=inWall(f.x,f.y,f.z,0.3);if(W){burst(f.x,f.y,f.z,W.kind==='maree'?0xbfe8ff:0xff7a2e,14,4);if(W.kind==='maree')PN.emit(f.x,f.y,f.z,0,2,0,0xdddddd,0.6,1.5,1.2,-0.5,0.6,0.6);scene.remove(f.o);BOSS.fb.splice(i,1);}}
+ if(WALLS.length)for(let i=BOSS.fb.length-1;i>=0;i--){const f=BOSS.fb[i];if(f.dl>0)continue;const W=inWall(f.x,f.y,f.z,0.3);if(W){if(W.kind==='glace'){W.life-=2;wallSteam(W,8);}burst(f.x,f.y,f.z,W.kind==='maree'?0xbfe8ff:0xff7a2e,14,4);if(W.kind==='maree')PN.emit(f.x,f.y,f.z,0,2,0,0xdddddd,0.6,1.5,1.2,-0.5,0.6,0.6);scene.remove(f.o);BOSS.fb.splice(i,1);}}
  // égide miroir
  if(AEGIS){const A=AEGIS;A.t-=dt;A.g.position.set(player.x,player.y+1,player.z);A.sph.rotation.y+=dt*1.5;const pulse=1+Math.sin(performance.now()/120)*0.03;A.g.scale.setScalar(pulse*(A.t<0.5?Math.max(0.05,A.t/0.5):1));
   const near=(o,r)=>Math.hypot(o.x-player.x,o.z-player.z)<(r||1.8)&&Math.abs(o.y-(player.y+1))<1.9;
@@ -4296,7 +4318,8 @@ function combatTick(dt){if(!started)return;
   else if(D.shotT<=0&&dp>5&&dp<15&&!BUFF.invis&&stealth<=0){D.shotT=rnd(3,4.5);D.charge=0.6;}}
  for(let i=CSHOT.length-1;i>=0;i--){const s=CSHOT[i];s.life-=dt;s.x+=s.vx*dt;s.y+=s.vy*dt;s.z+=s.vz*dt;s.o.position.set(s.x,s.y,s.z);if(Math.random()<dt*25)PA.emit(s.x,s.y,s.z,rnd(-.3,.3),rnd(-.3,.3),rnd(-.3,.3),ELEM[s.el].c,0.28,0.05,0.35,0,1);
   const hitP=Math.hypot(s.x-player.x,s.z-player.z)<0.75&&Math.abs(s.y-(player.y+1))<1.1;
-  const blocked=shotSolid(s.x,s.y,s.z)||s.y<gh(s.x,s.z)||(typeof AEGIS!=='undefined'&&AEGIS&&Math.hypot(s.x-player.x,s.z-player.z)<1.8);
+  const Wb=typeof inWall==='function'?inWall(s.x,s.y,s.z,0.1):null;if(Wb&&Wb.kind==='glace'&&s.el==='feu')Wb.life-=2;
+  const blocked=!!Wb||shotSolid(s.x,s.y,s.z)||s.y<gh(s.x,s.z)||(typeof AEGIS!=='undefined'&&AEGIS&&Math.hypot(s.x-player.x,s.z-player.z)<1.8);
   if(hitP&&!blocked)vieHurt(s.dmg);
   if(hitP||blocked||s.life<=0){burst(s.x,s.y,s.z,ELEM[s.el].c,10,3);scene.remove(s.o);CSHOT.splice(i,1);}}}
 {const _w=world4Tick;world4Tick=function(dt){const r=_w.apply(this,arguments);try{combatTick(dt);}catch(e){console.error(e);}return r;};}

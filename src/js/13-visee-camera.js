@@ -34,7 +34,7 @@ function tgCands(el,all){const out=[];
   const RU=S.puz.ruines;if(RU&&!RU.open)GUARD.forEach((g,i)=>{if(!RU.on[i]&&(all||RU.els[i]===el))out.push({kind:'guard',ref:g,pri:0.9});});}
  return out;}
 function autoTarget(el,dx,dz,creaOnly){let best=null,bs=1e9;for(const c of tgCands(el,false)){if(creaOnly&&c.kind!=='crea')continue;const p=tgPos(c);const vx=p.x-player.x,vz=p.z-player.z,d=Math.hypot(vx,vz);
-  if(d<0.6||d>(c.kind==='crea'?(FLY.on?30:24):18))continue;const cs=(vx*dx+vz*dz)/d;if(cs<0.55)continue;if(Math.abs(p.y-(player.y+1.4))>(FLY.on?32:9))continue;const sc=d*(1+2.2*(1-cs))*c.pri;if(sc<bs){bs=sc;best=Object.assign(p,{ref:c.ref,kind:c.kind});}}return best;}
+  if(d<0.6||d>(c.kind==='crea'?(FLY.on?30:24):18))continue;const cs=(vx*dx+vz*dz)/d;if(cs<0.55)continue;if(Math.abs(p.y-(player.y+1.4))>(FLY.on?32:9))continue;const sc=(5+d)*(1+6*(1-cs))*c.pri; /* la direction du regard compte plus que la distance */if(sc<bs){bs=sc;best=Object.assign(p,{ref:c.ref,kind:c.kind});}}return best;}
 function legacyTarget(el,dx,dz){let best=null,bd=18;ENT.forEach(e=>{if(e.kind!=='creature')return;const vx=e.x-player.x,vz=e.z-player.z,d=Math.hypot(vx,vz);if(d<bd&&(vx*dx+vz*dz)/d>0.5){bd=d;best=e;}});
  if(best)return {x:best.x,z:best.z,y:0,legacy:1};if(el==='arcane'){let bd2=14,bp=null;PROPS.forEach(p=>{if(p.dead>0)return;const vx=p.x-player.x,vz=p.z-player.z,d=Math.hypot(vx,vz);if(d<bd2&&(vx*dx+vz*dz)/d>0.6){bd2=d;bp=p;}});if(bp)return {x:bp.x,z:bp.z,y:0,legacy:1};}return null;}
 function castTarget(el,dx,dz,util){if(AIMO.legacy)return util?null:legacyTarget(el,dx,dz);

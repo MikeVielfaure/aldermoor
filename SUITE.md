@@ -92,6 +92,9 @@
   maximum ; charge pleine = critique garanti. Tapotement = lancer au relâché.
 - Enchantements (Table près de la Tour-Bibliothèque, 2 essences + 2 cristaux) : durée, épines, égide renforcée,
   ronces ignifuges, cœur de givre. Un par sort de garde (S.ench).
+- Retours du joueur (v27.1) : rochers du rempart à 2,1 m (saut normal bloqué, saut du vent et balai passent),
+  ronces 2,6 m ; sorts de garde posés au point marqué / viseur libre / devant la cible verrouillée (ronces = cage
+  fermée autour) ; visée : le regard compte plus que la distance, la créature touchée reste prioritaire 4 s.
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Monde réaliste (souhait du joueur, 2026-11-15)

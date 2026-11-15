@@ -85,3 +85,10 @@ function cRaceTick(dt){if(!CRACE.on)return;CRACE.t+=dt;const T=performance.now()
 {const _r=renderBook;renderBook=function(){_r.apply(this,arguments);if(bookTab!=='sorts')return;const L=GARDE_ORD.filter(k=>enchOf(k));const d=document.createElement('div');d.className='mu';d.style.margin='-4px 0 8px';
   d.innerHTML='✨ Enchantements : '+(L.length?L.map(k=>esc(GARDE_SP[k].name)+' · '+esc(enchName(k,enchOf(k)))).join(' — '):'aucun (Table d’enchantement, près de la Tour-Bibliothèque)')+'<br>💫 Garde le doigt appuyé sur un sort pour le charger.';const b=$('#book-body');b.insertBefore(d,b.children[2]||null);};}
 {const _wc=worldCtx;worldCtx=function(){const r=_wc.apply(this,arguments);try{if(r&&typeof r==='object')r.enchantements='Table d’enchantement près de la Tour-Bibliothèque (sorts de garde : durée, épines, égide renforcée, ignifuge, cœur de givre ; coût 2 essences + 2 cristaux). Course céleste entre les îles.';}catch(e){}return r;};}
+/* ================= VISÉE : LA CIBLE TOUCHÉE RESTE PRIORITAIRE =================
+   Quand un sort touche une créature hostile, elle reste la cible préférée 4 s tant qu'elle est dans le champ
+   (moins de ~50° du regard) : les tirs suivants ne partent plus vers une créature plus proche mais à côté. */
+const AIMS={ref:null,t:0};
+{const _h=hurtCreature;hurtCreature=function(e,el,x,z){if(e&&e.data&&!e.data.calme&&Math.hypot(e.x-player.x,e.z-player.z)<32){AIMS.ref=e;AIMS.t=performance.now()/1000;}return _h.apply(this,arguments);};}
+{const _at=autoTarget;autoTarget=function(el,dx,dz,creaOnly){const r=_at.apply(this,arguments);const e=AIMS.ref;if(!r||!e||r.ref===e||performance.now()/1000-AIMS.t>4||!ENT.includes(e))return r;
+  const p=tgPos({kind:'crea',ref:e}),vx=p.x-player.x,vz=p.z-player.z,d=Math.hypot(vx,vz);if(d<0.6||d>(FLY.on?30:24)||(vx*dx+vz*dz)/d<0.65)return r;return Object.assign(p,{ref:e,kind:'crea'});};}

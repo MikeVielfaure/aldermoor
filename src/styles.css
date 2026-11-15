@@ -139,15 +139,18 @@ body.induel #tracker,body.inwave #tracker,body.boss #tracker{visibility:hidden}
 
 /* mana : au-dessus du joystick (portrait), en bas au centre (paysage) */
 #manabox{left:calc(env(safe-area-inset-left) + 22px);bottom:calc(env(safe-area-inset-bottom) + 156px);width:124px;pointer-events:none;display:flex;align-items:center;gap:6px;font:700 10.5px Inter,sans-serif;color:#bfe0ff;text-shadow:0 1px 2px #000}
+#viebox{left:calc(env(safe-area-inset-left) + 22px);bottom:calc(env(safe-area-inset-bottom) + 172px);width:124px;pointer-events:none;display:flex;align-items:center;gap:6px;font:700 10.5px Inter,sans-serif;color:#ffc0c8;text-shadow:0 1px 2px #000}
+#viebox .bar{flex:1;height:7px;margin:0;background:rgba(40,8,14,.6);border:1px solid rgba(255,120,130,.4)}#vie-bar>i{background:linear-gradient(90deg,#d8283a,#ff7a8a)}
 #manabox .bar{flex:1;height:7px;margin:0;background:rgba(10,14,40,.6);border:1px solid rgba(143,208,255,.35)}
 #bossbar{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 104px);transform:translateX(-50%);width:min(88vw,420px);z-index:6;text-align:center;font:600 12px Inter,sans-serif;color:#ffe6c0;text-shadow:0 1px 3px #000;pointer-events:none}
 /* téléphone en paysage : tout le haut sur une ligne, les messages en bas au centre */
 @media (orientation:landscape) and (max-height:560px){
  .tbtns{max-width:none;flex-wrap:nowrap}
  #tracker{top:calc(env(safe-area-inset-top) + 10px);left:calc(env(safe-area-inset-left) + 182px);max-width:min(28vw,270px)}
- #feed{left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 30px);width:min(34vw,340px);align-items:center}
+ #feed{left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 44px);width:min(34vw,340px);align-items:center}
  .msg{text-align:center;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
  #manabox{left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 10px);width:min(30vw,240px)}
+ #viebox{left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 26px);width:min(30vw,240px)}
  #bossbar,#duel,#wave{top:calc(env(safe-area-inset-top) + 58px)}
  #duel,#wave{left:50%;right:auto;transform:translateX(-50%);width:min(54vw,460px)}
  #ctrls{transform:scale(.9);transform-origin:right bottom}

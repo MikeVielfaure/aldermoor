@@ -61,7 +61,14 @@
   rang « Maître des Arcanes » (niveau 25).
 - Ignivor se tourne enfin vers le joueur (un commentaire mal placé l'en empêchait).
 
+## Fait en v21 (novembre 2026)
+- Vie du joueur dans le monde : morsures des créatures hostiles (5 PV, 8 dans les Landes), retour de la vie
+  après 5 s, évanouissement sans perte (réveil Grande Cour / Campement), barre rouge seulement si blessé.
+- Potion de soin (Pétale enchanté + Champignon lunaire).
+- Créatures : barre de vie une fois touchées, animation de mort. PNJ : s'arrêtent et se tournent vers le joueur.
+
 ## Monde réaliste (souhait du joueur, 2026-11-15)
+- Le joueur précise : « réaliste mais que ça reste un jeu » ; garder le style actuel et le soigner.
 - itch.io bloque les téléchargements automatiques (Cloudflare) : le joueur peut déposer les packs dans assets/brut.
 - Essai de photos CC0 Poly Haven à la place des textures peintes (tools/textures.mjs) : presque invisible
   (les photos lissées de loin), donc pas intégré. Le vrai gain viendrait de modèles (rochers, arbres,

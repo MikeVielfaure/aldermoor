@@ -71,6 +71,9 @@
 - Caméra en orbite (plus de « coupe » à travers le joueur en tournant vite), geste vif = rotation accélérée,
   doigt perdu (appel, changement d'appli) libéré ; caméra automatique un peu plus réactive.
 - Balai : on peut sauter du balai en plein vol (chute plumée) et y remonter en l'air.
+- Créatures tireuses (~4 sur 10 parmi feu, glace, arcane, lumière, ombre) : lueur 0,6 s puis projectile
+  esquivable (6 PV, 9 dans les Landes), arrêté par les murs de garde et l'égide. Animaux paisibles blessés : fuite.
+- Balai : champ de vision qui s'élargit avec la vitesse.
 - Visée plus longue : 24 m à pied, 30 m en vol (et cibles au sol visées depuis le ciel), verrouillage 42 m.
 
 ## Monde réaliste (souhait du joueur, 2026-11-15)

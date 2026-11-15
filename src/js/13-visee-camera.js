@@ -25,7 +25,7 @@ function tgPos(c){const k=c.kind,r=c.ref;
  return {x:r.x,y:r.y,z:r.z,gy:r.y,top:r.y+2.6,rad:0.9};}
 function tgAlive(c){const k=c.kind,r=c.ref;if(k==='crea'||k==='event'||k==='chest')return ENT.includes(r)&&!(k==='chest'&&r.data.open);if(k==='prop')return r.dead<=0;if(k==='braz')return !r.lit;if(k==='seal')return !!(S.puz&&!S.puz.seals.open&&!S.puz.seals.on[r.i]);if(k==='guard')return !!(S.puz&&S.puz.ruines&&!S.puz.ruines.open&&!S.puz.ruines.on[r.i]);return true;}
 function tgCands(el,all){const out=[];
- for(const e of ENT){if(e.kind==='creature')out.push({kind:'crea',ref:e,pri:e.data.duel?0.4:0.6});
+ for(const e of ENT){if(e.kind==='creature'&&!e.data.charmed)out.push({kind:'crea',ref:e,pri:e.data.duel?0.4:0.6});
   else if(e.kind==='event'&&(all||!e.data.need||e.data.need===el))out.push({kind:'event',ref:e,pri:0.85});
   else if(e.kind==='chest'&&!e.data.open&&e.data.lock&&(all||(LOCKS[e.data.lock]&&LOCKS[e.data.lock].el===el)))out.push({kind:'chest',ref:e,pri:0.85});}
  if(all||el==='arcane')for(const p of PROPS)if(p.dead<=0)out.push({kind:'prop',ref:p,pri:1.15});

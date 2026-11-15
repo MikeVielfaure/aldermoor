@@ -75,6 +75,7 @@ function shotSolid(x,y,z){for(const c of COLS){if(c.lake||c.off||(c.bot!==undefi
 function combatTick(dt){if(!started)return;
  for(const e of ENT){if(e.kind!=='creature')continue;const D=e.data;if(D.duel||D.wave||D.dragon)continue;
   // animaux paisibles : fuite quand ils ont mal
+  if(D.charmed)continue;
   if(D.calme){if(D.hp0!==undefined&&D.hp<(D.lastHp??D.hp0))D.fleeT=4;D.lastHp=D.hp;if(D.fleeT>0){D.fleeT-=dt;const dx=e.x-player.x,dz=e.z-player.z,d=Math.hypot(dx,dz)||1;D.tx=e.x+dx/d*6;D.tz=e.z+dz/d*6;const o={x:e.x+dx/d*3*dt,z:e.z+dz/d*3*dt};pushOut(o,0.5);e.x=o.x;e.z=o.z;}continue;}
   if(D.ranged===undefined)D.ranged=RANGED_EL.includes(D.look)&&Math.random()<0.4;if(!D.ranged||vieBusy()||S.zone!=='monde'||D.frozen>0||D.confused>0)continue;
   const dp=Math.hypot(player.x-e.x,player.z-e.z);D.shotT=(D.shotT===undefined?rnd(1,3):D.shotT)-dt;

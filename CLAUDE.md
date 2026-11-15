@@ -75,6 +75,8 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 20f-iles-celestes | Îles du Miroir-Ciel (`ILES`, courants `VENTS`, cristaux `CRIST`, Autel des Vents → `S.elan`), île = entrée COLS avec `bot` (dessous), coups plus sensibles |
 | 20g-charge-enchant | sorts chargés (`CHG`, `CHGNOW`/`CRIT_FORCE` dans pow et 20d, écoute en capture sur `#ctrls`), enchantements `ENCH`/`S.ench` (table `ENCHT`), Course céleste `CRACE` |
 | 20h-nuits-etoilees | minuit sans sommeil forcé (`nightfall` remplacé, `dawnTick` → MJ à 7 h, `sleepHere`), aurores, étoiles filantes, étoiles tombées `NIGHT.stars`, vœu (`S.wish`, +1 `S.relics`) |
+| 20i-fusions-pacte | fusions à deux mains (`FUSIONS`, `FUS`, `fusion()`), second doigt sur un sort = lancer immédiat, Pacte de la Lune Noire (`PACTE_SP`, `pacteStart`, `pacteChoice`, créature dominée `D.charmed`) |
+| 20j-evenements | événements surprises `SURP` (`evCaravane`, `evInvasion`, `evMarchand` + `SHOP`), toutes les 3-5 min |
 | 21-boucle | `update(dt)`, `loop()`, `startGame()`, puis la séquence de construction du monde |
 | 22-appli | plein écran, écran qui reste allumé, enregistrement du mode hors-ligne |
 | 22b-partie-test | partie de test niveau 50 (`?test` dans l'adresse), sauvegarde normale mise de côté |

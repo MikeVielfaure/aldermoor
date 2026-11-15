@@ -1,17 +1,17 @@
 /* ================= ÉTAPE 9 : JEUX DE SORTS A/B, VISÉE LIBRE, RÉGLAGES DE VISÉE ================= */
 if(AIMO.assist===undefined)AIMO.assist=true;if(AIMO.duelLock===undefined)AIMO.duelLock=true;
-/* ---- trois jeux de 5 sorts (A, B, C) ----
+/* ---- trois jeux de 6 sorts (A, B, C) ----
    S.sets = [A,B,C] ; S.slots est TOUJOURS le jeu actif (même tableau que S.sets[S.setIdx]).
    Anciennes sauvegardes : S.slots + S.slotsAlt (jeux A/B de 4) sont repris tels quels. */
 const SET_N=['A','B','C'];
-function ensureSets(){const fix=a=>{a=(Array.isArray(a)?a:[]).slice(0,5).map(id=>S.spells.some(x=>x.id===id)?id:null);while(a.length<5)a.push(null);return a;};
+function ensureSets(){const fix=a=>{a=(Array.isArray(a)?a:[]).slice(0,6).map(id=>S.spells.some(x=>x.id===id)?id:null);while(a.length<6)a.push(null);return a;};
  if(![0,1,2].includes(S.setIdx))S.setIdx=0;
  if(!Array.isArray(S.sets)||S.sets.length!==3){const o=S.slotsAlt;S.sets=S.setIdx===1?[o,S.slots,null]:[S.slots,o,null];}
  S.sets=S.sets.map(fix);S.sets[S.setIdx]=fix(S.slots);S.slots=S.sets[S.setIdx];delete S.slotsAlt;}
 function setUse(i){ensureSets();S.setIdx=i;S.slots=S.sets[i];renderSlots();updSetBtn();sfx('click');}
 /* ⇄ : passe au jeu suivant qui contient des sorts (les jeux vides sont sautés) */
 function swapSets(silent){ensureSets();let nx=-1;for(let k=1;k<3;k++){const j=(S.setIdx+k)%3;if(S.sets[j].some(Boolean)){nx=j;break;}}const empty=nx<0;if(empty)nx=(S.setIdx+1)%3;
- setUse(nx);if(!silent)banner('Jeu de sorts '+SET_N[nx],S.slots.filter(Boolean).map(id=>(S.spells.find(x=>x.id===id)||{}).name).filter(Boolean).slice(0,5).join(' · ')||'vide');
+ setUse(nx);if(!silent)banner('Jeu de sorts '+SET_N[nx],S.slots.filter(Boolean).map(id=>(S.spells.find(x=>x.id===id)||{}).name).filter(Boolean).slice(0,6).join(' · ')||'vide');
  document.querySelectorAll('.slot').forEach((b,i)=>{b.classList.remove('flip');void b.offsetWidth;b.style.animationDelay=(i*0.04)+'s';b.classList.add('flip');});
  if(!silent&&empty&&!S.seenSetB){S.seenSetB=1;say('🔀 Jeu de sorts <b>'+SET_N[nx]+'</b> : il est vide. Ouvre le Grimoire › Sorts pour y placer d’autres sorts. Tu as 3 jeux : A, B et C.','sys');}
  if(!$('#book').classList.contains('hidden'))renderBook();save();}

@@ -61,7 +61,7 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 13b-camera-interieurs | caméra des lieux clos `inCam()` (plafond, murs, meubles, champ de vision), noms qui s'effacent de près `nearFade()` |
 | 14-lieux-… | Moulin du Ru, Marais des Lucioles, Ruines d'Ysmer (oracle, gardiens, crypte) |
 | 15-balai-… | balai `FLY`, course d'anneaux `RACE`, objets magiques `OBJS`, Faille à vagues `WAVE`, karma, quête de l'Oubli, Bosquet |
-| 16-jeux-sorts-… | 3 jeux de 5 sorts A/B/C (`S.sets`, `S.slots` = le jeu actif, même tableau ; `swapSets`, `setUse`), viseur libre (`freeAim`), réglages `AIMO` |
+| 16-jeux-sorts-… | 3 jeux de 6 sorts A/B/C (`S.sets`, `S.slots` = le jeu actif, même tableau ; `swapSets`, `setUse`), viseur libre (`freeAim`), réglages `AIMO` |
 | 17-ui | HUD, dialogues (`openDlg`, `send`), grimoire/journal (`renderBook`) |
 | 18-maitre-du-jeu | prompt du MJ (`RULES`, `worldCtx`, `buildPrompt`), `applyActions`, MJ de secours `fallbackGM` |
 | 18b-mj-cle | MJ IA avec la clé Claude du joueur (`mjInit`, `mjCall`, panneau `openMjk`), hors artifact |

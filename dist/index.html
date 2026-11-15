@@ -39,6 +39,8 @@ html,body{margin:0;height:100%;overflow:hidden;background:#0b1030;color:var(--in
 #tr-q{font-family:Cinzel,serif;color:var(--gold);font-size:11.5px}
 #feed{left:calc(env(safe-area-inset-left) + 10px);bottom:calc(env(safe-area-inset-bottom) + 262px);width:min(68vw,320px);display:flex;flex-direction:column;gap:4px;pointer-events:none;align-items:flex-start}
 .msg{background:rgba(16,12,36,.72);border:1px solid var(--line);border-radius:9px;padding:4px 9px;font-size:11.5px;line-height:1.35;animation:fin .3s ease;transition:opacity .6s;text-align:left;max-width:100%}
+.msg:nth-last-child(n+3){display:none}
+#hint::before{content:"👆 "}
 .msg.gm{border-color:rgba(255,122,224,.55)}
 .msg.gm b{color:#ffb8ec}
 .msg.sys{color:var(--mute)}
@@ -46,21 +48,25 @@ html,body{margin:0;height:100%;overflow:hidden;background:#0b1030;color:var(--in
 #joy-zone{left:0;bottom:0;width:46vw;height:46vh;touch-action:none}
 #joy{position:absolute;left:calc(env(safe-area-inset-left) + 22px);bottom:calc(env(safe-area-inset-bottom) + 22px);width:124px;height:124px;border-radius:50%;background:rgba(16,12,36,.45);border:1px solid var(--line)}
 #knob{position:absolute;left:37px;top:37px;width:50px;height:50px;border-radius:50%;background:rgba(243,207,122,.55);box-shadow:0 0 18px rgba(243,207,122,.5)}
-#ctrls{right:calc(env(safe-area-inset-right) + 10px);bottom:calc(env(safe-area-inset-bottom) + 12px);width:230px;height:230px;pointer-events:none}
+#ctrls{right:calc(env(safe-area-inset-right) + 10px);bottom:calc(env(safe-area-inset-bottom) + 12px);width:215px;height:280px;pointer-events:none}
 .cbtn{position:absolute;pointer-events:auto;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:600 11px Inter,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.1;padding:3px;touch-action:none;overflow:hidden}
 .cbtn:active{transform:scale(.93)}
 #b-jump{right:0;bottom:0;width:78px;height:78px;font-size:12px;border-width:2px}
-#b-act{right:146px;bottom:146px;width:58px;height:58px}
+#b-act{right:39px;bottom:228px;width:46px;height:46px;font-size:20px}#b-act:not(.ready){display:none}
 #b-act.ready{border-color:var(--gold);color:var(--gold);box-shadow:0 0 16px rgba(243,207,122,.45)}
 .slot{width:56px;height:56px;border-width:2px}
-.slot[data-s="0"]{right:103px;bottom:11px}.slot[data-s="1"]{right:76px;bottom:76px}.slot[data-s="2"]{right:11px;bottom:103px}.slot[data-s="3"]{right:159px;bottom:72px}.slot[data-s="4"]{right:72px;bottom:159px}
-.slot .ic{font-size:19px;line-height:1}
+.slot[data-s="0"]{right:97px;bottom:29px;width:50px;height:50px}.slot[data-s="1"]{right:53px;bottom:88px;width:50px;height:50px}.slot[data-s="2"]{right:156px;bottom:11px}.slot[data-s="3"]{right:144px;bottom:70px}.slot[data-s="4"]{right:106px;bottom:120px}.slot[data-s="5"]{right:46px;bottom:152px}
+.slot .ic{font-size:22px;line-height:1}
+.slot .fm{position:absolute;right:7px;bottom:5px;font-size:11px;font-weight:800;text-shadow:0 0 3px #000}
+.slot.leg{box-shadow:0 0 12px rgba(243,207,122,.6)!important}
+#info{cursor:pointer}#i-rank{display:none}#i-loc{font-size:10.5px;color:var(--mute)}
+#tr-q{display:none}#tracker{cursor:pointer}#tr-s{-webkit-line-clamp:1}
 .slot .nm{font-size:8.5px;opacity:.9;max-width:50px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
 .slot .cd{position:absolute;inset:0;border-radius:50%;pointer-events:none}
 .slot .k{position:absolute;top:4px;font-size:8px;color:var(--mute)}
 .slot.low{opacity:.45}
 .slot.empty{opacity:.5;border-style:dashed}
-#hint{position:absolute;right:0;bottom:214px;white-space:nowrap;font-size:12px;color:var(--gold);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 11px;pointer-events:none}
+#hint{position:absolute;right:0;bottom:284px;pointer-events:auto;font-size:13px!important;padding:8px 14px!important;border-color:var(--gold)!important;box-shadow:0 0 14px rgba(243,207,122,.35);white-space:nowrap;font-size:12px;color:var(--gold);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 11px;pointer-events:none}
 .bar{height:5px;border-radius:3px;background:rgba(255,255,255,.12);margin-top:4px;overflow:hidden;width:150px}
 .bar>i{display:block;height:100%;border-radius:3px;transition:width .15s}
 #mana-bar>i{background:linear-gradient(90deg,#3d6dff,#8fd0ff)}
@@ -141,9 +147,9 @@ html,body{margin:0;height:100%;overflow:hidden;background:#0b1030;color:var(--in
 body.induel #tracker,body.inwave #tracker,body.boss #tracker{visibility:hidden}
 #wave{top:calc(env(safe-area-inset-top) + 104px);left:calc(env(safe-area-inset-left) + 10px);right:calc(env(safe-area-inset-right) + 10px);background:var(--panel);border:1px solid rgba(180,140,255,.55);border-radius:12px;padding:8px 11px;font-size:12px;font-weight:600}
 #wave .hb{height:8px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:5px}#wave .hb i{display:block;height:100%;background:linear-gradient(90deg,#3dbf6a,#9af0a0);transition:width .2s}
-#b-down{right:146px;bottom:146px;width:58px;height:58px;font-size:9.5px}
+#b-down{right:39px;bottom:228px;width:58px;height:58px;font-size:9.5px}
 .rbtn.ic.on{border-color:var(--gold);box-shadow:0 0 10px rgba(243,207,122,.5)}
-#b-set{right:175px;bottom:6px;width:40px;height:40px;font-size:14px;line-height:1;padding:0}#b-set small{font-size:9px;color:var(--gold);font-weight:700}#b-set.alt{border-color:#ff7ae0;box-shadow:0 0 10px rgba(255,122,224,.45)}#b-set.alt small{color:#ff9ae0}
+#b-set{right:99px;bottom:220px;width:44px;height:44px;font-size:14px;line-height:1;padding:0}#b-set small{font-size:9px;color:var(--gold);font-weight:700}#b-set.alt{border-color:#ff7ae0;box-shadow:0 0 10px rgba(255,122,224,.45)}#b-set.alt small{color:#ff9ae0}
 .slot.flip{animation:sflip .32s ease both}@keyframes sflip{0%{transform:scale(.6) rotateY(90deg);opacity:.3}100%{transform:none;opacity:1}}
 #xhair{position:fixed;z-index:5;left:50%;top:40%;width:28px;height:28px;margin:-14px 0 0 -14px;border:2px solid rgba(255,255,255,.75);border-radius:50%;pointer-events:none;box-shadow:0 0 4px rgba(0,0,0,.6);transition:transform .12s,border-color .12s}#xhair i{position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;background:#fff}#xhair.over{border-color:#ffd27a;transform:scale(1.25)}#xhair.over i{background:#ffd27a}
 .setbar{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-size:12.5px}.setbar button{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:var(--ink);border-radius:8px;padding:4px 12px;font:700 12px Inter,sans-serif}.setbar button.on{background:var(--gold);color:#241a05;border-color:var(--gold)}
@@ -159,7 +165,6 @@ body.induel #tracker,body.inwave #tracker,body.boss #tracker{visibility:hidden}
  #tracker{top:calc(env(safe-area-inset-top) + 10px);left:calc(env(safe-area-inset-left) + 182px);max-width:min(28vw,270px)}
  #feed{left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 30px);width:min(34vw,340px);align-items:center}
  .msg{text-align:center;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
- .msg:nth-last-child(n+3){display:none}
  #manabox{left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 10px);width:min(30vw,240px)}
  #bossbar,#duel,#wave{top:calc(env(safe-area-inset-top) + 58px)}
  #duel,#wave{left:50%;right:auto;transform:translateX(-50%);width:min(54vw,460px)}
@@ -192,9 +197,9 @@ body.induel #tracker,body.inwave #tracker,body.boss #tracker{visibility:hidden}
 <div id="joy-zone" class="ui hidden"><div id="joy"><div id="knob"></div></div></div>
 <div id="ctrls" class="ui hidden">
   <div id="hint" class="hidden"></div>
-  <button id="b-act" class="cbtn">Agir</button><button id="b-down" class="cbtn hidden"><span style="font-size:20px">⬇</span>Descendre</button>
+  <button id="b-act" class="cbtn" aria-label="Agir">✋</button><button id="b-down" class="cbtn hidden"><span style="font-size:20px">⬇</span>Descendre</button>
   <button id="b-set" class="cbtn"><span>⇄</span><small>A</small></button><button id="b-jump" class="cbtn"><span style="font-size:20px">⤒</span>Saut</button>
-  <button class="cbtn slot" data-s="0"></button><button class="cbtn slot" data-s="1"></button><button class="cbtn slot" data-s="2"></button><button class="cbtn slot" data-s="3"></button><button class="cbtn slot" data-s="4"></button>
+  <button class="cbtn slot" data-s="0"></button><button class="cbtn slot" data-s="1"></button><button class="cbtn slot" data-s="2"></button><button class="cbtn slot" data-s="3"></button><button class="cbtn slot" data-s="4"></button><button class="cbtn slot" data-s="5"></button>
 </div>
 
 <div id="dlg" class="modal hidden">
@@ -224,7 +229,7 @@ body.induel #tracker,body.inwave #tracker,body.boss #tracker{visibility:hidden}
     <button class="ghost hidden" id="b-cont">Continuer</button>
     <button class="ghost" id="b-q">Graphismes : élevés</button>
     <button class="ghost hidden" id="b-mjkey">Maître du Jeu IA : brancher ma clé Claude</button>
-    <div class="keys">Mobile : joystick à gauche, glisse à droite pour tourner la caméra.<br>Clavier : ZQSD/WASD · souris pour la caméra · 1 à 5 lancer les sorts · T changer de jeu de sorts · Espace sauter · E agir · Entrée MJ · Maj courir<br><span id="mj-note"></span></div>
+    <div class="keys">Mobile : joystick à gauche, glisse à droite pour tourner la caméra.<br>Clavier : ZQSD/WASD · souris pour la caméra · 1 à 6 lancer les sorts · T changer de jeu de sorts · Espace sauter · E agir · Entrée MJ · Maj courir<br><span id="mj-note"></span></div>
   </div>
 </div>
 
@@ -327,7 +332,7 @@ const TAL_GEN=[
  {id:'agil',n:'Agilité',max:2,d:'+10 % de vitesse par rang ; au rang 2 : double saut.'},
  {id:'conc',n:'Concentration',max:2,d:'−15 % de coût en mana par rang.'}
 ];
-const RANKS=[{min:1,n:'Apprenti',slots:2},{min:5,n:'Adepte',slots:3},{min:10,n:'Mage',slots:4},{min:15,n:'Archimage',slots:5}];
+const RANKS=[{min:1,n:'Apprenti',slots:2},{min:5,n:'Adepte',slots:3},{min:10,n:'Mage',slots:4},{min:15,n:'Archimage',slots:5},{min:25,n:'Maître des Arcanes',slots:6}];
 const LOCS=[
  {id:'cour',name:'Grande Cour',x:0,z:2,r:11,spot:{x:3.9,z:5}},
  {id:'chateau',name:'Château d’Aldermoor',x:0,z:-35,r:12,spot:{x:0,z:-32}},
@@ -390,7 +395,7 @@ const CREA=[
 
 /* ================= ÉTAT ================= */
 let S={time:17.5*60};
-function newState(name){return {v:1,name:name||'Apprenti',day:1,time:8*60,xp:0,spells:[{...POOL[0],id:'etincelle'}],sel:0,talents:{},mastery:{},combos:[],slots:['etincelle',null,null,null,null],quests:[],done:[],chron:[],track:null,courses:[],npcLoc:{},locId:null};}
+function newState(name){return {v:1,name:name||'Apprenti',day:1,time:8*60,xp:0,spells:[{...POOL[0],id:'etincelle'}],sel:0,talents:{},mastery:{},combos:[],slots:['etincelle',null,null,null,null,null],quests:[],done:[],chron:[],track:null,courses:[],npcLoc:{},locId:null};}
 const SAVE_KEY='aldermoor-save-v1';
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){}}
 function load(){try{const t=localStorage.getItem(SAVE_KEY);return t?JSON.parse(t):null;}catch(e){return null;}}
@@ -412,7 +417,7 @@ const manaRegen=()=>9*(1+0.3*tal('flux'))*(lvl()>=15?1.5:1)*(typeof player!=='un
 function migrate(s){s.inv=s.inv||{};s.rep=s.rep||{};s.zone='monde';s.talents=s.talents||{};s.mastery=s.mastery||{};s.combos=s.combos||[];
  s.spells.forEach(sp=>{const p=POOL.find(x=>x.name.toLowerCase()===String(sp.name).toLowerCase());if(p){sp.form=p.form;sp.desc=p.desc;sp.inc=p.inc;}if(!FORMS[sp.form])sp.form='trait';if(!sp.id)sp.id=String(sp.name).toLowerCase().replace(/[^a-zà-ÿ0-9]+/g,'-');});
  if(!Array.isArray(s.slots))s.slots=[];
- s.slots=s.slots.slice(0,5).map(id=>s.spells.some(x=>x.id===id)?id:null);while(s.slots.length<5)s.slots.push(null);
+ s.slots=s.slots.slice(0,6).map(id=>s.spells.some(x=>x.id===id)?id:null);while(s.slots.length<6)s.slots.push(null);
  for(let i=0;i<4;i++){if(s.slots[i])continue;const used=s.spells.filter(x=>s.slots.includes(x.id));const cand=s.spells.filter(x=>!s.slots.includes(x.id));if(!cand.length)break;const c=cand.find(x=>!used.some(u=>u.el===x.el))||cand.find(x=>!used.some(u=>u.form===x.form))||cand[0];s.slots[i]=c.id;}
  return s;}
 function gainXP(n){const before=lvl();const rb=rankOf(before);S.xp+=n;
@@ -3259,18 +3264,18 @@ window.addEventListener('keydown',e=>{if(!started||anyModal()||e.target.tagName=
 
 /* ================= ÉTAPE 9 : JEUX DE SORTS A/B, VISÉE LIBRE, RÉGLAGES DE VISÉE ================= */
 if(AIMO.assist===undefined)AIMO.assist=true;if(AIMO.duelLock===undefined)AIMO.duelLock=true;
-/* ---- trois jeux de 5 sorts (A, B, C) ----
+/* ---- trois jeux de 6 sorts (A, B, C) ----
    S.sets = [A,B,C] ; S.slots est TOUJOURS le jeu actif (même tableau que S.sets[S.setIdx]).
    Anciennes sauvegardes : S.slots + S.slotsAlt (jeux A/B de 4) sont repris tels quels. */
 const SET_N=['A','B','C'];
-function ensureSets(){const fix=a=>{a=(Array.isArray(a)?a:[]).slice(0,5).map(id=>S.spells.some(x=>x.id===id)?id:null);while(a.length<5)a.push(null);return a;};
+function ensureSets(){const fix=a=>{a=(Array.isArray(a)?a:[]).slice(0,6).map(id=>S.spells.some(x=>x.id===id)?id:null);while(a.length<6)a.push(null);return a;};
  if(![0,1,2].includes(S.setIdx))S.setIdx=0;
  if(!Array.isArray(S.sets)||S.sets.length!==3){const o=S.slotsAlt;S.sets=S.setIdx===1?[o,S.slots,null]:[S.slots,o,null];}
  S.sets=S.sets.map(fix);S.sets[S.setIdx]=fix(S.slots);S.slots=S.sets[S.setIdx];delete S.slotsAlt;}
 function setUse(i){ensureSets();S.setIdx=i;S.slots=S.sets[i];renderSlots();updSetBtn();sfx('click');}
 /* ⇄ : passe au jeu suivant qui contient des sorts (les jeux vides sont sautés) */
 function swapSets(silent){ensureSets();let nx=-1;for(let k=1;k<3;k++){const j=(S.setIdx+k)%3;if(S.sets[j].some(Boolean)){nx=j;break;}}const empty=nx<0;if(empty)nx=(S.setIdx+1)%3;
- setUse(nx);if(!silent)banner('Jeu de sorts '+SET_N[nx],S.slots.filter(Boolean).map(id=>(S.spells.find(x=>x.id===id)||{}).name).filter(Boolean).slice(0,5).join(' · ')||'vide');
+ setUse(nx);if(!silent)banner('Jeu de sorts '+SET_N[nx],S.slots.filter(Boolean).map(id=>(S.spells.find(x=>x.id===id)||{}).name).filter(Boolean).slice(0,6).join(' · ')||'vide');
  document.querySelectorAll('.slot').forEach((b,i)=>{b.classList.remove('flip');void b.offsetWidth;b.style.animationDelay=(i*0.04)+'s';b.classList.add('flip');});
  if(!silent&&empty&&!S.seenSetB){S.seenSetB=1;say('🔀 Jeu de sorts <b>'+SET_N[nx]+'</b> : il est vide. Ouvre le Grimoire › Sorts pour y placer d’autres sorts. Tu as 3 jeux : A, B et C.','sys');}
  if(!$('#book').classList.contains('hidden'))renderBook();save();}
@@ -3310,12 +3315,12 @@ function aimTick9(dt){const xh=$('#xhair');const on=started&&libre()&&!anyModal(
 {const _ai9=aimTick;aimTick=function(dt){_ai9.apply(this,arguments);aimTick9(dt);};}
 
 /* ================= UI ================= */
-function say(t,type){const f=$('#feed');const d=document.createElement('div');d.className='msg'+(type?' '+type:'');d.innerHTML=t;f.appendChild(d);while(f.children.length>3)f.removeChild(f.firstChild);setTimeout(()=>{d.style.opacity=0;setTimeout(()=>d.remove(),700);},type==='gm'?8000:5000);}
+function say(t,type){const f=$('#feed');const d=document.createElement('div');d.className='msg'+(type?' '+type:'');d.innerHTML=t;f.appendChild(d);while(f.children.length>3)f.removeChild(f.firstChild);setTimeout(()=>{d.style.opacity=0;setTimeout(()=>d.remove(),700);},type==='gm'?8000:4000);}
 let aiState='pending',SAMPLE=null,aiUsed=false;
 function aiBadge(){const b=$('#ai-badge');$('#b-mj').classList.toggle('on',aiState==='on');if(aiState==='on'){b.textContent='MJ : IA Claude ✦';b.style.cursor='pointer';b.classList.add('on');}else if(aiState==='off'){b.textContent='MJ : classique';b.classList.remove('on');}else b.textContent='MJ : connexion…';}
 setTimeout(mjInit,0); // MJ IA : artifact claude.ai, sinon clé du joueur (18b-mj-cle), sinon MJ classique
 function updateHUD(){
- $('#i-time').textContent='Jour '+S.day+' · '+fmtTime(S.time)+' · '+(S.zone!=='monde'?'🕯':WEATHERS[(S.weather||{w:'clair'}).w].ic);
+ $('#i-time').textContent=(S.zone!=='monde'?'🕯':WEATHERS[(S.weather||{w:'clair'}).w].ic)+' '+fmtTime(S.time)+' · niv. '+lvl();
  $('#i-loc').textContent=(S.zone!=='monde'?ZONES[S.zone].n:S.locId?LOCBY[S.locId].name:'Sur les chemins')+(player.swim?' · 🏊 '+(BUFF.phoque?'':'froid '+Math.floor(player.cold||0)+'/13'):'');
  const L=lvl();$('#i-rank').textContent=rankOf(L).n+' · niv. '+L;
  const into=S.xp%100;$('#i-lvl').textContent=(Object.keys(BUFF).length?'🧪 '+Object.keys(BUFF).map(k=>POTIONS[k].n.split(' ').pop()+' '+Math.ceil(BUFF[k])+'s').join(', '):'');
@@ -3323,10 +3328,14 @@ function updateHUD(){
  const f=ptsFree();const bh='📖'+(f>0?'<span class="pts">'+f+'</span>':'');if($('#b-book').innerHTML!==bh)$('#b-book').innerHTML=bh;
  renderSlots();
 }
+/* bouton de sort : l'icône de l'élément (ou du sort spécial) et, dans le coin, la forme (➶ ◎ ✧) ; le nom est dans le Grimoire */
+const EL_IC={feu:'🔥',glace:'❄️',eau:'💧',vent:'🌪️',nature:'🌿',lumiere:'☀️',ombre:'🌑',arcane:'✨'};
+const SP_IC={demantibulus:'💥',etoiles:'🌠',gardien:'🌳',souffle:'🐉',oubli:'🌫️','g-rempart':'🪨','g-egide':'🔮','g-ronces':'🌲','g-maree':'🌊'};
+const slotIcon=sp=>SP_IC[sp.special]||EL_IC[sp.el]||'✦';
 function renderSlots(){const n=rankOf(lvl()).slots;document.querySelectorAll('.slot').forEach(b=>{const i=+b.dataset.s;const sp=i<n?S.spells.find(s=>s.id===S.slots[i]):null;const key=i>n?'H':i>=n?'L':sp?sp.id:'E';if(b.dataset.k===key)return;b.dataset.k=key;
- b.classList.toggle('hidden',i>n);if(i>=n){b.className='cbtn slot empty'+(i>n?' hidden':'');b.innerHTML='<span class="ic">🔒</span><span class="nm">'+RANKS.find(r=>r.slots>i).n+'</span>';b.style.borderColor='';b.style.boxShadow='';}
- else if(!sp){b.className='cbtn slot empty';b.innerHTML='<span class="k">'+(i+1)+'</span><span class="ic">+</span><span class="nm">vide</span>';b.style.borderColor='';b.style.boxShadow='';}
- else{const c=hex(ELEM[sp.el].c);b.className='cbtn slot';b.innerHTML='<div class="cd"></div><span class="k">'+(i+1)+'</span><span class="ic" style="color:'+c+'">'+FORMS[sp.form].ic+'</span><span class="nm">'+esc(sp.name)+'</span>';b.style.borderColor=c;b.style.boxShadow='0 0 12px '+c+'44';}});}
+ b.classList.toggle('hidden',i>n);if(i>=n){b.className='cbtn slot empty'+(i>n?' hidden':'');b.innerHTML='<span class="ic">🔒</span>';b.style.borderColor='';b.style.boxShadow='';}
+ else if(!sp){b.className='cbtn slot empty';b.innerHTML='<span class="ic">+</span>';b.style.borderColor='';b.style.boxShadow='';}
+ else{const c=hex(ELEM[sp.el].c);b.className='cbtn slot';b.innerHTML='<div class="cd"></div><span class="ic">'+slotIcon(sp)+'</span><span class="fm" style="color:'+c+'">'+FORMS[sp.form].ic+'</span>';b.title=sp.name;b.classList.toggle('leg',!!sp.legend);b.style.borderColor=c;b.style.boxShadow='0 0 12px '+c+'44';}});}
 function updSlotsFast(){const now=performance.now()/1000;$('#mana-bar i').style.width=(mana/manaMax()*100).toFixed(1)+'%';{const t=Math.floor(mana)+'';const m=$('#mana-n');if(m.textContent!==t)m.textContent=t;}const n=rankOf(lvl()).slots;
  document.querySelectorAll('.slot').forEach(b=>{const i=+b.dataset.s;if(i>=n)return;const sp=S.spells.find(s=>s.id===S.slots[i]);if(!sp)return;const cd=b.querySelector('.cd');const rem=(CD[sp.id]||0)-now,tot=spellCd(sp);
   if(cd)cd.style.background=rem>0?'conic-gradient(rgba(0,0,0,.62) '+(rem/tot*360).toFixed(0)+'deg, transparent 0)':'none';b.classList.toggle('low',mana<spellCost(sp));});}
@@ -3382,17 +3391,17 @@ $('#dlg-x').onclick=closeDlg;
 let bookTab='sorts';
 function openBook(tab){bookTab=tab;$('#book').classList.remove('hidden');renderBook();}
 function renderBook(){
- const tabs=[['sorts','Sorts'],['talents','Talents'+(ptsFree()>0?' ('+ptsFree()+')':'')],['combos','Combos'],['quetes','Quêtes'],['sac','Sac'],['alchimie','Alchimie'],['cours','Cours'],['chron','Chronique']];
+ const tabs=[['perso','Perso'],['sorts','Sorts'],['talents','Talents'+(ptsFree()>0?' ('+ptsFree()+')':'')],['combos','Combos'],['quetes','Quêtes'],['sac','Sac'],['alchimie','Alchimie'],['cours','Cours'],['chron','Chronique']];
  $('#book-title').textContent=['sorts','talents','combos'].includes(bookTab)?'Grimoire':'Journal';
  $('#book-tabs').innerHTML=tabs.map(([k,n])=>'<button class="tab'+(k===bookTab?' on':'')+'" data-t="'+k+'">'+n+'</button>').join('');
  $('#book-tabs').querySelectorAll('.tab').forEach(b=>b.onclick=()=>{bookTab=b.dataset.t;renderBook();});
  let h='';const n=rankOf(lvl()).slots;
  if(bookTab==='sorts'){
-  h='<div class="setbar"><span>Jeu de sorts :</span>'+SET_N.map((L,i)=>'<button data-set="'+i+'" class="'+((S.setIdx||0)===i?'on':'')+'">'+L+'</button>').join('')+'<span class="mu">⇄ en jeu pour basculer</span></div><div class="mu" style="margin-bottom:6px">Tu modifies le jeu <b>'+SET_N[S.setIdx||0]+'</b>. Place tes sorts dans les emplacements 1 à 5 (boutons sous chaque sort). Rang <b>'+rankOf(lvl()).n+'</b> : '+n+' emplacement'+(n>1?'s':'')+' actif'+(n>1?'s':'')+'. Chaque élément existe en 3 formes : ➶ Attaque, ◎ Zone, ✧ Utilitaire. Retrouver un sort que tu connais déjà le fait monter de rang (II, III) : moins cher, plus rapide, plus fort.</div>';
+  h='<div class="setbar"><span>Jeu de sorts :</span>'+SET_N.map((L,i)=>'<button data-set="'+i+'" class="'+((S.setIdx||0)===i?'on':'')+'">'+L+'</button>').join('')+'<span class="mu">⇄ en jeu pour basculer</span></div><div class="mu" style="margin-bottom:6px">Tu modifies le jeu <b>'+SET_N[S.setIdx||0]+'</b>. Place tes sorts dans les emplacements 1 à 6 (boutons sous chaque sort). Rang <b>'+rankOf(lvl()).n+'</b> : '+n+' emplacement'+(n>1?'s':'')+' actif'+(n>1?'s':'')+'. Chaque élément existe en 3 formes : ➶ Attaque, ◎ Zone, ✧ Utilitaire. Retrouver un sort que tu connais déjà le fait monter de rang (II, III) : moins cher, plus rapide, plus fort.</div>';
   ELS.forEach(el=>{const list=S.spells.filter(s=>s.el===el);if(!list.length)return;const ml=mLvl(el),xp=(S.mastery[el]||0)%30;
    h+='<div class="sec" style="display:flex;align-items:center;gap:7px"><span class="dot" style="background:'+hex(ELEM[el].c)+'"></span>'+ELEM[el].n+'<span class="badge">maîtrise '+ml+'/10</span></div><div class="mbar"><i style="width:'+(ml>=10?100:xp/30*100)+'%;background:'+hex(ELEM[el].c)+'"></i></div>';
    ['trait','zone','util'].forEach(f=>list.filter(s=>s.form===f).forEach(s=>{const si=S.slots.indexOf(s.id);
-    h+='<div class="it'+(si>=0&&si<n?' sel':'')+'"><h4>'+esc(s.name)+'<span class="badge">'+FORMS[f].ic+' '+FORMS[f].n+'</span>'+(spRank(s)>1?'<span class="badge" style="color:var(--gold)">rang '+RANK_N[spRank(s)]+'</span>':'')+'</h4><i>« '+esc(s.inc)+' »</i> <span class="mu">· '+spellCost(s)+' mana · recharge '+spellCd(s)+' s</span><div>'+esc(s.desc)+'</div><div class="fx">Effet : '+esc(fxOf(s))+'</div><div class="slotpick"><span class="mu">Emplacement :</span>'+[0,1,2,3,4].map(i=>'<button data-as="'+esc(s.id)+'" data-slot="'+i+'" class="'+(si===i?'on':'')+'"'+(i>=n?' disabled':'')+'>'+(i>=n?'🔒':(i+1))+'</button>').join('')+'</div></div>';}));});
+    h+='<div class="it'+(si>=0&&si<n?' sel':'')+'"><h4>'+esc(s.name)+'<span class="badge">'+FORMS[f].ic+' '+FORMS[f].n+'</span>'+(spRank(s)>1?'<span class="badge" style="color:var(--gold)">rang '+RANK_N[spRank(s)]+'</span>':'')+'</h4><i>« '+esc(s.inc)+' »</i> <span class="mu">· '+spellCost(s)+' mana · recharge '+spellCd(s)+' s</span><div>'+esc(s.desc)+'</div><div class="fx">Effet : '+esc(fxOf(s))+'</div><div class="slotpick"><span class="mu">Emplacement :</span>'+[0,1,2,3,4,5].map(i=>'<button data-as="'+esc(s.id)+'" data-slot="'+i+'" class="'+(si===i?'on':'')+'"'+(i>=n?' disabled':'')+'>'+(i>=n?'🔒':(i+1))+'</button>').join('')+'</div></div>';}));});
   const missEl=ELS.filter(e=>!S.spells.some(s=>s.el===e));if(missEl.length)h+='<div class="sec">Éléments encore inconnus</div><div class="mu">'+missEl.map(e=>ELEM[e].n).join(' · ')+'</div>';
   const missF=[];ELS.forEach(e=>{if(S.spells.some(s=>s.el===e))['zone','util'].forEach(f=>{if(!S.spells.some(s=>s.el===e&&s.form===f))missF.push(ELEM[e].n+' '+FORMS[f].n.toLowerCase());});});
   if(missF.length)h+='<div class="sec">Formes à découvrir</div><div class="mu">'+missF.join(' · ')+'<br>Cherche les parchemins, suis les cours ou demande aux professeurs.</div>';}
@@ -3775,7 +3784,7 @@ window.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;keys[
  if(e.code==='KeyE'||e.code==='KeyF')interact();
  if(e.code==='Space'){e.preventDefault();if(!e.repeat){jumpHeld=true;jump();}}
  if(e.code==='Enter'){e.preventDefault();openDlg({mode:'act'});setTimeout(()=>$('#dlg-in').focus(),50);}
- if(/^Digit[1-5]$/.test(e.code)){castSlot(+e.code.slice(5)-1);}});
+ if(/^Digit[1-6]$/.test(e.code)){castSlot(+e.code.slice(5)-1);}});
 window.addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='Space')jumpHeld=false;});
 window.addEventListener('keydown',e=>{if(e.code==='Escape'){closeDlg();$('#book').classList.add('hidden');}});
 const anyModal=()=>!$('#dlg').classList.contains('hidden')||!$('#book').classList.contains('hidden')||!$('#night').classList.contains('hidden')||!$('#pick').classList.contains('hidden')||!$('#map').classList.contains('hidden')||!$('#opts').classList.contains('hidden')||!$('#mjk').classList.contains('hidden');
@@ -4180,6 +4189,22 @@ function gardeTick(dt){if(!started)return;
   GARDE_ORD.forEach(k=>{const G=GARDE_SP[k],ok=gardeHas(k);h+='<div style="margin:5px 0;'+(ok?'':'opacity:.7')+'">'+(ok?'🛡 <b>'+esc(G.name)+'</b> <span class="mu">— '+esc(G.desc)+'</span>':'❔ <span class="mu">Gagne un duel à l’Arène pour apprendre une nouvelle parade.</span>')+'</div>';});
   h+='<div class="mu" style="margin-top:6px">✦ Coups critiques : '+(S.crits||0)+' · primes : '+(S.primes||0)+'</div>';
   const b=$('#book-body'),d=document.createElement('div');d.innerHTML=h+'</div>';b.insertBefore(d.firstChild,b.children[1]||null);};}
+
+/* ================= ÉCRAN ÉPURÉ : fenêtre du personnage, bulle d'action ================= */
+// la bulle « Cueillir… / Parler à… » est le bouton Agir (il n'apparaît que s'il y a quelque chose à faire)
+btn('#hint',interact);
+$('#info').addEventListener('click',()=>{if(started&&!anyModal()){sfx('click');openBook('perso');}});
+$('#tracker').addEventListener('click',()=>{if(started&&!anyModal()){sfx('click');openBook('quetes');}});
+{const _r=renderBook;renderBook=function(){_r.apply(this,arguments);if(bookTab!=='perso')return;const L=lvl(),R=rankOf(L),nx=RANKS.find(r=>r.min>L),D=S.duels||{w:0,l:0};
+  const row=(k,v)=>'<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span class="mu">'+k+'</span><b style="text-align:right">'+v+'</b></div>';
+  let h='<div class="it"><h4 style="font-family:Cinzel,serif;color:var(--gold);font-size:17px">'+esc(S.name)+'</h4><div class="mu">'+R.n+' · niveau '+L+(nx?' · '+nx.n+' au niveau '+nx.min:'')+'</div>'+
+   '<div class="bar" style="width:100%;margin-top:8px"><i style="width:'+(S.xp%100)+'%;background:linear-gradient(90deg,#c99a2e,#f3cf7a)"></i></div><div class="mu" style="margin-top:3px">'+(S.xp%100)+'/100 XP avant le niveau '+(L+1)+'</div></div><div class="it">'+
+   row('Jour',S.day+' · '+fmtTime(S.time))+row('Lieu',$('#i-loc').textContent)+row('Mana',Math.floor(mana)+' / '+manaMax())+row('Emplacements de sorts',R.slots+' (jeu '+SET_N[S.setIdx||0]+' actif sur 3)')+
+   row('Sorts connus',S.spells.length)+row('Sorts légendaires',Object.keys(LEG_SP).filter(legHas).length+' / 4')+row('Sorts de garde',GARDE_ORD.filter(gardeHas).length+' / 4')+
+   row('Coups critiques',(S.crits||0)+' · primes '+(S.primes||0))+row('Duels',D.w+' gagné'+(D.w>1?'s':'')+' · '+D.l+' perdu'+(D.l>1?'s':''))+row('Combos découverts',S.combos.length+' / '+COMBOS.length)+
+   (Object.keys(BUFF).length?row('Potions actives',Object.keys(BUFF).map(k=>POTIONS[k].n+' '+Math.ceil(BUFF[k])+' s').join(', ')):'')+
+   (S.dragonMort?row('Ignivor','vaincue (jour '+S.dragonMort+')'):'')+'</div><div class="mu">Touche le cadre en haut à gauche pour rouvrir cette fenêtre.</div>';
+  $('#book-body').innerHTML=h;$('#book-title').textContent='Personnage';};}
 /* ================= BOUCLE ================= */
 let started=false,fastT=0,last=performance.now(),ambT=40,saveT=0,hudT=0,focT=0,waterT=0;
 const cTopD=new THREE.Color(0x3f86e0),cBotD=new THREE.Color(0xc4e0f6),cTopN=new THREE.Color(0x050818),cBotN=new THREE.Color(0x141c3c),cDusk=new THREE.Color(0xf0905a),tTop=new THREE.Color(),tBot=new THREE.Color();
@@ -4361,8 +4386,8 @@ function testState(name){const s=newState(name||'Testeur');
  s.xp=4900; // niveau 50
  const all=POOL_UNI.map(p=>({...p,id:spId(p.name),rank:RANK_MAX}));all.push({...OUBLI_SP,rank:1});Object.keys(LEG_SP).forEach(k=>all.push(legSpell(k)));GARDE_ORD.forEach(k=>all.push(gardeSpell(k)));s.spells=all;
  const id=(el,form)=>(all.find(x=>x.el===el&&x.form===form&&!x.special)||{}).id||null;
- s.slots=[id('feu','trait'),id('glace','trait'),id('lumiere','zone'),id('nature','zone'),id('vent','util')]; // jeu A : combat
- s.sets=[s.slots,['leg-demantibulus','leg-etoiles','leg-gardien','leg-souffle',null],['garde-rempart','garde-egide','garde-ronces','garde-maree',id('arcane','util')]];s.setIdx=0; // B : légendaires, C : protection
+ s.slots=[id('feu','trait'),id('glace','trait'),id('lumiere','zone'),id('nature','zone'),id('vent','util'),id('eau','trait')]; // jeu A : combat
+ s.sets=[s.slots,['leg-demantibulus','leg-etoiles','leg-gardien','leg-souffle','oubli'],['garde-rempart','garde-egide','garde-ronces','garde-maree',id('arcane','util'),id('glace','zone')]];s.setIdx=0; // B : légendaires, C : protection
  s.mastery={};ELS.forEach(e=>s.mastery[e]=300); // maîtrise 10/10 partout (+3 points de talent par élément)
  s.objs={};Object.keys(OBJS).forEach(k=>s.objs[k]=1); // balai et tous les objets magiques
  s.inv={};Object.keys(INGR).forEach(k=>s.inv[k]=12);Object.keys(POTIONS).forEach(k=>s.inv['p_'+k]=3);
@@ -4375,7 +4400,7 @@ function testState(name){const s=newState(name||'Testeur');
  if(old){const r=document.createElement('button');r.className='ghost';r.id='b-restore';r.textContent='↩ Reprendre ma partie d’avant le test';box.insertBefore(r,$('#b-cont'));
   r.onclick=()=>{try{localStorage.setItem(SAVE_KEY,old);localStorage.removeItem(TEST_BACKUP);}catch(e){}location.href=location.pathname;};}
  b.onclick=()=>{try{const cur=localStorage.getItem(SAVE_KEY);if(cur&&!/"Partie de test/.test(cur)&&!localStorage.getItem(TEST_BACKUP))localStorage.setItem(TEST_BACKUP,cur);}catch(e){}
-  startGame(testState($('#name').value.trim()||'Testeur'),true);setTimeout(()=>say('🧪 <b>Partie de test</b> : niveau 50, 24 sorts au rang III + Oubli, 3 jeux de 5 sorts (bouton ⇄) : A combat, B les 4 légendaires, C les 4 sorts de garde, balai 🧹 et tous les objets. Ta partie normale est mise de côté (écran d’accueil avec ?test).','gm'),1500);};})();
+  startGame(testState($('#name').value.trim()||'Testeur'),true);setTimeout(()=>say('🧪 <b>Partie de test</b> : niveau 50, 24 sorts au rang III + Oubli, 3 jeux de 6 sorts (bouton ⇄) : A combat, B les 4 légendaires, C les 4 sorts de garde, balai 🧹 et tous les objets. Ta partie normale est mise de côté (écran d’accueil avec ?test).','gm'),1500);};})();
 })();
 </script>
 </body>

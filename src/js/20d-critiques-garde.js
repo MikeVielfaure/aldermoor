@@ -101,3 +101,19 @@ function gardeTick(dt){if(!started)return;
   GARDE_ORD.forEach(k=>{const G=GARDE_SP[k],ok=gardeHas(k);h+='<div style="margin:5px 0;'+(ok?'':'opacity:.7')+'">'+(ok?'🛡 <b>'+esc(G.name)+'</b> <span class="mu">— '+esc(G.desc)+'</span>':'❔ <span class="mu">Gagne un duel à l’Arène pour apprendre une nouvelle parade.</span>')+'</div>';});
   h+='<div class="mu" style="margin-top:6px">✦ Coups critiques : '+(S.crits||0)+' · primes : '+(S.primes||0)+'</div>';
   const b=$('#book-body'),d=document.createElement('div');d.innerHTML=h+'</div>';b.insertBefore(d.firstChild,b.children[1]||null);};}
+
+/* ================= ÉCRAN ÉPURÉ : fenêtre du personnage, bulle d'action ================= */
+// la bulle « Cueillir… / Parler à… » est le bouton Agir (il n'apparaît que s'il y a quelque chose à faire)
+btn('#hint',interact);
+$('#info').addEventListener('click',()=>{if(started&&!anyModal()){sfx('click');openBook('perso');}});
+$('#tracker').addEventListener('click',()=>{if(started&&!anyModal()){sfx('click');openBook('quetes');}});
+{const _r=renderBook;renderBook=function(){_r.apply(this,arguments);if(bookTab!=='perso')return;const L=lvl(),R=rankOf(L),nx=RANKS.find(r=>r.min>L),D=S.duels||{w:0,l:0};
+  const row=(k,v)=>'<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span class="mu">'+k+'</span><b style="text-align:right">'+v+'</b></div>';
+  let h='<div class="it"><h4 style="font-family:Cinzel,serif;color:var(--gold);font-size:17px">'+esc(S.name)+'</h4><div class="mu">'+R.n+' · niveau '+L+(nx?' · '+nx.n+' au niveau '+nx.min:'')+'</div>'+
+   '<div class="bar" style="width:100%;margin-top:8px"><i style="width:'+(S.xp%100)+'%;background:linear-gradient(90deg,#c99a2e,#f3cf7a)"></i></div><div class="mu" style="margin-top:3px">'+(S.xp%100)+'/100 XP avant le niveau '+(L+1)+'</div></div><div class="it">'+
+   row('Jour',S.day+' · '+fmtTime(S.time))+row('Lieu',$('#i-loc').textContent)+row('Mana',Math.floor(mana)+' / '+manaMax())+row('Emplacements de sorts',R.slots+' (jeu '+SET_N[S.setIdx||0]+' actif sur 3)')+
+   row('Sorts connus',S.spells.length)+row('Sorts légendaires',Object.keys(LEG_SP).filter(legHas).length+' / 4')+row('Sorts de garde',GARDE_ORD.filter(gardeHas).length+' / 4')+
+   row('Coups critiques',(S.crits||0)+' · primes '+(S.primes||0))+row('Duels',D.w+' gagné'+(D.w>1?'s':'')+' · '+D.l+' perdu'+(D.l>1?'s':''))+row('Combos découverts',S.combos.length+' / '+COMBOS.length)+
+   (Object.keys(BUFF).length?row('Potions actives',Object.keys(BUFF).map(k=>POTIONS[k].n+' '+Math.ceil(BUFF[k])+' s').join(', ')):'')+
+   (S.dragonMort?row('Ignivor','vaincue (jour '+S.dragonMort+')'):'')+'</div><div class="mu">Touche le cadre en haut à gauche pour rouvrir cette fenêtre.</div>';
+  $('#book-body').innerHTML=h;$('#book-title').textContent='Personnage';};}

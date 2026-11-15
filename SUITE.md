@@ -55,8 +55,17 @@
 - 4 sorts de garde, un par duel gagné : Rempart de pierre, Égide miroir (renvoie les tirs des duellistes,
   se brise après 2 boules de feu d'Ignivor), Haie de ronces, Mur d'eau.
 - Démantibulus agit en duel (30 %, puis 10 %) ; Souffle du dragon plus long (17 m) et plus large.
-- Boutons de sort : 1-2-3 en arc près du pouce, 4-5 derrière, ⇄ en bas à gauche ; un peu plus petits en paysage.
+- Boutons (croquis du joueur, 2026-11-15) : 6 sorts autour de Saut (1-2 petits collés à Saut, 3 à 6 en arc),
+  ⇄ et Agir au-dessus (Agir seulement quand il y a quelque chose à faire, la bulle « Cueillir… » se touche aussi).
+  Icônes d'élément sans texte. Cadre en haut à gauche = fenêtre du personnage (onglet Perso). 6e emplacement :
+  rang « Maître des Arcanes » (niveau 25).
 - Ignivor se tourne enfin vers le joueur (un commentaire mal placé l'en empêchait).
+
+## Monde réaliste (souhait du joueur, 2026-11-15)
+- itch.io bloque les téléchargements automatiques (Cloudflare) : le joueur peut déposer les packs dans assets/brut.
+- Essai de photos CC0 Poly Haven à la place des textures peintes (tools/textures.mjs) : presque invisible
+  (les photos lissées de loin), donc pas intégré. Le vrai gain viendrait de modèles (rochers, arbres,
+  créatures) et de cartes de relief, plus lourds sur téléphone : à décider avec le joueur.
 
 ## Idées proposées par le joueur, pas encore faites
 - Acheter un terrain, l'aménager, y faire pousser des plantes (demande une monnaie et des achats).

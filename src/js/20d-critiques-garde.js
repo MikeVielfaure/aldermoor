@@ -14,7 +14,7 @@ function prime(e){const xp=10+Math.floor(rnd(0,7));gainXP(xp);S.primes=(S.primes
 // au lancement : on tire le critique et on habille le sort
 {const _cs=castSpell;castSpell=function(sp){if(!sp||sp.form==='util'||sp.special)return _cs.apply(this,arguments);
   const now=performance.now()/1000,ready=!((CD[sp.id]||0)>now||player.cd>0)&&mana>=spellCost(sp);
-  if(!ready||Math.random()>=critChance(sp))return _cs.apply(this,arguments);
+  if(!ready||(!CRIT_FORCE&&Math.random()>=critChance(sp)))return _cs.apply(this,arguments);
   const n0=PROJ.length;CRITNOW=true;let r;try{r=_cs.apply(this,arguments);}finally{CRITNOW=false;}
   S.crits=(S.crits||0)+1;const c=ELEM[sp.el].c;
   PROJ.slice(n0).forEach(p=>{p.crit=true;p.o.scale.multiplyScalar(1.6);p.o.add(glow(0xffd27a,2.4,0.85));p.life+=0.4;

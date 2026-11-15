@@ -87,10 +87,12 @@
 - Balai dans la Faille (plafond 6 m au-dessus du sol pour rester à portée des monstres).
 - Projectiles 30 % plus rapides ; chaque coup sur une créature se sent (arrêt, secousse, éclat).
 
-## À discuter : enchantements (proposé au joueur le 2026-11-15)
-- Enchanter ses sorts de garde (ignifuge, durée, épines…) et ses objets, avec des ingrédients et des essences,
-  sur une table d'enchantement (métier d'Enchanteur déjà souhaité).
-- Visée plus longue : 24 m à pied, 30 m en vol (et cibles au sol visées depuis le ciel), verrouillage 42 m.
+## Fait en v27 (novembre 2026)
+- Sorts chargés : doigt appuyé (attaque/zone), lueur sur la baguette, plus gros et plus fort, mana ×1,6 au
+  maximum ; charge pleine = critique garanti. Tapotement = lancer au relâché.
+- Enchantements (Table près de la Tour-Bibliothèque, 2 essences + 2 cristaux) : durée, épines, égide renforcée,
+  ronces ignifuges, cœur de givre. Un par sort de garde (S.ench).
+- Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Monde réaliste (souhait du joueur, 2026-11-15)
 - Le joueur précise : « réaliste mais que ça reste un jeu » ; garder le style actuel et le soigner.
@@ -130,7 +132,6 @@
 
 ## Constats des tests (à améliorer)
 - La Faille : vagues 1-3 trop faciles, boss trop brutal → montée plus progressive.
-- Idée : maintenir un bouton de sort pour le charger (plus puissant).
 - « Là où je regarde » + aide désactivée ne peut pas toucher en hauteur (0 %) : à masquer ou corriger.
 - Un toucher très court en tournant la caméra peut poser un « point visé » involontaire.
 - Le décor v13 ajoute environ 25 appels de dessin et 20 à 30 % de triangles dans les vues les plus

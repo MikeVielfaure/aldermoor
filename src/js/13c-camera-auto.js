@@ -18,16 +18,18 @@ function camAutoTick(dt){if(!started||anyModal()||TALK||CAMA.mode===0)return;con
  let ix=joy.x,iy=joy.y;if(keys.KeyW||keys.KeyZ||keys.ArrowUp)iy+=1;if(keys.KeyS||keys.ArrowDown)iy-=1;if(keys.KeyA||keys.KeyQ||keys.ArrowLeft)ix-=1;if(keys.KeyD||keys.ArrowRight)ix+=1;
  const mag=Math.min(1,Math.hypot(ix,iy)),moving=mag>0.15;
  // combat : la menace hostile la plus proche, si elle sort du champ de vision
- let turned=false;
- if(CAMA.mode===2&&calm>1.2&&!(AIM.lock&&AIMO.follow)&&S.zone==='monde'){CAMA.tT-=dt;if(CAMA.tT<=0){CAMA.tT=0.25;let best=null,bd=14;
+ let turned=false,threatYaw=null,threatD=99;
+ if(CAMA.mode===2&&calm>1.2&&!(AIM.lock&&AIMO.follow)&&S.zone==='monde'){CAMA.tT-=dt;if(CAMA.tT<=0){CAMA.tT=0.25;let best=null,bd=14;{/* une créature déjà suivie le reste jusqu'à 20 m (on peut reculer sans que la caméra décroche) */const c=CAMA.threat;if(c&&ENT.includes(c)&&!c.data.calme&&!c.data.duel){const dc=Math.hypot(c.x-player.x,c.z-player.z);if(dc<20){best=c;bd=dc*0.8;}}}
    for(const e of ENT){if(e.kind!=='creature'||e.data.calme||e.data.duel)continue;const d=Math.hypot(e.x-player.x,e.z-player.z);if(d<bd){bd=d;best=e;}}
    if(typeof BOSS!=='undefined'&&BOSS.on&&BOSS.e&&ENT.includes(BOSS.e))best=BOSS.e;CAMA.threat=best;} // boss : priorité à Ignivor
-  const e=CAMA.threat;if(e&&ENT.includes(e)){const want=Math.atan2(e.x-player.x,e.z-player.z),d=angDiff(want,camYaw),cone=0.55;
-   if(Math.abs(d)>cone){camYaw+=(d-Math.sign(d)*cone)*Math.min(1,dt*3.2);turned=true;}
+  const e=CAMA.threat;if(e&&ENT.includes(e)){const want=Math.atan2(e.x-player.x,e.z-player.z),d=angDiff(want,camYaw),dd=Math.hypot(e.x-player.x,e.z-player.z),close=dd<9,cone=close?0.32:0.55;threatYaw=want;threatD=dd;
+   /* une créature proche est gardée plus près du centre, et rattrapée plus vite */if(Math.abs(d)>cone){camYaw+=(d-Math.sign(d)*cone)*Math.min(1,dt*(close?4.5:3.2));turned=true;}
    if(e.data.dragon)camPitch+=(0.1-camPitch)*Math.min(1,dt*1.5);}} // on lève les yeux vers le dragon
  // suivi des déplacements
  if(!turned&&moving&&calm>0.8&&!(AIM.lock&&AIMO.follow)){const by=MOVY.on?MOVY.yaw:camYaw,fx=Math.sin(by),fz=Math.cos(by),mx=fx*iy-fz*ix,mz=fz*iy+fx*ix,head=Math.atan2(mx,mz),d=angDiff(head,camYaw);
-  {/* la caméra se replace derrière le joueur, aussi en marche arrière (demi-tour en ~2 s) */const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95,k=(FLY.on?2.3:run?1.35:0.95)*Math.min(1,Math.abs(d)/1.2+0.15);camYaw+=d*Math.min(1,dt*k);}}
+  /* en combat, si l'on s'éloigne (ou tourne autour) d'une créature proche, la caméra la garde en vue : pas de demi-tour */
+  const flee=threatYaw!==null&&threatD<20&&Math.abs(angDiff(head,threatYaw))>1.4;
+  if(!flee){/* la caméra se replace derrière le joueur, aussi en marche arrière (demi-tour en ~2 s) */const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95,k=(FLY.on?2.3:run?1.35:0.95)*Math.min(1,Math.abs(d)/1.2+0.15);camYaw+=d*Math.min(1,dt*k);}}
  // inclinaison : retour doux vers une vue normale en marchant
  if(moving&&calm>2.5&&!FLY.on){const want=S.zone==='monde'?0.38:0.32;camPitch+=(want-camPitch)*Math.min(1,dt*0.8);}}
 {const _at=aimTick;aimTick=function(dt){const r=_at.apply(this,arguments);try{camAutoTick(dt);}catch(e){}return r;};}

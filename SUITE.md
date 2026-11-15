@@ -105,6 +105,9 @@
 - v29 : Fusions à deux mains (8, < 0,7 s entre deux sorts d'éléments différents, S.fus) ; Pacte de la Lune Noire
   (2e quête interdite : Siphon d'âme + Domination, ou Aube purificatrice + 1 talent) ; événements surprises
   (caravane attaquée, invasion de la Faille à Brumepont, marchand de la nuit qui accepte essences et cristaux).
+- v29.1 : en balai, la caméra dirige le vol (vers le bas on pique, vers le haut on monte, zone neutre 0,22-0,5) ;
+  en combat, s'éloigner d'une créature proche ne fait plus faire demi-tour à la caméra (elle la garde en vue
+  jusqu'à 20 m, et la recentre plus vite quand elle est à moins de 9 m).
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Monde réaliste (souhait du joueur, 2026-11-15)

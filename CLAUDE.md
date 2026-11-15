@@ -77,6 +77,8 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 20h-nuits-etoilees | minuit sans sommeil forcé (`nightfall` remplacé, `dawnTick` → MJ à 7 h, `sleepHere`), aurores, étoiles filantes, étoiles tombées `NIGHT.stars`, vœu (`S.wish`, +1 `S.relics`) |
 | 20i-fusions-pacte | fusions à deux mains (`FUSIONS`, `FUS`, `fusion()`), second doigt sur un sort = lancer immédiat, Pacte de la Lune Noire (`PACTE_SP`, `pacteStart`, `pacteChoice`, créature dominée `D.charmed`) |
 | 20j-evenements | événements surprises `SURP` (`evCaravane`, `evInvasion`, `evMarchand` + `SHOP`), toutes les 3-5 min |
+| 20k-perf-lueurs | lueurs (Sprite) au-delà de 62 m sur le calque 1 (non dessiné), sans toucher à .visible ; `userData.noCull` pour les exceptions |
+| 20l-elites | créatures élites (`makeElite`, `ELITE_POW`, couronne, butin, `S.elites`) |
 | 21-boucle | `update(dt)`, `loop()`, `startGame()`, puis la séquence de construction du monde |
 | 22-appli | plein écran, écran qui reste allumé, enregistrement du mode hors-ligne |
 | 22b-partie-test | partie de test niveau 50 (`?test` dans l'adresse), sauvegarde normale mise de côté |

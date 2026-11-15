@@ -108,6 +108,8 @@
 - v29.1 : en balai, la caméra dirige le vol (vers le bas on pique, vers le haut on monte, zone neutre 0,22-0,5) ;
   en combat, s'éloigner d'une créature proche ne fait plus faire demi-tour à la caméra (elle la garde en vue
   jusqu'à 20 m, et la recentre plus vite quand elle est à moins de 9 m).
+- v30 : créatures élites (~1/14, couronne, ×3 PV, bouclier / régénérante / meneuse / enragée, butin) ; lueurs
+  lointaines (> 62 m) non dessinées. Mesures (téléphone en paysage) : 90 à 480 dessins selon les lieux, ~120 la nuit.
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Monde réaliste (souhait du joueur, 2026-11-15)
@@ -116,6 +118,10 @@
 - Essai de photos CC0 Poly Haven à la place des textures peintes (tools/textures.mjs) : presque invisible
   (les photos lissées de loin), donc pas intégré. Le vrai gain viendrait de modèles (rochers, arbres,
   créatures) et de cartes de relief, plus lourds sur téléphone : à décider avec le joueur.
+
+## Idées proposées, pas encore faites
+- Familier (animal apprivoisé), terrain à soi (maison, jardin, monnaie), pêche magique, donjon sous le Pic de
+  Givrecorne, tournoi à l’Arène (5 duels d’affilée).
 
 ## Idées proposées par le joueur, pas encore faites
 - Acheter un terrain, l'aménager, y faire pousser des plantes (demande une monnaie et des achats).

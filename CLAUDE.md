@@ -74,6 +74,7 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 20e-vie-creatures | vie du joueur `VIE` (`vieHurt`, `vieFaint`, barre `#viebox`), potion de soin, barres de vie des créatures `CBAR`, mort animée `CORPSES` (enrobage de `removeEnt`), PNJ qui se tournent vers le joueur |
 | 20f-iles-celestes | Îles du Miroir-Ciel (`ILES`, courants `VENTS`, cristaux `CRIST`, Autel des Vents → `S.elan`), île = entrée COLS avec `bot` (dessous), coups plus sensibles |
 | 20g-charge-enchant | sorts chargés (`CHG`, `CHGNOW`/`CRIT_FORCE` dans pow et 20d, écoute en capture sur `#ctrls`), enchantements `ENCH`/`S.ench` (table `ENCHT`), Course céleste `CRACE` |
+| 20h-nuits-etoilees | minuit sans sommeil forcé (`nightfall` remplacé, `dawnTick` → MJ à 7 h, `sleepHere`), aurores, étoiles filantes, étoiles tombées `NIGHT.stars`, vœu (`S.wish`, +1 `S.relics`) |
 | 21-boucle | `update(dt)`, `loop()`, `startGame()`, puis la séquence de construction du monde |
 | 22-appli | plein écran, écran qui reste allumé, enregistrement du mode hors-ligne |
 | 22b-partie-test | partie de test niveau 50 (`?test` dans l'adresse), sauvegarde normale mise de côté |
@@ -195,6 +196,7 @@ Non vérifiable par le bot : le son (à l'oreille), la fluidité sur vrai télé
 - Petites modifications ciblées, `npm run check` après chacune, `npm test` avant de dire « fini ».
 - Garder le charme : pas de menus lourds, liberté du joueur (les sorts agissent sur le monde, les
   combinaisons imprévues doivent marcher), le MJ peut tout réutiliser.
+- Le joueur ne veut pas être téléporté contre son gré (nuit, sommeil…) : garder la liberté de mouvement.
 - Avant un gros changement : `git commit` (les anciennes versions sont aussi dans `sauvegardes/`).
 
 ## Idées en attente (voir SUITE.md)

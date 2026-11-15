@@ -29,8 +29,10 @@ await ev('keys.KeyD=keys.KeyW=keys.KeyS=false;for(let k=0;k<120;k++){update(0.03
 console.log('duel result',res,await ev('[!!DUEL,S.duels]'));
 // map & options
 await ev('openMap()');await sl(300);await ev(closeAll);await ev('openOpts()');await sl(200);await ev(closeAll);
-// night -> sleep
-await ev('S.time=23.99*60');await ev('bot.run(1)');await p.click('#b-sleep');await sl(1500);await ev('bot.run(1)');
+// minuit : le jour change sur place (plus d'écran de sommeil ni de téléportation), puis le matin
+await ev('window.__p0=[player.x,player.z];S.time=23.99*60');await ev('bot.run(1)');await sl(500);
+console.log('minuit',await ev('[S.day,!$("#night").classList.contains("hidden"),Math.hypot(player.x-window.__p0[0],player.z-window.__p0[1])<6]'));
+await ev('S.time=6.99*60');await ev('bot.run(1)');await sl(1500);await ev('bot.run(1)');
 console.log('day2',await ev('[S.day,fmtTime(S.time),S.zone]'));
 // save & reload continue
 await ev('save()');await p.reload();await p.evaluate(()=>{window.__noAutoQ=1;});await sl(1500);await p.click('#b-cont');await sl(1500);

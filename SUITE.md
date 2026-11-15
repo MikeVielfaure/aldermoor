@@ -99,6 +99,9 @@
   compte que s'il monte jusqu'au rayon (plus de rapprochement brusque en vol) ; direction de marche gardée tant que
   le doigt reste sur le joystick (MOVY) : la caméra fait demi-tour derrière le joueur en marche arrière ; toucher
   près des commandes ne vise pas (tapBlocked) ; partie de test : jeu A choisi par le joueur.
+- Nuits étoilées (v28) : plus de téléportation pour dormir (minuit = nouveau jour sur place, MJ au lever du jour,
+  « Dormir ici » dans la fenêtre du personnage) ; aurores par nuit claire, étoiles filantes, jusqu'à 3 étoiles qui
+  tombent près du joueur (2 essences + 1 cristal) ; 3 la même nuit = vœu (+1 point de talent).
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Monde réaliste (souhait du joueur, 2026-11-15)

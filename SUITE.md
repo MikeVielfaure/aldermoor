@@ -95,6 +95,10 @@
 - Retours du joueur (v27.1) : rochers du rempart à 2,1 m (saut normal bloqué, saut du vent et balai passent),
   ronces 2,6 m ; sorts de garde posés au point marqué / viseur libre / devant la cible verrouillée (ronces = cage
   fermée autour) ; visée : le regard compte plus que la distance, la créature touchée reste prioritaire 4 s.
+- Retours v27.2 : Pas de l'ombre marche dans les Landes (limite de la vallée codée en dur) ; caméra : un obstacle ne
+  compte que s'il monte jusqu'au rayon (plus de rapprochement brusque en vol) ; direction de marche gardée tant que
+  le doigt reste sur le joystick (MOVY) : la caméra fait demi-tour derrière le joueur en marche arrière ; toucher
+  près des commandes ne vise pas (tapBlocked) ; partie de test : jeu A choisi par le joueur.
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Monde réaliste (souhait du joueur, 2026-11-15)

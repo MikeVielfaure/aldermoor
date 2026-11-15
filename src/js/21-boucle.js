@@ -1,4 +1,11 @@
 let CAMD=8,CAMPS=0.38; // caméra : distance et inclinaison lissées
+/* hauteur du sommet d'un obstacle (absolue), mise en cache */
+function colTop(c){if(c.h!==undefined)return c.h;if(c._top===undefined)c._top=gh(c.x,c.z)+(c.fh||(c.tree?7.6*c.tree.s:6.5));return c._top;}
+/* direction de marche : prise sur la caméra quand on pose le doigt, puis gardée tant qu'on le garde (la caméra
+   automatique peut alors pivoter derrière le joueur, même en marche arrière, sans le faire tourner en rond) ;
+   un glissement manuel de la caméra la décale d'autant (20-controles). */
+const MOVY={on:false,yaw:0};
+function moveYaw(active){if(!active){MOVY.on=false;return camYaw;}if(!MOVY.on){MOVY.on=true;MOVY.yaw=camYaw;}return MOVY.yaw;}
 /* ================= BOUCLE ================= */
 let started=false,fastT=0,last=performance.now(),ambT=40,saveT=0,hudT=0,focT=0,waterT=0;
 const cTopD=new THREE.Color(0x3f86e0),cBotD=new THREE.Color(0xc4e0f6),cTopN=new THREE.Color(0x050818),cBotN=new THREE.Color(0x141c3c),cDusk=new THREE.Color(0xf0905a),tTop=new THREE.Color(),tBot=new THREE.Color();
@@ -25,7 +32,8 @@ function update(dt){
   let ix=joy.x,iy=joy.y;if(keys.KeyW||keys.KeyZ||keys.ArrowUp)iy+=1;if(keys.KeyS||keys.ArrowDown)iy-=1;if(keys.KeyA||keys.KeyQ||keys.ArrowLeft)ix-=1;if(keys.KeyD||keys.ArrowRight)ix+=1;
   const mag=Math.min(1,Math.hypot(ix,iy));const slick=onSlick(player);
   let tvx=0,tvz=0;
-  if(mag>0.08){const fx=Math.sin(camYaw),fz=Math.cos(camYaw),rx=-fz,rz=fx;let mx=fx*iy+rx*ix,mz=fz*iy+rz*ix;const l=Math.hypot(mx,mz);mx/=l;mz/=l;const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95;const sp=(run?8.5:4.5)*mag*(1+0.1*tal('agil'))*(slick?1.6:1)*(player.swim?0.45:1)*(player.wade?0.6:1)*(BUFF.celerite?1.5:1);if(FLY.on){const fs=(run?18:11)*mag*(S.elan?1.3:1);tvx=mx*fs;tvz=mz*fs;}else{tvx=mx*sp;tvz=mz*sp;}
+  if(mag<=0.08)moveYaw(false);
+  if(mag>0.08){const by=moveYaw(true),fx=Math.sin(by),fz=Math.cos(by),rx=-fz,rz=fx;let mx=fx*iy+rx*ix,mz=fz*iy+rz*ix;const l=Math.hypot(mx,mz);mx/=l;mz/=l;const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95;const sp=(run?8.5:4.5)*mag*(1+0.1*tal('agil'))*(slick?1.6:1)*(player.swim?0.45:1)*(player.wade?0.6:1)*(BUFF.celerite?1.5:1);if(FLY.on){const fs=(run?18:11)*mag*(S.elan?1.3:1);tvx=mx*fs;tvz=mz*fs;}else{tvx=mx*sp;tvz=mz*sp;}
    let tr=Math.atan2(mx,mz),d=tr-player.ry;d=Math.atan2(Math.sin(d),Math.cos(d));player.ry+=d*Math.min(1,dt*12);}
   const acc=FLY.on?2.6:player.dash>0?0:(slick?1.1:(player.grounded?14:5));
   player.vx+=(tvx-player.vx)*Math.min(1,dt*acc);player.vz+=(tvz-player.vz)*Math.min(1,dt*acc);
@@ -62,7 +70,7 @@ function update(dt){
  hudT+=dt;if(hudT>0.25){hudT=0;updateHUD();updateTracker();}
  fastT+=dt;if(fastT>0.08){fastT=0;updSlotsFast();}
  ambientAnim(dt,t);lighting();
- const zn=S.zone,inD=zn==='donjon';let cp=camPitch,dist=8*CAMZ;let la=0;if(zn!=='monde'){inCam(zn);cp=IC[0];dist=IC[1];la=IC[2];}fovTo(zn!=='monde'&&!TALK?IC[3]:FOV0,dt);/* lieux clos : voir 13b-camera-interieurs */if(zn==='monde'){const sx=-Math.sin(camYaw)*Math.cos(cp),sz=-Math.cos(camYaw)*Math.cos(cp);for(let d=1.2;d<=dist;d+=0.4){const x=player.x+sx*d,z=player.z+sz*d;let hit=false;for(const c of COLS){if(c.lake||c.off||(c.h!==undefined&&c.h<player.y+1.9)||(c.bot!==undefined&&c.bot>player.y+2.5))continue;if(c.r!==undefined){const rr=c.tree?c.r+0.5:c.r+0.3;if(Math.abs(x-c.x)<rr&&Math.abs(z-c.z)<rr&&Math.hypot(x-c.x,z-c.z)<rr){hit=true;break;}}else if(Math.abs(x-c.x)<c.hw+0.3&&Math.abs(z-c.z)<c.hd+0.3){hit=true;break;}}if(hit){dist=Math.max(zn==='monde'?2.6:2,d-0.4);break;}}}if(zn==='monde'){let dd=camClear(Math.max(cp,0.12),dist);if(dd<4.2&&cp>=0.12){for(const up of [0.18,0.36]){const c2=Math.min(1.1,cp+up),d2=camClear(c2,dist);if(d2>dd+1.0){cp=c2;dd=d2;if(d2>=4.2)break;}}}dist=Math.max(1.15,dd);}
+ const zn=S.zone,inD=zn==='donjon';let cp=camPitch,dist=8*CAMZ;let la=0;if(zn!=='monde'){inCam(zn);cp=IC[0];dist=IC[1];la=IC[2];}fovTo(zn!=='monde'&&!TALK?IC[3]:FOV0,dt);/* lieux clos : voir 13b-camera-interieurs */if(zn==='monde'){const sx=-Math.sin(camYaw)*Math.cos(cp),sz=-Math.cos(camYaw)*Math.cos(cp);for(let d=1.2;d<=dist;d+=0.4){const x=player.x+sx*d,z=player.z+sz*d,ry=player.y+1.7+Math.sin(cp)*d;let hit=false;for(const c of COLS){if(c.lake||c.off||(c.h!==undefined&&c.h<player.y+1.9)||(c.bot!==undefined&&c.bot>player.y+2.5))continue;if(c.r!==undefined){const rr=c.tree?c.r+0.5:c.r+0.3;if(Math.abs(x-c.x)<rr&&Math.abs(z-c.z)<rr&&Math.hypot(x-c.x,z-c.z)<rr&&colTop(c)>ry){hit=true;break;}}else if(Math.abs(x-c.x)<c.hw+0.3&&Math.abs(z-c.z)<c.hd+0.3&&colTop(c)>ry){hit=true;break;}}if(hit){dist=Math.max(zn==='monde'?2.6:2,d-0.4);break;}}}if(zn==='monde'){let dd=camClear(Math.max(cp,0.12),dist);if(dd<4.2&&cp>=0.12){for(const up of [0.18,0.36]){const c2=Math.min(1.1,cp+up),d2=camClear(c2,dist);if(d2>dd+1.0){cp=c2;dd=d2;if(d2>=4.2)break;}}}dist=Math.max(1.15,dd);}
  /* caméra en orbite : l'angle suit le doigt tout de suite, seule la distance est lissée (elle se rapproche d'un coup devant un obstacle, s'éloigne en douceur) ; avant, la position glissait en ligne droite et coupait à travers le joueur quand on tournait vite */
  if(!TALK){if(dist<CAMD-0.01)CAMD=dist;else CAMD+=(dist-CAMD)*Math.min(1,dt*2.5);dist=CAMD;CAMPS+=(cp-CAMPS)*Math.min(1,dt*12);cp=CAMPS;}
  const cls=zn==='monde'?Math.max(0,3.6-dist):0;const cx=player.x-Math.sin(camYaw)*Math.cos(cp)*dist,cz=player.z-Math.cos(camYaw)*Math.cos(cp)*dist,cy=player.y+1.7+Math.sin(cp)*dist+cls*0.55;

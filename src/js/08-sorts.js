@@ -119,7 +119,7 @@ function doUtil(sp){const el=sp.el,k=pow(el),[dx,dz]=fwd(),c=ELEM[el].c;
   if(!best){say('La lueur tournoie, perplexe : rien à guider dans les environs.','sys');return;}
   const g=new THREE.Group();g.add(new THREE.Mesh(new THREE.SphereGeometry(0.13,10,8),basic(0xfff6c8)));g.add(glow(0xfff1a0,1.4,0.9));g.position.y=1.8;
   addEnt('guide',player.x,player.z,g,{target:best,y:1.8},60);say('✨ Une lueur s’élance vers '+(best.kind==='scroll'?'un parchemin':best.kind==='item'?'un objet de quête':'un événement')+' à '+Math.round(bd)+' m. Suis-la !','sys');}
- else if(el==='ombre'){const D=utilDist(9*Math.min(1.5,k));let tx=player.x,tz=player.z;for(let d=D;d>0.5;d-=0.5){const px=player.x+dx*d,pz=player.z+dz*d;if(isFree({x:px,z:pz},0.4)&&(!inLake({x:px,z:pz})||walkable({x:px,z:pz}))&&Math.hypot(px,pz)<92){tx=px;tz=pz;break;}}
+ else if(el==='ombre'){const D=utilDist(9*Math.min(1.5,k));let tx=player.x,tz=player.z;for(let d=D;d>0.5;d-=0.5){const px=player.x+dx*d,pz=player.z+dz*d;if(isFree({x:px,z:pz},0.4)&&(!inLake({x:px,z:pz})||walkable({x:px,z:pz}))&&(px>1500?Math.hypot(px-2000,pz)<165:Math.hypot(px,pz)<92)){tx=px;tz=pz;break;}}
   for(let i=0;i<30;i++){PN.emit(player.x+rnd(-.4,.4),player.y+rnd(0,2),player.z+rnd(-.4,.4),rnd(-1,1),rnd(0,1),rnd(-1,1),0x150a24,0.6,1.2,0.8,0,1,0.85);PN.emit(tx+rnd(-.4,.4),player.y+rnd(0,2),tz+rnd(-.4,.4),rnd(-1,1),rnd(0,1),rnd(-1,1),0x2a1048,0.6,0.1,0.6,0,1,0.85);}
   player.x=tx;player.z=tz;stealth=Math.max(stealth,2);}
  else if(el==='arcane'){let best=null,bd=20*Math.min(1.5,k);ENT.forEach(e=>{if((e.kind==='scroll'&&!e.data.hidden)||e.kind==='item'){const d=Math.hypot(e.x-player.x,e.z-player.z);if(d<bd){bd=d;best=e;}}});

@@ -68,7 +68,9 @@ function groundPick(x,y){NDC.set(x/window.innerWidth*2-1,-(y/window.innerHeight)
    const hx=o.x+d.x*b,hz=o.z+d.z*b;return {x:hx,y:hAt(hx,hz),z:hz};}}return null;}
 function scr(x,y,z){PV.set(x,y,z).project(camera);if(PV.z>1||PV.z<-1)return null;return [(PV.x+1)/2*window.innerWidth,(1-PV.y)/2*window.innerHeight];}
 function recenter(){AIM.rc=0.7;AIM.nudge={yaw:player.ry,t:0.7};sfx('click');}
-function onTap(x,y){if(!started||anyModal())return;const now=performance.now();
+/* une zone autour des commandes (sorts, joystick, barre du haut) ne pose ni marqueur ni cible : un doigt qui rate un bouton ne vise pas */
+function tapBlocked(x,y){for(const s of ['#ctrls','#joy','.tbtns','#info','#tracker']){const el=$(s);if(!el||el.classList.contains('hidden'))continue;const r=el.getBoundingClientRect(),m=s==='#ctrls'||s==='#joy'?18:8;if(x>r.left-m&&x<r.right+m&&y>r.top-m&&y<r.bottom+m)return true;}return false;}
+function onTap(x,y){if(!started||anyModal()||tapBlocked(x,y))return;const now=performance.now();
  if(now-TAP.last<TAP.dbl&&Math.hypot(x-TAP.lx,y-TAP.ly)<50){TAP.last=0;recenter();return;}TAP.last=now;TAP.lx=x;TAP.ly=y;if(!AIMO.tap)return;
  let best=null,bd=1e9;
  for(const n of npcs){if(n.sleep||n.inDuel||!n.obj.visible)continue;const dw=Math.hypot(n.x-player.x,n.z-player.z);if(dw>5)continue;const s=scr(n.x,gy0(n.x,n.z)+1.1,n.z);if(!s)continue;const dp=Math.hypot(s[0]-x,s[1]-y);if(dp<60&&dp<bd){bd=dp;best={npc:n};}}

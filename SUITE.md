@@ -110,6 +110,9 @@
   jusqu'à 20 m, et la recentre plus vite quand elle est à moins de 9 m).
 - v30 : créatures élites (~1/14, couronne, ×3 PV, bouclier / régénérante / meneuse / enragée, butin) ; lueurs
   lointaines (> 62 m) non dessinées. Mesures (téléphone en paysage) : 90 à 480 dessins selon les lieux, ~120 la nuit.
+- v31 : vitesse de la caméra réglable (douce / normale / rapide par défaut / très rapide : retour derrière le joueur
+  en 3,6 / 2,2 / 1,2 / 0,8 s) ; familier (cerf, poule, panda, pingouin des Landes, apprivoisé avec 2 ingrédients :
+  suit le joueur, ramasse les ingrédients, un don par espèce).
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Monde réaliste (souhait du joueur, 2026-11-15)
@@ -120,7 +123,7 @@
   créatures) et de cartes de relief, plus lourds sur téléphone : à décider avec le joueur.
 
 ## Idées proposées, pas encore faites
-- Familier (animal apprivoisé), terrain à soi (maison, jardin, monnaie), pêche magique, donjon sous le Pic de
+- Terrain à soi (maison, jardin, monnaie), pêche magique, donjon sous le Pic de
   Givrecorne, tournoi à l’Arène (5 duels d’affilée).
 
 ## Idées proposées par le joueur, pas encore faites

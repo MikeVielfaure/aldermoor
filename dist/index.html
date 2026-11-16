@@ -415,7 +415,7 @@ const ptsSpent=()=>Object.values(S.talents||{}).reduce((a,b)=>a+b,0);
 const ptsFree=()=>ptsTotal()-ptsSpent();
 let CAST_K=1; // rang du sort en cours de lancement (19b-sorts-uniques)
 let CRITNOW=false,CHGNOW=0,CRIT_FORCE=false; // CHGNOW : sort chargé (0 à 1), CRIT_FORCE : charge pleine = critique (20g-charge-enchant) // un coup critique est en cours : sort sous sa forme majeure (20d-critiques-garde)
-const pow=el=>(1+0.25*tal(el+'_pow')+0.03*mLvl(el))*wMul(el)*(BUFF.puissance?1.3:1)*karmaMul(el)*CAST_K*(CRITNOW?1.4:1)*(1+0.6*CHGNOW);
+const pow=el=>(1+0.25*tal(el+'_pow')+0.03*mLvl(el))*wMul(el)*(BUFF.puissance?1.3:1)*karmaMul(el)*CAST_K*(CRITNOW?1.4:1)*(1+0.6*CHGNOW)*petMul(el);
 const manaMax=()=>100+25*tal('reserve');
 const manaRegen=()=>9*(1+0.3*tal('flux'))*(lvl()>=15?1.5:1)*(typeof player!=='undefined'&&player.grounded&&player.spd<0.05&&!FLY.on?1.8:1); // immobile : méditation
 function migrate(s){s.inv=s.inv||{};s.rep=s.rep||{};s.zone='monde';s.talents=s.talents||{};s.mastery=s.mastery||{};s.combos=s.combos||[];
@@ -2922,6 +2922,11 @@ function nearFade(s,a,b){s.onBeforeRender=(r,sc,cam)=>{s.getWorldPosition(NFV);s
    Options ⚙ → « Caméra » : manuelle / suit les déplacements / suit + combat (mémorisé). */
 const CAM_MODES=['manuelle','suit les déplacements','suit + combat'];
 const CAMA={mode:2,lastDrag:-9,threat:null,tT:0};
+/* vitesse à laquelle la caméra revient derrière le joueur (Options ⚙ → « Vitesse de la caméra ») */
+const CAM_SPEEDS=[['douce',0.6],['normale',1],['rapide',1.8],['très rapide',2.8]];CAMA.sp=2;
+try{const v=localStorage.getItem('aldermoor-camspeed');if(v!==null&&CAM_SPEEDS[+v])CAMA.sp=+v;}catch(e){}
+const camK=()=>CAM_SPEEDS[CAMA.sp][1];
+function camSpeedNext(){CAMA.sp=(CAMA.sp+1)%CAM_SPEEDS.length;try{localStorage.setItem('aldermoor-camspeed',String(CAMA.sp));}catch(e){}}
 try{const v=+localStorage.getItem('aldermoor-cam');if(v>=0&&v<=2&&localStorage.getItem('aldermoor-cam')!==null)CAMA.mode=v;}catch(e){}
 const angDiff=(a,b)=>Math.atan2(Math.sin(a-b),Math.cos(a-b));
 function camAutoTick(dt){if(!started||anyModal()||TALK||CAMA.mode===0)return;const now=performance.now()/1000;
@@ -2939,14 +2944,17 @@ function camAutoTick(dt){if(!started||anyModal()||TALK||CAMA.mode===0)return;con
    /* une créature proche est gardée plus près du centre, et rattrapée plus vite */if(Math.abs(d)>cone){camYaw+=(d-Math.sign(d)*cone)*Math.min(1,dt*(close?4.5:3.2));turned=true;}
    if(e.data.dragon)camPitch+=(0.1-camPitch)*Math.min(1,dt*1.5);}} // on lève les yeux vers le dragon
  // suivi des déplacements
- if(!turned&&moving&&calm>0.8&&!(AIM.lock&&AIMO.follow)){const by=MOVY.on?MOVY.yaw:camYaw,fx=Math.sin(by),fz=Math.cos(by),mx=fx*iy-fz*ix,mz=fz*iy+fx*ix,head=Math.atan2(mx,mz),d=angDiff(head,camYaw);
+ if(!turned&&moving&&calm>0.8/Math.sqrt(camK())&&!(AIM.lock&&AIMO.follow)){const by=MOVY.on?MOVY.yaw:camYaw,fx=Math.sin(by),fz=Math.cos(by),mx=fx*iy-fz*ix,mz=fz*iy+fx*ix,head=Math.atan2(mx,mz),d=angDiff(head,camYaw);
   /* en combat, si l'on s'éloigne (ou tourne autour) d'une créature proche, la caméra la garde en vue : pas de demi-tour */
   const flee=threatYaw!==null&&threatD<20&&Math.abs(angDiff(head,threatYaw))>1.4;
-  if(!flee){/* la caméra se replace derrière le joueur, aussi en marche arrière (demi-tour en ~2 s) */const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95,k=(FLY.on?2.3:run?1.35:0.95)*Math.min(1,Math.abs(d)/1.2+0.15);camYaw+=d*Math.min(1,dt*k);}}
+  if(!flee){/* la caméra se replace derrière le joueur, aussi en marche arrière (demi-tour en ~2 s) */const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95,k=(FLY.on?2.3:run?1.35:0.95)*camK()*Math.min(1,Math.abs(d)/1.2+0.15);camYaw+=d*Math.min(1,dt*k);}}
  // inclinaison : retour doux vers une vue normale en marchant
  if(moving&&calm>2.5&&!FLY.on){const want=S.zone==='monde'?0.38:0.32;camPitch+=(want-camPitch)*Math.min(1,dt*0.8);}}
 {const _at=aimTick;aimTick=function(dt){const r=_at.apply(this,arguments);try{camAutoTick(dt);}catch(e){}return r;};}
 function camModeNext(){CAMA.mode=(CAMA.mode+1)%3;try{localStorage.setItem('aldermoor-cam',String(CAMA.mode));}catch(e){}}
+
+// ligne d'options : vitesse de la caméra
+{const _ro=renderOpts;renderOpts=function(){_ro.apply(this,arguments);const c=$('#o-cam');if(!c||$('#o-csp'))return;const d=document.createElement('div');d.className='op';d.innerHTML='<span>Vitesse de la caméra</span><button class="ghost sm" id="o-csp">'+CAM_SPEEDS[CAMA.sp][0]+'</button>';const row=c.closest('.op');row.parentNode.insertBefore(d,row.nextSibling);$('#o-csp').onclick=()=>{camSpeedNext();renderOpts();};};}
 /* ================= ÉTAPE 7 : NOUVEAUX LIEUX (MOULIN, MARAIS, RUINES) & OBJETS ================= */
 const POOLS=[{x:51,z:57,r:3.4},{x:58,z:48.5,r:2.8},{x:63.5,z:50,r:2.4},{x:54.5,z:62.5,r:2.6},{x:48,z:51,r:2.0}];
 function poolCarve(x,z){if(x<42||z<42||x>70||z>70)return 0;let m=0;for(const p of POOLS){const d=Math.hypot(x-p.x,z-p.z);if(d<p.r)m=Math.max(m,0.55*smooth(p.r,p.r-1.3,d));}return m;}
@@ -4287,7 +4295,7 @@ function vieTick(dt){if(!started)return;
  {const m=vieMax();if(m>VIE.max)VIE.hp+=m-VIE.max;VIE.max=m;}if(VIE.hp>VIE.max)VIE.hp=VIE.max;
  if(!vieBusy()&&S.zone==='monde'&&!FLY.on){for(const e of ENT){if(e.kind!=='creature')continue;const D=e.data;if(D.calme||D.duel||D.wave||D.dragon||D.frozen>0||D.confused>0)continue;
    D.biteT=(D.biteT||0)-dt;const dp=Math.hypot(player.x-e.x,player.z-e.z);if(dp<1.25&&player.y-gh(player.x,player.z)<1.5&&D.biteT<=0){D.biteT=1.1;vieHurt(e.x>1500?8:5);}}}
- VIE.calm-=dt;if(VIE.calm<=0&&VIE.hp<VIE.max&&!VIE.faint){const med=player.grounded&&player.spd<0.05;VIE.hp=Math.min(VIE.max,VIE.hp+dt*(med?14:6));}
+ VIE.calm-=dt;if(VIE.calm<=0&&VIE.hp<VIE.max&&!VIE.faint){const med=player.grounded&&player.spd<0.05;VIE.hp=Math.min(VIE.max,VIE.hp+dt*(med?14:6)*(S.pet&&S.pet.sp==='panda'?2:1));}
  vieHud();
  // barres de vie des créatures
  for(const [e,B] of CBAR){if(!ENT.includes(e)){scene.remove(B.s);B.s.material.map.dispose();B.s.material.dispose();CBAR.delete(e);}}
@@ -4779,6 +4787,56 @@ function eliteTick(dt){if(!started||S.zone!=='monde')return;const now=performanc
 {const _w=world4Tick;world4Tick=function(dt){const r=_w.apply(this,arguments);try{eliteTick(dt);}catch(e){console.error(e);}return r;};}
 {const _r=renderBook;renderBook=function(){_r.apply(this,arguments);if(bookTab!=='perso')return;const it=$('#book-body').querySelectorAll('.it')[1];if(!it)return;const d=document.createElement('div');
   d.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span class="mu">Élites vaincues</span><b>'+(S.elites||0)+'</b></div>';it.appendChild(d.firstChild);};}
+/* ================= LE FAMILIER =================
+   Dans les Landes, un animal paisible (cerf, poule, panda, pingouin) peut être apprivoisé avec une friandise :
+   2 ingrédients de cueillette (on donne ceux qu'on a le plus). Il te suit partout dans le monde (il t'attend dehors
+   quand tu entres quelque part), ramasse les ingrédients autour de toi, et a un don selon l'espèce :
+   cerf +12 % de vitesse à pied, panda vie qui revient 2× plus vite, pingouin +15 % de puissance de Glace,
+   poule un œuf doré chaque matin (1 essence + 1 cristal). Un seul familier à la fois (fenêtre du personnage : le libérer).
+   S.pet = {sp, name, cname, look, weak}. Le familier est une créature calme marquée data.pet (jamais blessée ni visée). */
+const PET_SP={cerf:{re:/cerf/i,ic:'🦌',don:'+12 % de vitesse à pied',names:['Plume','Brindefeu','Sylve','Écorce']},poule:{re:/poule/i,ic:'🐔',don:'un œuf doré chaque matin (1 essence + 1 cristal)',names:['Cocotte','Pépite','Grain-d’Or','Plumette']},
+ panda:{re:/panda/i,ic:'🐼',don:'ta vie revient 2× plus vite',names:['Brume','Bambou','Moufle','Nuage']},pingouin:{re:/pingouin/i,ic:'🐧',don:'+15 % de puissance de Glace',names:['Givre','Flocon','Banquise','Pingo']}};
+const petSpOf=name=>Object.keys(PET_SP).find(k=>PET_SP[k].re.test(name||''));
+const PET={e:null,herbT:4};
+function petMul(el){return S&&S.pet&&S.pet.sp==='pingouin'&&el==='glace'?1.15:1;}
+function treatItem(){const own=Object.keys(INGR).filter(k=>INGR[k].where&&INGR[k].where.length&&(S.inv[k]||0)>=2).sort((a,b)=>(S.inv[b]||0)-(S.inv[a]||0));return own[0]||null;}
+// point d'action qui suit l'animal apprivoisable le plus proche
+const TAME={x:1e9,z:1e9,e:null};
+station({get x(){return TAME.x;},get z(){return TAME.z;},reach:2.6,hint:()=>{if(!TAME.e||S.pet)return null;const t=treatItem();return t?'Apprivoiser (2 '+INGR[t].n+')':'Apprivoiser : il faut 2 ingrédients de cueillette';},act:()=>tame(TAME.e)});
+function tame(e){if(!e||S.pet||!ENT.includes(e))return;const t=treatItem();if(!t){say('Il te faut une friandise : 2 ingrédients de cueillette du même genre.','sys');return;}
+ const sp=petSpOf(e.data.name);if(!sp)return;S.inv[t]-=2;const P=PET_SP[sp],name=pick(P.names);
+ S.pet={sp,name,cname:e.data.name,look:e.data.look,weak:e.data.weak};const x=e.x,z=e.z;removeEnt(e);petSpawn(x,z);
+ for(let i=0;i<40;i++)PA.emit(x+rnd(-.6,.6),gh(x,z)+rnd(0.5,2),z+rnd(-.6,.6),0,rnd(.5,1.5),0,i%2?0xff7aa0:0xffd0e0,0.3,0.05,rnd(.8,1.4),0,0.5);
+ banner(P.ic+' '+name+' te suit !','Ton familier : '+P.don);sfx('learn');chron('J’ai apprivoisé '+name+' ('+sp+').');
+ say(P.ic+' <b>'+esc(name)+'</b> mange ta friandise et décide de te suivre. Il ramassera les ingrédients autour de toi. Don : '+P.don+'.','gm');save();}
+function petSpawn(x,z){if(!S.pet)return;const P=S.pet;const e=spawnCreatureAt(x,z,P.cname,P.weak,P.look,3,{calme:true,pet:true});e.ttl=Infinity;e.data.eliteChk=1;e.data.name=P.name;PET.e=e;return e;}
+function petFree(){if(!S.pet)return;const n=S.pet.name;if(PET.e&&ENT.includes(PET.e)){const e=PET.e;e.data.pet=false;e.data.hx=e.x;e.data.hz=e.z;e.ttl=120;}PET.e=null;S.pet=null;say('🍃 '+esc(n)+' retourne à la vie sauvage.','sys');save();}
+// le familier n'est jamais blessé, tué ni visé
+{const _h=hurtCreature;hurtCreature=function(e){if(e&&e.data&&e.data.pet)return;return _h.apply(this,arguments);};}
+{const _k=killCreature;killCreature=function(e){if(e&&e.data&&e.data.pet)return;return _k.apply(this,arguments);};}
+{const _c=tgCands;tgCands=function(){return _c.apply(this,arguments).filter(c=>!(c.kind==='crea'&&c.ref.data.pet));};}
+function petTick(dt){if(!started)return;
+ // apprivoisement : l'animal paisible le plus proche (Landes)
+ TAME.e=null;TAME.x=TAME.z=1e9;if(!S.pet&&S.zone==='monde'){let bd=3;for(const e of ENT){if(e.kind!=='creature'||!e.data.calme||e.data.pet||e.data.charmed||!petSpOf(e.data.name))continue;if(e.data.fleeT>0)continue;const d=Math.hypot(e.x-player.x,e.z-player.z);if(d<bd){bd=d;TAME.e=e;TAME.x=e.x;TAME.z=e.z;}}}
+ if(!S.pet)return;
+ if(!PET.e||!ENT.includes(PET.e)){if(S.zone==='monde'){const a=player.ry+Math.PI;petSpawn(player.x+Math.sin(a)*2.5,player.z+Math.cos(a)*2.5);}return;}
+ const e=PET.e,D=e.data;e.obj.visible=S.zone==='monde';if(S.zone!=='monde')return;
+ const a=player.ry+Math.PI+0.6,tx=player.x+Math.sin(a)*2.4,tz=player.z+Math.cos(a)*2.4,dx=tx-e.x,dz=tz-e.z,d=Math.hypot(dx,dz);
+ if(Math.hypot(player.x-e.x,player.z-e.z)>25){e.x=tx;e.z=tz;burst(e.x,gh(e.x,e.z)+1,e.z,0xffd0e0,12,2);}
+ else if(d>0.6){const s=Math.min(d,dt*Math.min(12,1.5+d*2.2));e.x+=dx/d*s;e.z+=dz/d*s;e.obj.rotation.y=Math.atan2(dx,dz);}
+ D.tx=e.x;D.tz=e.z;D.hx=e.x;D.hz=e.z;
+ // il ramasse les ingrédients autour de toi
+ PET.herbT-=dt;if(PET.herbT<=0){PET.herbT=5;const h=ENT.find(o=>o.kind==='herb'&&Math.hypot(o.x-player.x,o.z-player.z)<8);
+  if(h&&h.data.ing){const id=h.data.ing;burst(h.x,gh(h.x,h.z)+0.8,h.z,0xfff1a0,14,2);removeEnt(h);addItem(id,1);say(PET_SP[S.pet.sp].ic+' '+esc(S.pet.name)+' te rapporte : <b>'+esc(INGR[id].n)+'</b>.','sys');}}}
+{const _w=world4Tick;world4Tick=function(dt){const r=_w.apply(this,arguments);try{petTick(dt);}catch(err){console.error(err);}return r;};}
+// la poule pond chaque matin
+{const _d=dawnTick;dawnTick=function(){const before=S.dawnDay;const r=_d.apply(this,arguments);if(S.dawnDay!==before&&S.pet&&S.pet.sp==='poule'){addItem('essence',1);addItem('cristal',1);setTimeout(()=>say('🥚 '+esc(S.pet.name)+' a pondu un <b>œuf doré</b> : +1 essence, +1 cristal.','sys'),2500);}return r;};}
+// fenêtre du personnage
+{const _r=renderBook;renderBook=function(){_r.apply(this,arguments);if(bookTab!=='perso')return;const b=$('#book-body'),d=document.createElement('div');d.className='it';
+  if(S.pet){const P=PET_SP[S.pet.sp];d.innerHTML='<h4>'+P.ic+' '+esc(S.pet.name)+'<span class="badge">familier</span></h4><div class="mu">Don : '+P.don+'. Il ramasse les ingrédients autour de toi.</div><button class="tbtn" id="b-petfree" style="margin-top:8px;background:rgba(255,255,255,.1);color:var(--ink)">Lui rendre sa liberté</button>';}
+  else d.innerHTML='<div class="mu">🐾 Pas de familier. Dans les Landes, approche-toi d’un cerf, d’une poule, d’un panda ou d’un pingouin avec 2 ingrédients de cueillette pour l’apprivoiser.</div>';
+  b.appendChild(d);const fb=$('#b-petfree');if(fb)fb.onclick=()=>{petFree();renderBook();};};}
+{const _wc=worldCtx;worldCtx=function(){const r=_wc.apply(this,arguments);try{if(r&&typeof r==='object')r.familier=S.pet?(S.pet.name+' ('+S.pet.sp+') suit le joueur'):'aucun (on peut apprivoiser cerfs, poules, pandas, pingouins des Landes)';}catch(e){}return r;};}
 let CAMD=8,CAMPS=0.38; // caméra : distance et inclinaison lissées
 /* hauteur du sommet d'un obstacle (absolue), mise en cache */
 function colTop(c){if(c.h!==undefined)return c.h;if(c._top===undefined)c._top=gh(c.x,c.z)+(c.fh||(c.tree?7.6*c.tree.s:6.5));return c._top;}
@@ -4814,7 +4872,7 @@ function update(dt){
   const mag=Math.min(1,Math.hypot(ix,iy));const slick=onSlick(player);
   let tvx=0,tvz=0;
   if(mag<=0.08)moveYaw(false);
-  if(mag>0.08){const by=moveYaw(true),fx=Math.sin(by),fz=Math.cos(by),rx=-fz,rz=fx;let mx=fx*iy+rx*ix,mz=fz*iy+rz*ix;const l=Math.hypot(mx,mz);mx/=l;mz/=l;const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95;const sp=(run?8.5:4.5)*mag*(1+0.1*tal('agil'))*(slick?1.6:1)*(player.swim?0.45:1)*(player.wade?0.6:1)*(BUFF.celerite?1.5:1);if(FLY.on){const fs=(run?18:11)*mag*(S.elan?1.3:1);tvx=mx*fs;tvz=mz*fs;}else{tvx=mx*sp;tvz=mz*sp;}
+  if(mag>0.08){const by=moveYaw(true),fx=Math.sin(by),fz=Math.cos(by),rx=-fz,rz=fx;let mx=fx*iy+rx*ix,mz=fz*iy+rz*ix;const l=Math.hypot(mx,mz);mx/=l;mz/=l;const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95;const sp=(run?8.5:4.5)*mag*(1+0.1*tal('agil'))*(slick?1.6:1)*(player.swim?0.45:1)*(player.wade?0.6:1)*(BUFF.celerite?1.5:1)*(S.pet&&S.pet.sp==='cerf'?1.12:1);if(FLY.on){const fs=(run?18:11)*mag*(S.elan?1.3:1);tvx=mx*fs;tvz=mz*fs;}else{tvx=mx*sp;tvz=mz*sp;}
    let tr=Math.atan2(mx,mz),d=tr-player.ry;d=Math.atan2(Math.sin(d),Math.cos(d));player.ry+=d*Math.min(1,dt*12);}
   const acc=FLY.on?2.6:player.dash>0?0:(slick?1.1:(player.grounded?14:5));
   player.vx+=(tvx-player.vx)*Math.min(1,dt*acc);player.vz+=(tvz-player.vz)*Math.min(1,dt*acc);

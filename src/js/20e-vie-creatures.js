@@ -42,7 +42,7 @@ function vieTick(dt){if(!started)return;
  {const m=vieMax();if(m>VIE.max)VIE.hp+=m-VIE.max;VIE.max=m;}if(VIE.hp>VIE.max)VIE.hp=VIE.max;
  if(!vieBusy()&&S.zone==='monde'&&!FLY.on){for(const e of ENT){if(e.kind!=='creature')continue;const D=e.data;if(D.calme||D.duel||D.wave||D.dragon||D.frozen>0||D.confused>0)continue;
    D.biteT=(D.biteT||0)-dt;const dp=Math.hypot(player.x-e.x,player.z-e.z);if(dp<1.25&&player.y-gh(player.x,player.z)<1.5&&D.biteT<=0){D.biteT=1.1;vieHurt(e.x>1500?8:5);}}}
- VIE.calm-=dt;if(VIE.calm<=0&&VIE.hp<VIE.max&&!VIE.faint){const med=player.grounded&&player.spd<0.05;VIE.hp=Math.min(VIE.max,VIE.hp+dt*(med?14:6));}
+ VIE.calm-=dt;if(VIE.calm<=0&&VIE.hp<VIE.max&&!VIE.faint){const med=player.grounded&&player.spd<0.05;VIE.hp=Math.min(VIE.max,VIE.hp+dt*(med?14:6)*(S.pet&&S.pet.sp==='panda'?2:1));}
  vieHud();
  // barres de vie des créatures
  for(const [e,B] of CBAR){if(!ENT.includes(e)){scene.remove(B.s);B.s.material.map.dispose();B.s.material.dispose();CBAR.delete(e);}}

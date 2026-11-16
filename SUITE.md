@@ -119,6 +119,8 @@
 - v32.1 (mêlée) : contact créature = séparation douce (la créature recule, plus de projection de 0,8 m par image :
   pointes à 39 m/s mesurées, maintenant 8,5) ; direction de marche : suit toute rotation de caméra sauf la caméra
   automatique (CAMA.autoAcc) ; caméra manuelle : plus de petit recentrage après un sort (camNudge).
+- v33 : le Domaine (terrain 300 🪙 près de Brumepont ; maison 600 🪙 en 3 styles, jardin 4 parcelles 200 🪙, chaudron
+  150 🪙, lanternes et fleurs 80 🪙) ; maison = repos, réveil après évanouissement, Pierre de rappel.
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Monde réaliste (souhait du joueur, 2026-11-15)
@@ -129,7 +131,7 @@
   créatures) et de cartes de relief, plus lourds sur téléphone : à décider avec le joueur.
 
 ## Idées proposées, pas encore faites
-- Terrain à soi (maison, jardin, monnaie), pêche magique, donjon sous le Pic de
+- Domaine : intérieur de la maison (meubles à acheter), animaux du familier au jardin ; pêche magique, donjon sous le Pic de
   Givrecorne, tournoi à l’Arène (5 duels d’affilée).
 
 ## Idées proposées par le joueur, pas encore faites

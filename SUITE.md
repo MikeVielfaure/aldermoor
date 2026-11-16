@@ -116,6 +116,9 @@
 - v32 : pièces d’or (S.or) ; Échoppe de l’Artisan à Brumepont (baguettes, robes, rachat des récoltes) ;
   6 baguettes et 6 robes (bonus de puissance, mana, vitesse, vie, critiques ; couleur de robe et lueur de baguette) ;
   Baguette du dragon sur Ignivor, équipement parfois sur les élites. Prochaine étape possible : terrain et maison (or).
+- v32.1 (mêlée) : contact créature = séparation douce (la créature recule, plus de projection de 0,8 m par image :
+  pointes à 39 m/s mesurées, maintenant 8,5) ; direction de marche : suit toute rotation de caméra sauf la caméra
+  automatique (CAMA.autoAcc) ; caméra manuelle : plus de petit recentrage après un sort (camNudge).
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Monde réaliste (souhait du joueur, 2026-11-15)

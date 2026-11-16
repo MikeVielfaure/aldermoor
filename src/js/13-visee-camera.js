@@ -55,7 +55,7 @@ function homeProj(p,dt){const c=p.ht;if(!tgAlive(c)){p.ht=null;return;}const T=t
  const sp=Math.hypot(p.vx,p.vy,p.vz)||1;const cx=p.vx/sp,cy=p.vy/sp,cz=p.vz/sp,wx=dx/d,wy=dy/d,wz=dz/d;const dot=clamp(cx*wx+cy*wy+cz*wz,-1,1),ang=Math.acos(dot);
  if(ang<1e-4)return;const k=Math.min(1,turn/ang);let nx=cx+(wx-cx)*k,ny=cy+(wy-cy)*k,nz=cz+(wz-cz)*k;const nl=Math.hypot(nx,ny,nz)||1;p.vx=nx/nl*sp;p.vy=ny/nl*sp;p.vz=nz/nl*sp;
  if(p.el==='glace')p.o.lookAt(o.x+p.vx,o.y+p.vy,o.z+p.vz);}
-function camNudge(yaw){if(AIMO.mode!=='camera'||(AIM.lock&&AIMO.follow))return;const d=Math.atan2(Math.sin(yaw-camYaw),Math.cos(yaw-camYaw));if(Math.abs(d)>0.3)AIM.nudge={yaw:camYaw+d*0.6,t:0.6};}
+function camNudge(yaw){if(AIMO.mode!=='camera'||(AIM.lock&&AIMO.follow)||(typeof CAMA!=='undefined'&&CAMA.mode===0))return; /* caméra manuelle : elle ne tourne jamais toute seule */const d=Math.atan2(Math.sin(yaw-camYaw),Math.cos(yaw-camYaw));if(Math.abs(d)>0.3)AIM.nudge={yaw:camYaw+d*0.6,t:0.6};}
 {const _cs3=castSpell;castSpell=function(sp){if(DUEL)DUEL.lastForm=sp.form;const now=performance.now()/1000;const ok=!((CD[sp.id]||0)>now||player.cd>0||mana<spellCost(sp));let usedPt=false;
  if(ok&&sp.form!=='zone'){let yaw=(AIMO.mode==='camera'||AIMO.mode==='libre')&&!AIMO.legacy?camYaw:player.ry;const T=castTarget(sp.el,Math.sin(yaw),Math.cos(yaw),sp.form==='util');if(T){yaw=Math.atan2(T.x-player.x,T.z-player.z);usedPt=T.kind==='pt';camNudge(yaw);}player.ry=yaw;}
  const r=_cs3.apply(this,arguments);if(ok&&usedPt)AIM.pt=null;return r;};}

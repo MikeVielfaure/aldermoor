@@ -2821,7 +2821,7 @@ function homeProj(p,dt){const c=p.ht;if(!tgAlive(c)){p.ht=null;return;}const T=t
  const sp=Math.hypot(p.vx,p.vy,p.vz)||1;const cx=p.vx/sp,cy=p.vy/sp,cz=p.vz/sp,wx=dx/d,wy=dy/d,wz=dz/d;const dot=clamp(cx*wx+cy*wy+cz*wz,-1,1),ang=Math.acos(dot);
  if(ang<1e-4)return;const k=Math.min(1,turn/ang);let nx=cx+(wx-cx)*k,ny=cy+(wy-cy)*k,nz=cz+(wz-cz)*k;const nl=Math.hypot(nx,ny,nz)||1;p.vx=nx/nl*sp;p.vy=ny/nl*sp;p.vz=nz/nl*sp;
  if(p.el==='glace')p.o.lookAt(o.x+p.vx,o.y+p.vy,o.z+p.vz);}
-function camNudge(yaw){if(AIMO.mode!=='camera'||(AIM.lock&&AIMO.follow))return;const d=Math.atan2(Math.sin(yaw-camYaw),Math.cos(yaw-camYaw));if(Math.abs(d)>0.3)AIM.nudge={yaw:camYaw+d*0.6,t:0.6};}
+function camNudge(yaw){if(AIMO.mode!=='camera'||(AIM.lock&&AIMO.follow)||(typeof CAMA!=='undefined'&&CAMA.mode===0))return; /* caméra manuelle : elle ne tourne jamais toute seule */const d=Math.atan2(Math.sin(yaw-camYaw),Math.cos(yaw-camYaw));if(Math.abs(d)>0.3)AIM.nudge={yaw:camYaw+d*0.6,t:0.6};}
 {const _cs3=castSpell;castSpell=function(sp){if(DUEL)DUEL.lastForm=sp.form;const now=performance.now()/1000;const ok=!((CD[sp.id]||0)>now||player.cd>0||mana<spellCost(sp));let usedPt=false;
  if(ok&&sp.form!=='zone'){let yaw=(AIMO.mode==='camera'||AIMO.mode==='libre')&&!AIMO.legacy?camYaw:player.ry;const T=castTarget(sp.el,Math.sin(yaw),Math.cos(yaw),sp.form==='util');if(T){yaw=Math.atan2(T.x-player.x,T.z-player.z);usedPt=T.kind==='pt';camNudge(yaw);}player.ry=yaw;}
  const r=_cs3.apply(this,arguments);if(ok&&usedPt)AIM.pt=null;return r;};}
@@ -2941,13 +2941,13 @@ function camAutoTick(dt){if(!started||anyModal()||TALK||CAMA.mode===0)return;con
    for(const e of ENT){if(e.kind!=='creature'||e.data.calme||e.data.duel)continue;const d=Math.hypot(e.x-player.x,e.z-player.z);if(d<bd){bd=d;best=e;}}
    if(typeof BOSS!=='undefined'&&BOSS.on&&BOSS.e&&ENT.includes(BOSS.e))best=BOSS.e;CAMA.threat=best;} // boss : priorité à Ignivor
   const e=CAMA.threat;if(e&&ENT.includes(e)){const want=Math.atan2(e.x-player.x,e.z-player.z),d=angDiff(want,camYaw),dd=Math.hypot(e.x-player.x,e.z-player.z),close=dd<9,cone=close?0.32:0.55;threatYaw=want;threatD=dd;
-   /* une créature proche est gardée plus près du centre, et rattrapée plus vite */if(Math.abs(d)>cone){camYaw+=(d-Math.sign(d)*cone)*Math.min(1,dt*(close?4.5:3.2));turned=true;}
+   /* une créature proche est gardée plus près du centre, et rattrapée plus vite */if(Math.abs(d)>cone){const r=(d-Math.sign(d)*cone)*Math.min(1,dt*(close?4.5:3.2));camYaw+=r;CAMA.autoAcc=(CAMA.autoAcc||0)+r;turned=true;}
    if(e.data.dragon)camPitch+=(0.1-camPitch)*Math.min(1,dt*1.5);}} // on lève les yeux vers le dragon
  // suivi des déplacements
  if(!turned&&moving&&calm>0.8/Math.sqrt(camK())&&!(AIM.lock&&AIMO.follow)){const by=MOVY.on?MOVY.yaw:camYaw,fx=Math.sin(by),fz=Math.cos(by),mx=fx*iy-fz*ix,mz=fz*iy+fx*ix,head=Math.atan2(mx,mz),d=angDiff(head,camYaw);
   /* en combat, si l'on s'éloigne (ou tourne autour) d'une créature proche, la caméra la garde en vue : pas de demi-tour */
   const flee=threatYaw!==null&&threatD<20&&Math.abs(angDiff(head,threatYaw))>1.4;
-  if(!flee){/* la caméra se replace derrière le joueur, aussi en marche arrière (demi-tour en ~2 s) */const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95,k=(FLY.on?2.3:run?1.35:0.95)*camK()*Math.min(1,Math.abs(d)/1.2+0.15);camYaw+=d*Math.min(1,dt*k);}}
+  if(!flee){/* la caméra se replace derrière le joueur, aussi en marche arrière (demi-tour en ~2 s) */const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95,k=(FLY.on?2.3:run?1.35:0.95)*camK()*Math.min(1,Math.abs(d)/1.2+0.15);{const r=d*Math.min(1,dt*k);camYaw+=r;CAMA.autoAcc=(CAMA.autoAcc||0)+r;}}}
  // inclinaison : retour doux vers une vue normale en marchant
  if(moving&&calm>2.5&&!FLY.on){const want=S.zone==='monde'?0.38:0.32;camPitch+=(want-camPitch)*Math.min(1,dt*0.8);}}
 {const _at=aimTick;aimTick=function(dt){const r=_at.apply(this,arguments);try{camAutoTick(dt);}catch(e){}return r;};}
@@ -3812,7 +3812,7 @@ function joyMove(e){const r=joyEl.getBoundingClientRect();let dx=e.clientX-(r.le
 $('#joy-zone').addEventListener('pointerdown',e=>{if(joy.id!==null)return;joy.id=e.pointerId;joyMove(e);e.preventDefault();});
 const drag={id:null,x:0,y:0};
 canvas.addEventListener('pointerdown',e=>{if(drag.id!==null)return;drag.id=e.pointerId;drag.x=e.clientX;drag.y=e.clientY;});
-window.addEventListener('pointermove',e=>{if(e.pointerId===joy.id)joyMove(e);else if(e.pointerId===drag.id){const mx=e.clientX-drag.x,my=e.clientY-drag.y;/* un saut énorme = événement perdu : on l'ignore ; un geste vif tourne plus (accélération) */if(!PINCH.on&&Math.abs(mx)<260&&Math.abs(my)<260){const ax=1+Math.min(1.1,Math.abs(mx)/32),ay=1+Math.min(0.8,Math.abs(my)/40);{const dy=mx*0.0068*AIMO.sens*ax;camYaw-=dy;if(MOVY.on)MOVY.yaw-=dy;}camPitch=clamp(camPitch+my*0.0034*AIMO.sens*ay,-0.35,1.25);}drag.x=e.clientX;drag.y=e.clientY;}});
+window.addEventListener('pointermove',e=>{if(e.pointerId===joy.id)joyMove(e);else if(e.pointerId===drag.id){const mx=e.clientX-drag.x,my=e.clientY-drag.y;/* un saut énorme = événement perdu : on l'ignore ; un geste vif tourne plus (accélération) */if(!PINCH.on&&Math.abs(mx)<260&&Math.abs(my)<260){const ax=1+Math.min(1.1,Math.abs(mx)/32),ay=1+Math.min(0.8,Math.abs(my)/40);{const dy=mx*0.0068*AIMO.sens*ax;camYaw-=dy;}camPitch=clamp(camPitch+my*0.0034*AIMO.sens*ay,-0.35,1.25);}drag.x=e.clientX;drag.y=e.clientY;}});
 /* doigt « perdu » (appel, notification, changement d'appli) : on libère joystick et caméra */
 function ctrlReset(){joy.id=null;joy.x=joy.y=0;knob.style.transform='';drag.id=null;if(typeof PINCH!=='undefined'){PINCH.on=false;PINCH.id=null;}}
 window.addEventListener('blur',ctrlReset);document.addEventListener('visibilitychange',()=>{if(document.hidden)ctrlReset();});
@@ -4926,7 +4926,8 @@ function colTop(c){if(c.h!==undefined)return c.h;if(c._top===undefined)c._top=gh
    automatique peut alors pivoter derrière le joueur, même en marche arrière, sans le faire tourner en rond) ;
    un glissement manuel de la caméra la décale d'autant (20-controles). */
 const MOVY={on:false,yaw:0};
-function moveYaw(active){if(!active){MOVY.on=false;return camYaw;}if(!MOVY.on){MOVY.on=true;MOVY.yaw=camYaw;}return MOVY.yaw;}
+function moveYaw(active){if(!active){MOVY.on=false;CAMA.autoAcc=0;return camYaw;}if(!MOVY.on){MOVY.on=true;MOVY.yaw=camYaw;MOVY.last=camYaw;CAMA.autoAcc=0;}
+ MOVY.yaw+=angDiff(camYaw,MOVY.last)-(CAMA.autoAcc||0);MOVY.last=camYaw;CAMA.autoAcc=0;return MOVY.yaw;} /* doigt, verrouillage, recentrage : la marche suit ; caméra automatique : la marche garde son cap */
 /* ================= BOUCLE ================= */
 let started=false,fastT=0,last=performance.now(),ambT=40,saveT=0,hudT=0,focT=0,waterT=0;
 const cTopD=new THREE.Color(0x3f86e0),cBotD=new THREE.Color(0xc4e0f6),cTopN=new THREE.Color(0x050818),cBotN=new THREE.Color(0x141c3c),cDusk=new THREE.Color(0xf0905a),tTop=new THREE.Color(),tBot=new THREE.Color();
@@ -5053,7 +5054,7 @@ function updEnts(dt){const t=performance.now()/1000;
     const dx=tx-e.x,dz=tz-e.z,d=Math.hypot(dx,dz);
     if(d<0.4&&D.confused<=0&&dp>=9){const a=Math.random()*TAU,r=Math.random()*6;D.tx=D.hx+Math.cos(a)*r;D.tz=D.hz+Math.sin(a)*r;}
     else if(d>0.01){const sp=(D.confused>0?4:dp<9?2.4:1.8)*dt;e.x+=dx/d*Math.min(sp,d);e.z+=dz/d*Math.min(sp,d);}
-    if(dp<1.1&&player.y<1.5){const d2=dp||1;player.x+=(player.x-e.x)/d2*0.8;player.z+=(player.z-e.z)/d2*0.8;flash(player.x,1.2,player.z,ELEM[D.look].c,1.2,0.2);if(!D.bumped){D.bumped=1;say('Aïe ! Tu te fais bousculer ('+esc(D.name)+'). Riposte avec un sort !','sys');}}}
+    /* contact : on sépare en douceur (la créature recule surtout), au lieu de projeter le joueur de 0,8 m à chaque image */if(dp<1.1&&player.y-gh(player.x,player.z)<1.5){const d2=dp||1,ov=1.1-dp,ux=(player.x-e.x)/d2,uz=(player.z-e.z)/d2;e.x-=ux*ov*0.7;e.z-=uz*ov*0.7;player.x+=ux*ov*0.3;player.z+=uz*ov*0.3;if(!D.flT||D.flT<performance.now()-400){D.flT=performance.now();flash(player.x,player.y+1.2,player.z,ELEM[D.look].c,1.2,0.2);}if(!D.bumped){D.bumped=1;say('Aïe ! Tu te fais bousculer ('+esc(D.name)+'). Riposte avec un sort !','sys');}}}
    e.x+=D.kx*dt;e.z+=D.kz*dt;D.kx*=Math.max(0,1-4*dt);D.kz*=Math.max(0,1-4*dt);
    const o={x:e.x,z:e.z};pushOut(o,0.4);e.x=o.x;e.z=o.z;
    D.y=1.4+Math.sin(e.t*3)*(stuck?0.02:0.3);e.obj.position.set(e.x,D.y-1.4+gh(e.x,e.z),e.z);

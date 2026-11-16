@@ -5,7 +5,8 @@ function colTop(c){if(c.h!==undefined)return c.h;if(c._top===undefined)c._top=gh
    automatique peut alors pivoter derrière le joueur, même en marche arrière, sans le faire tourner en rond) ;
    un glissement manuel de la caméra la décale d'autant (20-controles). */
 const MOVY={on:false,yaw:0};
-function moveYaw(active){if(!active){MOVY.on=false;return camYaw;}if(!MOVY.on){MOVY.on=true;MOVY.yaw=camYaw;}return MOVY.yaw;}
+function moveYaw(active){if(!active){MOVY.on=false;CAMA.autoAcc=0;return camYaw;}if(!MOVY.on){MOVY.on=true;MOVY.yaw=camYaw;MOVY.last=camYaw;CAMA.autoAcc=0;}
+ MOVY.yaw+=angDiff(camYaw,MOVY.last)-(CAMA.autoAcc||0);MOVY.last=camYaw;CAMA.autoAcc=0;return MOVY.yaw;} /* doigt, verrouillage, recentrage : la marche suit ; caméra automatique : la marche garde son cap */
 /* ================= BOUCLE ================= */
 let started=false,fastT=0,last=performance.now(),ambT=40,saveT=0,hudT=0,focT=0,waterT=0;
 const cTopD=new THREE.Color(0x3f86e0),cBotD=new THREE.Color(0xc4e0f6),cTopN=new THREE.Color(0x050818),cBotN=new THREE.Color(0x141c3c),cDusk=new THREE.Color(0xf0905a),tTop=new THREE.Color(),tBot=new THREE.Color();
@@ -132,7 +133,7 @@ function updEnts(dt){const t=performance.now()/1000;
     const dx=tx-e.x,dz=tz-e.z,d=Math.hypot(dx,dz);
     if(d<0.4&&D.confused<=0&&dp>=9){const a=Math.random()*TAU,r=Math.random()*6;D.tx=D.hx+Math.cos(a)*r;D.tz=D.hz+Math.sin(a)*r;}
     else if(d>0.01){const sp=(D.confused>0?4:dp<9?2.4:1.8)*dt;e.x+=dx/d*Math.min(sp,d);e.z+=dz/d*Math.min(sp,d);}
-    if(dp<1.1&&player.y<1.5){const d2=dp||1;player.x+=(player.x-e.x)/d2*0.8;player.z+=(player.z-e.z)/d2*0.8;flash(player.x,1.2,player.z,ELEM[D.look].c,1.2,0.2);if(!D.bumped){D.bumped=1;say('Aïe ! Tu te fais bousculer ('+esc(D.name)+'). Riposte avec un sort !','sys');}}}
+    /* contact : on sépare en douceur (la créature recule surtout), au lieu de projeter le joueur de 0,8 m à chaque image */if(dp<1.1&&player.y-gh(player.x,player.z)<1.5){const d2=dp||1,ov=1.1-dp,ux=(player.x-e.x)/d2,uz=(player.z-e.z)/d2;e.x-=ux*ov*0.7;e.z-=uz*ov*0.7;player.x+=ux*ov*0.3;player.z+=uz*ov*0.3;if(!D.flT||D.flT<performance.now()-400){D.flT=performance.now();flash(player.x,player.y+1.2,player.z,ELEM[D.look].c,1.2,0.2);}if(!D.bumped){D.bumped=1;say('Aïe ! Tu te fais bousculer ('+esc(D.name)+'). Riposte avec un sort !','sys');}}}
    e.x+=D.kx*dt;e.z+=D.kz*dt;D.kx*=Math.max(0,1-4*dt);D.kz*=Math.max(0,1-4*dt);
    const o={x:e.x,z:e.z};pushOut(o,0.4);e.x=o.x;e.z=o.z;
    D.y=1.4+Math.sin(e.t*3)*(stuck?0.02:0.3);e.obj.position.set(e.x,D.y-1.4+gh(e.x,e.z),e.z);

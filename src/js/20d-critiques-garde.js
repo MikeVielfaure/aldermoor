@@ -5,7 +5,7 @@
    Sorts de garde (série de 4, un appris à chaque duel gagné à l'Arène) : Rempart de pierre, Égide miroir,
    Haie de ronces, Mur d'eau. Les murs sont des collisions temporaires (COLS) : ils bloquent le joueur,
    les créatures et les projectiles (hitsSolid). L'égide renvoie les projectiles des duellistes et de la Faille. */
-const critChance=sp=>0.1+0.005*mLvl(sp.el);
+const critChance=sp=>0.1+0.005*mLvl(sp.el)+gearCrit();
 function critFx(e,txt){const y=gh(e.x,e.z)+(e.data.dragon?e.data.y:1.2);floatAt(e.x,e.z,'✦ CRITIQUE'+(txt?' '+txt:'')+' ✦','#ffd27a');
  HITSTOP=Math.max(HITSTOP,0.07);SHAKE=Math.max(SHAKE,0.35);flash(e.x,y,e.z,0xffd27a,3.5,0.35);
  for(let i=0;i<36;i++){const a=Math.random()*TAU,b=rnd(-0.3,1),v=rnd(3,8);PA.emit(e.x,y,e.z,Math.cos(a)*v,b*v+1,Math.sin(a)*v,i%3?0xffd27a:0xffffff,rnd(.3,.55),0.05,rnd(.4,.8),5,1);}}

@@ -11,7 +11,7 @@ function testState(name){const s=newState(name||'Testeur');
  s.mastery={};ELS.forEach(e=>s.mastery[e]=300); // maîtrise 10/10 partout (+3 points de talent par élément)
  s.objs={};Object.keys(OBJS).forEach(k=>s.objs[k]=1); // balai et tous les objets magiques
  s.inv={};Object.keys(INGR).forEach(k=>s.inv[k]=12);Object.keys(POTIONS).forEach(k=>s.inv['p_'+k]=3);
- s.relics=1;s.karma=0;s.duels={w:0,l:0,best:{}};
+ s.relics=1;s.or=1000;s.karma=0;s.duels={w:0,l:0,best:{}};
  s.chron=[{d:1,h:'08:00',t:'Partie de test : niveau 50, tous les sorts au rang III, tous les objets.'}];
  return s;}
 (function(){if(!/[?&]test\b/.test(location.search))return;

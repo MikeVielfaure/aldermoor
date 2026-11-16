@@ -8,7 +8,7 @@
      puis s'enfoncent) au lieu de disparaître d'un coup.
    - PNJ : quand tu t'approches, ils s'arrêtent et se tournent vers toi. */
 const VIE={hp:100,max:100,calm:0,faint:false};
-const vieMax=()=>100+2*Math.min(50,lvl());
+const vieMax=()=>100+2*Math.min(50,lvl())+gearVie();
 const vieBusy=()=>!started||BOSS.on||!!DUEL||(typeof WAVE!=='undefined'&&!!WAVE)||VIE.faint;
 function vieHud(){const b=$('#viebox');if(!b)return;const hurt=VIE.hp<VIE.max-0.5&&!vieBusy();b.classList.toggle('hidden',!hurt);if(hurt){$('#vie-bar i').style.width=clamp(VIE.hp/VIE.max*100,0,100)+'%';$('#vie-n').textContent=Math.ceil(VIE.hp);}}
 function vieHurt(n){if(vieBusy())return;if(BUFF.invis)n*=0.5;VIE.hp-=n;VIE.calm=5;sfx('hurt');SHAKE=Math.max(SHAKE,0.25);const hv=$('#hurt');hv.style.opacity=0.7;setTimeout(()=>hv.style.opacity=0,180);

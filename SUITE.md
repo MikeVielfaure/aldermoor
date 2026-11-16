@@ -113,6 +113,9 @@
 - v31 : vitesse de la caméra réglable (douce / normale / rapide par défaut / très rapide : retour derrière le joueur
   en 3,6 / 2,2 / 1,2 / 0,8 s) ; familier (cerf, poule, panda, pingouin des Landes, apprivoisé avec 2 ingrédients :
   suit le joueur, ramasse les ingrédients, un don par espèce).
+- v32 : pièces d’or (S.or) ; Échoppe de l’Artisan à Brumepont (baguettes, robes, rachat des récoltes) ;
+  6 baguettes et 6 robes (bonus de puissance, mana, vitesse, vie, critiques ; couleur de robe et lueur de baguette) ;
+  Baguette du dragon sur Ignivor, équipement parfois sur les élites. Prochaine étape possible : terrain et maison (or).
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Monde réaliste (souhait du joueur, 2026-11-15)

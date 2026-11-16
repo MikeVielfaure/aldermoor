@@ -16,9 +16,9 @@ const ptsSpent=()=>Object.values(S.talents||{}).reduce((a,b)=>a+b,0);
 const ptsFree=()=>ptsTotal()-ptsSpent();
 let CAST_K=1; // rang du sort en cours de lancement (19b-sorts-uniques)
 let CRITNOW=false,CHGNOW=0,CRIT_FORCE=false; // CHGNOW : sort chargé (0 à 1), CRIT_FORCE : charge pleine = critique (20g-charge-enchant) // un coup critique est en cours : sort sous sa forme majeure (20d-critiques-garde)
-const pow=el=>(1+0.25*tal(el+'_pow')+0.03*mLvl(el))*wMul(el)*(BUFF.puissance?1.3:1)*karmaMul(el)*CAST_K*(CRITNOW?1.4:1)*(1+0.6*CHGNOW)*petMul(el);
-const manaMax=()=>100+25*tal('reserve');
-const manaRegen=()=>9*(1+0.3*tal('flux'))*(lvl()>=15?1.5:1)*(typeof player!=='undefined'&&player.grounded&&player.spd<0.05&&!FLY.on?1.8:1); // immobile : méditation
+const pow=el=>(1+0.25*tal(el+'_pow')+0.03*mLvl(el))*wMul(el)*(BUFF.puissance?1.3:1)*karmaMul(el)*CAST_K*(CRITNOW?1.4:1)*(1+0.6*CHGNOW)*petMul(el)*gearMul(el);
+const manaMax=()=>100+25*tal('reserve')+gearMana(); // gearMana : robe (20n-equipement)
+const manaRegen=()=>9*gearRegen()*(1+0.3*tal('flux'))*(lvl()>=15?1.5:1)*(typeof player!=='undefined'&&player.grounded&&player.spd<0.05&&!FLY.on?1.8:1); // immobile : méditation
 function migrate(s){s.inv=s.inv||{};s.rep=s.rep||{};s.zone='monde';s.talents=s.talents||{};s.mastery=s.mastery||{};s.combos=s.combos||[];
  s.spells.forEach(sp=>{const p=POOL.find(x=>x.name.toLowerCase()===String(sp.name).toLowerCase());if(p){sp.form=p.form;sp.desc=p.desc;sp.inc=p.inc;}if(!FORMS[sp.form])sp.form='trait';if(!sp.id)sp.id=String(sp.name).toLowerCase().replace(/[^a-zà-ÿ0-9]+/g,'-');});
  if(!Array.isArray(s.slots))s.slots=[];

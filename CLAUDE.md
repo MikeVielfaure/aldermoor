@@ -80,6 +80,7 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 20k-perf-lueurs | lueurs (Sprite) au-delà de 62 m sur le calque 1 (non dessiné), sans toucher à .visible ; `userData.noCull` pour les exceptions |
 | 20l-elites | créatures élites (`makeElite`, `ELITE_POW`, couronne, butin, `S.elites`) |
 | 20m-familier | familier `S.pet` / `PET` (apprivoisement par un point d'action qui suit l'animal le plus proche, `petTick`, dons : `petMul` dans pow, vitesse 21-boucle, vie 20e, œuf au `dawnTick`) |
+| 20n-equipement | pièces d'or `S.or` (`gainOr`), Échoppe de l'Artisan (`shopRoot`), baguettes `WANDS` / robes `ROBES`, `S.equip`/`S.gear`, bonus `gearMul/gearMana/gearRegen/gearSpeed/gearCrit/gearVie`, apparence `gearVisTick` (robe : `L.robe` dans 05c) |
 | 21-boucle | `update(dt)`, `loop()`, `startGame()`, puis la séquence de construction du monde |
 | 22-appli | plein écran, écran qui reste allumé, enregistrement du mode hors-ligne |
 | 22b-partie-test | partie de test niveau 50 (`?test` dans l'adresse), sauvegarde normale mise de côté |

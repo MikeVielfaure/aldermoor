@@ -10,7 +10,7 @@ let APPR_NOBAKE=false;
 const AG={ring:new THREE.TorusGeometry(0.135,0.042,8,20),tail:new THREE.BoxGeometry(0.1,0.085,0.035),sclera:new THREE.SphereGeometry(0.031,12,10),brow:new THREE.BoxGeometry(0.062,0.013,0.018),
  tuft:new THREE.SphereGeometry(0.068,8,6),hood:new THREE.SphereGeometry(0.2,14,10,0,TAU,0,Math.PI/2),cuff:new THREE.CylinderGeometry(0.12,0.075,0.17,12,1,true),collar:new THREE.ConeGeometry(0.05,0.09,3),
  tie:new THREE.BoxGeometry(0.055,0.06,0.02),lining:new THREE.BoxGeometry(0.035,0.56,0.02),liningS:new THREE.BoxGeometry(0.035,0.72,0.02),handle:new THREE.CylinderGeometry(0.02,0.024,0.13,8),knob:new THREE.SphereGeometry(0.026,8,6)};
-function apprLook(L){return {skin:L.skin||0xf0c8a0,hair:L.hair||0x3a2414,style:L.style==='pony'||L.style==='bun'||L.style==='long'?L.style:'short',robe:APPR.noir,trim:L.trim||APPR.violet,h:(L.h||1)*0.93,w:L.w||1};}
+function apprLook(L){return {skin:L.skin||0xf0c8a0,hair:L.hair||0x3a2414,style:L.style==='pony'||L.style==='bun'||L.style==='long'?L.style:'short',robe:L.robe||APPR.noir,trim:L.trim||APPR.violet,h:(L.h||1)*0.93,w:L.w||1};}
 // construit le corps d'un(e) apprenti(e) : même squelette que les autres personnages (animHuman marche tel quel)
 function makeApprenti(L,lining){APPR_NOBAKE=true;let H;try{H=makeHuman0(apprLook(L));}finally{APPR_NOBAKE=false;}
  const P=H.p,M=c=>mat(c,{flatShading:false,roughness:0.85}),add=(g,m,p,x,y,z)=>{const o=new THREE.Mesh(g,typeof m==='number'?M(m):m);o.position.set(x,y,z);o.castShadow=true;p.add(o);return o;};

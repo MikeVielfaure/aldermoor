@@ -128,6 +128,8 @@
   feu ; Reparo par étapes ; enchantement d’incassabilité ; seules les constructions du joueur cassent).
 - v34.1 (maniabilité) : la marche suit toujours la caméra (plus de direction retenue) ; caméra auto seulement en
   avançant (|écart| < 0,9) ; recul plus vif (3,8 / 5,2 m/s).
+- v34.2 : mode de caméra « derrière moi (+ combat) » (par défaut pour une nouvelle partie) : la caméra revient
+  toujours derrière le personnage, virages et demi-tours compris. Les 4 modes restent au choix (Options ⚙).
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Idées autour de la construction (vision du joueur : conquête, protection de village)

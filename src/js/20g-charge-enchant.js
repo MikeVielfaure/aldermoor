@@ -7,7 +7,7 @@
      (2 essences + 2 cristaux) : durée +50 %, Épines, Égide renforcée, Ronces ignifuges, Cœur de givre. S.ench.
    - Course céleste : anneaux entre les Îles du Miroir-Ciel (départ sur la première île), record S.craceBest. */
 const CHG={id:null,i:-1,t0:0,b:null,full:false};let CHARGE_K=0;
-const chargeable=sp=>!!sp&&!sp.special&&sp.form!=='util';
+const chargeable=sp=>!!sp&&((!sp.special&&sp.form!=='util')||sp.special==='proteggo'); // Proteggo chargé à fond = Proteggo Maxima (20p)
 function chgK(){return CHG.id===null?0:clamp((performance.now()/1000-CHG.t0-0.25)/0.9,0,1);}
 function chgStyle(b,k,col){if(!b)return;if(k<=0){b.style.transform='';b.style.filter='';return;}b.style.transform='scale('+(1+0.14*k).toFixed(3)+')';b.style.filter='brightness('+(1+0.8*k).toFixed(2)+') drop-shadow(0 0 '+Math.round(4+14*k)+'px '+col+')';}
 // on intercepte le toucher des boutons de sort avant leur propre écouteur (phase de capture)

@@ -71,6 +71,7 @@ function pushOut(o,rad,allowIce,py){
  for(const c of COLS){
   if(c.off||(py!==undefined&&c.h!==undefined&&py>=c.h-0.46))continue;
   if(c.bot!==undefined&&(py===undefined||py+1.8<c.bot))continue; /* île flottante (20f) : on passe dessous */
+  if(c.gate&&py!==undefined)continue; /* porte construite (20q) : le joueur passe, pas les créatures */
   if(c.r!==undefined){if(c.off)continue;if(c.lake&&allowIce===2)continue;const dx=o.x-c.x,dz=o.z-c.z;if(Math.abs(dx)>c.r+rad||Math.abs(dz)>c.r+rad)continue;if(c.lake&&allowIce&&onIce(o))continue;const d=Math.hypot(dx,dz),m=c.r+rad;if(d<m){if(d<1e-4)o.x+=m;else{o.x=c.x+dx/d*m;o.z=c.z+dz/d*m;}}}
   else{const dx=o.x-c.x,dz=o.z-c.z,px=c.hw+rad-Math.abs(dx),pz=c.hd+rad-Math.abs(dz);if(px>0&&pz>0){if(px<pz)o.x+=(dx>=0?1:-1)*px;else o.z+=(dz>=0?1:-1)*pz;}}
  }

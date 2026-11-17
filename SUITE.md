@@ -121,7 +121,16 @@
   automatique (CAMA.autoAcc) ; caméra manuelle : plus de petit recentrage après un sort (camNudge).
 - v33 : le Domaine (terrain 300 🪙 près de Brumepont ; maison 600 🪙 en 3 styles, jardin 4 parcelles 200 🪙, chaudron
   150 🪙, lanternes et fleurs 80 🪙) ; maison = repos, réveil après évanouissement, Pierre de rappel.
+- v34 : joystick en arrière = le joueur recule face à l’avant (plus de demi-tour de caméra, PLBACK) ; Démantibulus
+  respecte le point marqué ; Proteggo (bulle de mana qui s’use, se renforce en relançant dedans, Maxima en charge
+  pleine, arrête les tirs, repousse les créatures, absorbe les coups) ; construction (Construo : murs, palissade,
+  porte, tour, plateforme en l’air, mur de cristal ; bois et pierre ; destruction progressive par sorts, siège et
+  feu ; Reparo par étapes ; enchantement d’incassabilité ; seules les constructions du joueur cassent).
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
+
+## Idées autour de la construction (vision du joueur : conquête, protection de village)
+- Attaques de village par des vagues qui visent les constructions ; alliés (PNJ) qui lancent Proteggo avec toi ;
+  plans (escaliers, toits) ; multijoueur un jour (plusieurs sorciers qui unissent leurs Proteggo).
 
 ## Monde réaliste (souhait du joueur, 2026-11-15)
 - Le joueur précise : « réaliste mais que ça reste un jeu » ; garder le style actuel et le soigner.

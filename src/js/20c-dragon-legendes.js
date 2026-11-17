@@ -30,14 +30,14 @@ function shockRing(x,z,col,size){ring(x,z,col,size||3,0.9);flash(x,gh(x,z)+1.5,z
 /* ---------- les sorts ---------- */
 function legTarget(el,range){const [dx,dz]=fwd();const T=castTarget(el,dx,dz,false);if(T&&T.ref&&T.kind==='crea')return T.ref;
  let best=null,bd=range||28;for(const e of ENT){if(e.kind!=='creature'||e.data.calme)continue;const vx=e.x-player.x,vz=e.z-player.z,d=Math.hypot(vx,vz);if(d>bd)continue;if((vx*dx+vz*dz)/d<0.35)continue;bd=d;best=e;}return best;}
-function castDemanti(sp){const [dx,dz]=fwd(),e=legTarget('arcane',30),tp=new THREE.Vector3();player.H.p.tip.getWorldPosition(tp);
- const tx=e?e.x:player.x+dx*18,tz=e?e.z:player.z+dz*18,ty=e?gh(tx,tz)+(e.data.dragon?e.data.y:1.4):player.y+1.4;if(e)player.ry=Math.atan2(tx-player.x,tz-player.z);
+function castDemanti(sp){const [dx,dz]=fwd(),T0=castTarget('arcane',dx,dz,false),P=T0&&T0.kind==='pt'?T0:null,e=P?null:legTarget('arcane',30),tp=new THREE.Vector3();player.H.p.tip.getWorldPosition(tp);
+ /* un point marqué (ou le viseur libre) est respecté : le rayon y va */const tx=e?e.x:P?P.x:player.x+dx*18,tz=e?e.z:P?P.z:player.z+dz*18,ty=e?gh(tx,tz)+(e.data.dragon?e.data.y:1.4):P?gh(tx,tz)+0.6:player.y+1.4;if(e)player.ry=Math.atan2(tx-player.x,tz-player.z);
  for(let i=0;i<=40;i++){const k=i/40;PA.emit(tp.x+(tx-tp.x)*k,tp.y+(ty-tp.y)*k,tp.z+(tz-tp.z)*k,rnd(-.3,.3),rnd(-.3,.3),rnd(-.3,.3),i%3?0xff7ae0:0xffffff,rnd(.3,.55),0.05,rnd(.25,.5),0,1);}
  flash(tp.x,tp.y,tp.z,0xff7ae0,3,0.4);sfx('cast','arcane','zone',player.x,player.z);
  setTimeout(()=>{SHAKE=Math.max(SHAKE,0.6);HITSTOP=Math.max(HITSTOP,0.08);shockRing(tx,tz,0xff7ae0,4);sfx('impact','arcane',tx,tz);
   for(let i=0;i<60;i++){const a=Math.random()*TAU,b=rnd(-0.4,1),v=rnd(3,9);PA.emit(tx,ty,tz,Math.cos(a)*v,b*v+2,Math.sin(a)*v,i%2?0xff7ae0:0xf3cf7a,rnd(.3,.6),0.05,rnd(.6,1.2),6,1);}
   if(e&&ENT.includes(e)){if(e.data.dragon)dragonHit(e,'arcane',14);else if(e.data.duel){demantiDuel(e,ty);}else{debris(e.x,ty,e.z,ELEM[e.data.look].c,14);floatAt(e.x,e.z,'DÉMANTIBULÉ !','#ff9ae8');killCreature(e);}}
-  PROPS.forEach(p=>{const d=Math.hypot(p.x-tx,p.z-tz);if(p.dead<=0&&d<4.5){if(d<1.6&&p.type!=='rock'){debris(p.x,p.y,p.z,0x8a6a42,6);p.dead=40;p.g.visible=false;}else{p.vx+=(p.x-tx)/(d||1)*12;p.vz+=(p.z-tz)/(d||1)*12;p.vy=7;}}});},260);}
+  if(typeof bldHit==='function')bldHit(tx,tz,3,'arcane',120);PROPS.forEach(p=>{const d=Math.hypot(p.x-tx,p.z-tz);if(p.dead<=0&&d<4.5){if(d<1.6&&p.type!=='rock'){debris(p.x,p.y,p.z,0x8a6a42,6);p.dead=40;p.g.visible=false;}else{p.vx+=(p.x-tx)/(d||1)*12;p.vz+=(p.z-tz)/(d||1)*12;p.vy=7;}}});},260);}
 /* en duel, l'adversaire n'est pas détruit : le bouclier vole en éclats et il perd 30 % de ses PV (10 % les fois suivantes) */
 function demantiDuel(e,ty){if(!DUEL||DUEL.e!==e||DUEL.phase!=='fight')return;if(DUEL.shield>0){DUEL.shield=0;floatAt(e.x,e.z,'Bouclier brisé !','#bfe8ff');}
  const first=!DUEL.demanti;DUEL.demanti=(DUEL.demanti||0)+1;const dmg=Math.round(Math.max(first?22:9,DUEL.omax*(first?0.3:0.1)));DUEL.ohp-=dmg;if(!first&&DUEL.demanti===2)say('🛡 '+esc(DUEL.d.name)+' a appris à parer le Démantibulus : il fait moins mal maintenant.','sys');debris(e.x,ty,e.z,ELEM[DUEL.d.el].c,10);floatAt(e.x,e.z,'DÉMANTIBULÉ ! -'+dmg,'#ff9ae8');

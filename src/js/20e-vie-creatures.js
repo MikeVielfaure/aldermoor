@@ -71,7 +71,7 @@ function creaShoot(e){const D=e.data,c=ELEM[D.look].c,oy=gh(e.x,e.z)+(D.y||1.2)*
  const lead=0.35,tx=player.x+player.vx*lead,tz=player.z+player.vz*lead,ty=player.y+1,L=Math.hypot(tx-e.x,ty-oy,tz-e.z)||1,sp=11;
  CSHOT.push({o,x:e.x,y:oy,z:e.z,vx:(tx-e.x)/L*sp,vy:(ty-oy)/L*sp,vz:(tz-e.z)/L*sp,life:2.2,el:D.look,dmg:e.x>1500?9:6});sfx('cast',D.look,'trait',e.x,e.z);}
 /* obstacle pour un projectile : comme hitsSolid, mais un objet bas (banc, muret) laisse passer ce qui vole au-dessus */
-function shotSolid(x,y,z){for(const c of COLS){if(c.lake||c.off||(c.bot!==undefined&&y<c.bot))continue;if(c.h!==undefined&&y>c.h)continue;if(c.r!==undefined){if(Math.abs(x-c.x)<c.r&&Math.abs(z-c.z)<c.r&&Math.hypot(x-c.x,z-c.z)<c.r)return true;}else if(Math.abs(x-c.x)<c.hw&&Math.abs(z-c.z)<c.hd)return true;}return false;}
+function shotSolid(x,y,z){for(const c of COLS){if(c.lake||c.off||(c.bot!==undefined&&y<c.bot))continue;if(c.h!==undefined&&y>c.h)continue;if(c.r!==undefined){if(Math.abs(x-c.x)<c.r&&Math.abs(z-c.z)<c.r&&Math.hypot(x-c.x,z-c.z)<c.r)return c;}else if(Math.abs(x-c.x)<c.hw&&Math.abs(z-c.z)<c.hd)return c;}return null;}
 function combatTick(dt){if(!started)return;
  for(const e of ENT){if(e.kind!=='creature')continue;const D=e.data;if(D.duel||D.wave||D.dragon)continue;
   // animaux paisibles : fuite quand ils ont mal
@@ -84,7 +84,8 @@ function combatTick(dt){if(!started)return;
  for(let i=CSHOT.length-1;i>=0;i--){const s=CSHOT[i];s.life-=dt;s.x+=s.vx*dt;s.y+=s.vy*dt;s.z+=s.vz*dt;s.o.position.set(s.x,s.y,s.z);if(Math.random()<dt*25)PA.emit(s.x,s.y,s.z,rnd(-.3,.3),rnd(-.3,.3),rnd(-.3,.3),ELEM[s.el].c,0.28,0.05,0.35,0,1);
   const hitP=Math.hypot(s.x-player.x,s.z-player.z)<0.75&&Math.abs(s.y-(player.y+1))<1.1;
   const Wb=typeof inWall==='function'?inWall(s.x,s.y,s.z,0.1):null;if(Wb&&Wb.kind==='glace'&&s.el==='feu')Wb.life-=2;
-  const blocked=!!Wb||shotSolid(s.x,s.y,s.z)||s.y<gh(s.x,s.z)||(typeof AEGIS!=='undefined'&&AEGIS&&Math.hypot(s.x-player.x,s.z-player.z)<1.8);
+  const sc=shotSolid(s.x,s.y,s.z);if(sc&&sc.bld&&typeof bldDamage==='function')bldDamage(sc.bld,s.dmg||6,s.el);
+  const blocked=!!Wb||!!sc||s.y<gh(s.x,s.z)||(typeof AEGIS!=='undefined'&&AEGIS&&Math.hypot(s.x-player.x,s.z-player.z)<1.8);
   if(hitP&&!blocked)vieHurt(s.dmg);
   if(hitP||blocked||s.life<=0){burst(s.x,s.y,s.z,ELEM[s.el].c,10,3);scene.remove(s.o);CSHOT.splice(i,1);}}}
 {const _w=world4Tick;world4Tick=function(dt){const r=_w.apply(this,arguments);try{combatTick(dt);}catch(e){console.error(e);}return r;};}

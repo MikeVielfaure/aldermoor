@@ -4,10 +4,10 @@
 const TEST_BACKUP='aldermoor-save-avant-test';
 function testState(name){const s=newState(name||'Testeur');
  s.xp=4900; // niveau 50
- const all=POOL_UNI.map(p=>({...p,id:spId(p.name),rank:RANK_MAX}));all.push({...OUBLI_SP,rank:1});Object.keys(LEG_SP).forEach(k=>all.push(legSpell(k)));GARDE_ORD.forEach(k=>all.push(gardeSpell(k)));s.spells=all;
+ const all=POOL_UNI.map(p=>({...p,id:spId(p.name),rank:RANK_MAX}));all.push({...OUBLI_SP,rank:1});Object.keys(LEG_SP).forEach(k=>all.push(legSpell(k)));GARDE_ORD.forEach(k=>all.push(gardeSpell(k)));all.push(Object.assign({},PROTEGGO_SP),Object.assign({},CONSTRUO_SP),Object.assign({},REPARO_SP));s.spells=all;
  const id=(el,form)=>(all.find(x=>x.el===el&&x.form===form&&!x.special)||{}).id||null;
  s.slots=[id('vent','util'),id('ombre','util'),id('glace','trait'),'leg-demantibulus','leg-souffle','garde-rempart']; // jeu A (choisi par le joueur) : Aeris Gradus, Umbra Gradus, Glacimor, Démantibulus, Souffle du dragon, Murus Saxeus
- s.sets=[s.slots,['leg-demantibulus','leg-etoiles','leg-gardien','leg-souffle','oubli'],['garde-rempart','garde-egide','garde-ronces','garde-maree',id('arcane','util'),id('glace','zone')]];s.setIdx=0; // B : légendaires, C : protection
+ s.sets=[s.slots,['leg-demantibulus','leg-etoiles','leg-gardien','leg-souffle','oubli','proteggo'],['garde-rempart','garde-egide','garde-ronces','garde-maree','construo','reparo']];s.setIdx=0; // B : légendaires, C : protection
  s.mastery={};ELS.forEach(e=>s.mastery[e]=300); // maîtrise 10/10 partout (+3 points de talent par élément)
  s.objs={};Object.keys(OBJS).forEach(k=>s.objs[k]=1); // balai et tous les objets magiques
  s.inv={};Object.keys(INGR).forEach(k=>s.inv[k]=12);Object.keys(POTIONS).forEach(k=>s.inv['p_'+k]=3);

@@ -82,6 +82,8 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 20m-familier | familier `S.pet` / `PET` (apprivoisement par un point d'action qui suit l'animal le plus proche, `petTick`, dons : `petMul` dans pow, vitesse 21-boucle, vie 20e, œuf au `dawnTick`) |
 | 20n-equipement | pièces d'or `S.or` (`gainOr`), Échoppe de l'Artisan (`shopRoot`), baguettes `WANDS` / robes `ROBES`, `S.equip`/`S.gear`, bonus `gearMul/gearMana/gearRegen/gearSpeed/gearCrit/gearVie`, apparence `gearVisTick` (robe : `L.robe` dans 05c) |
 | 20o-domaine | le Domaine `S.home` (emplacement `homeFindSite`, construction au kit `homeBuild` + `dkFlush` en cours de partie, jardin `HOME.plots`, `homeSpawn` pour le rappel et le réveil), mis en place dans un enrobage de `startGame` |
+| 20p-proteggo | Proteggo : bulles `PSH` (`castProteggo`, renfort, Maxima = charge pleine), blocage des tirs qui entrent (`pshBlock`), coups absorbés (`pshAbsorb` sur hurtPlayer / vieHurt / duelPlayerHit / waveHurt) |
+| 20q-construction | Construo / Reparo, pièces `BLD` (`BLD_T`, `bldPlace`, `bldDamage`, `bldBreak`, ruines), COLS `bld` (porte : `c.gate` laisse passer le joueur), récolte bois / pierre (`GATHER`, carrières), `S.builds`. Seules les constructions du joueur cassent |
 | 21-boucle | `update(dt)`, `loop()`, `startGame()`, puis la séquence de construction du monde |
 | 22-appli | plein écran, écran qui reste allumé, enregistrement du mode hors-ligne |
 | 22b-partie-test | partie de test niveau 50 (`?test` dans l'adresse), sauvegarde normale mise de côté |

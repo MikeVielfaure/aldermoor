@@ -6,7 +6,8 @@ function colTop(c){if(c.h!==undefined)return c.h;if(c._top===undefined)c._top=gh
    automatique peut alors pivoter derrière le joueur, même en marche arrière, sans le faire tourner en rond) ;
    un glissement manuel de la caméra la décale d'autant (20-controles). */
 const MOVY={on:false,yaw:0};
-function moveYaw(active){if(!active){MOVY.on=false;CAMA.autoAcc=0;return camYaw;}if(!MOVY.on){MOVY.on=true;MOVY.yaw=camYaw;MOVY.last=camYaw;CAMA.autoAcc=0;}
+function moveYaw(active){MOVY.on=false;CAMA.autoAcc=0;return camYaw; /* simple et prévisible : la marche suit TOUJOURS la caméra */
+ if(!active){MOVY.on=false;CAMA.autoAcc=0;return camYaw;}if(!MOVY.on){MOVY.on=true;MOVY.yaw=camYaw;MOVY.last=camYaw;CAMA.autoAcc=0;}
  MOVY.yaw+=angDiff(camYaw,MOVY.last)-(CAMA.autoAcc||0);MOVY.last=camYaw;CAMA.autoAcc=0;return MOVY.yaw;} /* doigt, verrouillage, recentrage : la marche suit ; caméra automatique : la marche garde son cap */
 /* ================= BOUCLE ================= */
 let started=false,fastT=0,last=performance.now(),ambT=40,saveT=0,hudT=0,focT=0,waterT=0;
@@ -35,7 +36,7 @@ function update(dt){
   const mag=Math.min(1,Math.hypot(ix,iy));const slick=onSlick(player);
   let tvx=0,tvz=0;
   PLBACK=false;if(mag<=0.08)moveYaw(false);
-  if(mag>0.08){const by=moveYaw(true),fx=Math.sin(by),fz=Math.cos(by),rx=-fz,rz=fx;let mx=fx*iy+rx*ix,mz=fz*iy+rz*ix;const l=Math.hypot(mx,mz);mx/=l;mz/=l;const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95;PLBACK=!FLY.on&&!player.swim&&iy<-0.35&&Math.abs(ix)<Math.abs(iy)*0.8;const sp=(run&&!PLBACK?8.5:4.5)*(PLBACK?0.8:1)*mag*(1+0.1*tal('agil'))*(slick?1.6:1)*(player.swim?0.45:1)*(player.wade?0.6:1)*(BUFF.celerite?1.5:1)*(S.pet&&S.pet.sp==='cerf'?1.12:1)*gearSpeed();if(FLY.on){const fs=(run?18:11)*mag*(S.elan?1.3:1);tvx=mx*fs;tvz=mz*fs;}else{tvx=mx*sp;tvz=mz*sp;}
+  if(mag>0.08){const by=moveYaw(true),fx=Math.sin(by),fz=Math.cos(by),rx=-fz,rz=fx;let mx=fx*iy+rx*ix,mz=fz*iy+rz*ix;const l=Math.hypot(mx,mz);mx/=l;mz/=l;const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95;PLBACK=!FLY.on&&!player.swim&&iy<-0.35&&Math.abs(ix)<Math.abs(iy)*0.8;const sp=(PLBACK?(run?5.2:3.8):run?8.5:4.5)*mag*(1+0.1*tal('agil'))*(slick?1.6:1)*(player.swim?0.45:1)*(player.wade?0.6:1)*(BUFF.celerite?1.5:1)*(S.pet&&S.pet.sp==='cerf'?1.12:1)*gearSpeed();if(FLY.on){const fs=(run?18:11)*mag*(S.elan?1.3:1);tvx=mx*fs;tvz=mz*fs;}else{tvx=mx*sp;tvz=mz*sp;}
    let tr=Math.atan2(mx,mz)+(PLBACK?Math.PI:0),d=tr-player.ry;d=Math.atan2(Math.sin(d),Math.cos(d));player.ry+=d*Math.min(1,dt*12);}
   const acc=FLY.on?2.6:player.dash>0?0:(slick?1.1:(player.grounded?14:5));
   player.vx+=(tvx-player.vx)*Math.min(1,dt*acc);player.vz+=(tvz-player.vz)*Math.min(1,dt*acc);

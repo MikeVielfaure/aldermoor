@@ -34,7 +34,7 @@ function camAutoTick(dt){if(!started||anyModal()||TALK||CAMA.mode===0)return;con
  if(!turned&&moving&&calm>0.8/Math.sqrt(camK())&&!(AIM.lock&&AIMO.follow)){const by=MOVY.on?MOVY.yaw:camYaw,fx=Math.sin(by),fz=Math.cos(by),mx=fx*iy-fz*ix,mz=fz*iy+fx*ix,head=Math.atan2(mx,mz),d=angDiff(head,camYaw);
   /* en combat, si l'on s'éloigne (ou tourne autour) d'une créature proche, la caméra la garde en vue : pas de demi-tour */
   const flee=threatYaw!==null&&threatD<20&&Math.abs(angDiff(head,threatYaw))>1.4;
-  if(!flee&&Math.abs(d)<2.2&&!PLBACK){/* la caméra se replace derrière le joueur ; en marche arrière le joueur recule, la caméra ne fait pas demi-tour */const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95,k=(FLY.on?2.3:run?1.35:0.95)*camK()*Math.min(1,Math.abs(d)/1.2+0.15);{const r=d*Math.min(1,dt*k);camYaw+=r;CAMA.autoAcc=(CAMA.autoAcc||0)+r;}}}
+  if(!flee&&Math.abs(d)<0.9&&iy>0.3&&!PLBACK){/* seulement en avançant : de côté ou en arrière la caméra ne bouge pas (pas de spirale) *//* la caméra se replace derrière le joueur ; en marche arrière le joueur recule, la caméra ne fait pas demi-tour */const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95,k=(FLY.on?2.3:run?1.35:0.95)*camK()*Math.min(1,Math.abs(d)/1.2+0.15);{const r=d*Math.min(1,dt*k);camYaw+=r;CAMA.autoAcc=(CAMA.autoAcc||0)+r;}}}
  // inclinaison : retour doux vers une vue normale en marchant
  if(moving&&calm>2.5&&!FLY.on){const want=S.zone==='monde'?0.38:0.32;camPitch+=(want-camPitch)*Math.min(1,dt*0.8);}}
 {const _at=aimTick;aimTick=function(dt){const r=_at.apply(this,arguments);try{camAutoTick(dt);}catch(e){}return r;};}

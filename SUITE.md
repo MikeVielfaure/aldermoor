@@ -133,6 +133,8 @@
 - v35 : caméra « derrière moi » (sans cadrage de combat) en plus de « derrière moi (+ combat) » ; briques (pierre,
   bois, poutre, dalle, cristal qui flotte) : s’empilent, tombent, poussées par le vent, soulevées par l’Arcane,
   dispersées par les explosions, brûlées, figées ; s’abîment et cassent ; Reparo ; InstancedMesh par type.
+- v36 : Construo en roulette (les 6 boutons deviennent les constructions, 1er toucher = aperçu lumineux qui suit
+  le joueur et la caméra, 2e = poser, ➡ page suivante, ⇄ quitter). À faire : incassabilité des briques.
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Idées autour de la construction (vision du joueur : conquête, protection de village)

@@ -15,6 +15,8 @@ if(test){
 }
 // catalogue des modèles 3D (pour l'Atelier) et contenu créé dans l'Atelier (src/contenu/*.json), donnés au jeu avant son code
 const CAT={};for(const d of ['creatures','persos']){const p=R('src','assets',d);CAT[d]=fs.existsSync(p)?fs.readdirSync(p).filter(f=>f.endsWith('.glb')&&f!=='animations.glb').map(f=>f.slice(0,-4)).sort():[];}
+{const og=R('src','assets','objets','objets.glb');CAT.objets=[];if(fs.existsSync(og)){const b=fs.readFileSync(og),j=JSON.parse(b.slice(20,20+b.readUInt32LE(12)).toString('utf8'));CAT.objets=j.scenes[0].nodes.map(i=>j.nodes[i].name);} // les objets de objets.glb
+ const oi=R('src','assets','objets-import');if(fs.existsSync(oi))fs.readdirSync(oi).filter(f=>f.endsWith('.glb')).forEach(f=>CAT.objets.push('imp:'+f.slice(0,-4)));}
 const CONT={};{const cd=R('src','contenu');if(fs.existsSync(cd))for(const f of fs.readdirSync(cd).filter(f=>f.endsWith('.json'))){try{CONT[f.slice(0,-5)]=JSON.parse(fs.readFileSync(path.join(cd,f),'utf8'));}catch(e){throw new Error('src/contenu/'+f+' invalide : '+e.message);}}}
 const DATA='<script>window.__CATALOGUE='+JSON.stringify(CAT)+';window.__CONTENU='+JSON.stringify(CONT)+';</script>\n';
 const out=read('head.html')+'<style>\n'+read('styles.css')+'</style>\n'+read('body.html')+DATA+'<script>\n(function(){\n'+code+'})();\n</script>\n'+read('tail.html');

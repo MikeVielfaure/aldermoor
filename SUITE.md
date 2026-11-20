@@ -140,7 +140,7 @@
   toutes faites ; IA créatrice branchée sur l'Atelier.
 - v38 : Atelier v2 : import de modèles .glb, animations au choix, attaques (morsure, tir, cadence, portée, effets
   brûlure / poison / gel / repousse) ; onglet Sorts (variantes) ; onglet Monde (carte, lieux, portails) ; IA qui
-  remplit les fiches ; npm run publier. À faire : Personnages, Objets ; régions nouvelles (grande carte) ; minage.
+  remplit les fiches ; npm run publier. Puis onglets Personnages et Objets (v39). À discuter : régions nouvelles (grande carte), minage.
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Idées autour de la construction (vision du joueur : conquête, protection de village)

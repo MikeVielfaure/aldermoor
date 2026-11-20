@@ -34,6 +34,7 @@ closure `(function(){ ... })();`. Conséquences importantes :
   `{const _old=castSpell; castSpell=function(sp){ ...; return _old.apply(this,arguments); };}`.
   Avant de modifier une fonction, chercher TOUS ses enrobages (`grep -n "castSpell=" src/js`).
 - Ne jamais modifier `dist/` à la main : il est régénéré.
+- Atelier (22c) : une variable lue par la boucle d’affichage doit être déclarée AVANT la boucle (piège déjà rencontré deux fois : TAB, PICK).
 
 | Fichier `src/js/` | Contenu |
 |---|---|
@@ -90,10 +91,11 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 20t-contenu | créatures créées dans l'Atelier (`contCreatures` : src/contenu/creatures.json + localStorage de l'Atelier), apparition par groupe près de leur lieu, `?test&voir=<id>` |
 | 20u-contenu-sorts | sorts de l'Atelier (`CSPELLS`, effets explosion / multi / rebond, grande / attire / souffle, plateforme / teleport / soin / bouclier / bond ; `CPOW` dans pow), `?test&sort=<id>` |
 | 20v-contenu-monde | lieux et portails de l'Atelier (`CWORLD`, ajoutés à LOCS, décor auto, arches `CPORT`), `?test&lieu=<id>`, `?test&pos=x,z` |
+| 20w-contenu-objets-persos | personnages de l'Atelier (ajoutés à NPCS / MDL_PERSO / LINES avant buildCharacters, `?test&pnj=<id>`) et objets (`COBJETS` : objets.glb ou importés `objets-import`, interactions coffre / message / soin / mana) |
 | 21-boucle | `update(dt)`, `loop()`, `startGame()`, puis la séquence de construction du monde |
 | 22-appli | plein écran, écran qui reste allumé, enregistrement du mode hors-ligne |
 | 22b-partie-test | partie de test niveau 50 (`?test` dans l'adresse), sauvegarde normale mise de côté |
-| 22c-atelier | **L'Atelier** (`?atelier`, sur ordinateur) : onglets Créatures (import .glb, animations, attaques, effets), Sorts, Monde (carte, lieux, portails) ; barre IA (`mjCall`, clé du MJ) ; enregistrement dans le dossier du projet (File System Access, retenu en IndexedDB) ; `npm run publier` |
+| 22c-atelier | **L'Atelier** (`?atelier`, sur ordinateur) : onglets Créatures (import .glb, animations, attaques, effets), Sorts, Monde (carte, lieux, portails), Personnages, Objets (import .glb, choix sur la carte) ; barre IA (`mjCall`, clé du MJ) ; enregistrement dans le dossier du projet (File System Access, retenu en IndexedDB) ; `npm run publier` |
 
 Autres : `src/styles.css`, `src/body.html` (HUD/modales + balises `<script>` Three.js en CDN),
 `src/head.html`, `src/tail.html`, `src/static/` (icône, manifeste, `sw.js` : copiés tels quels dans

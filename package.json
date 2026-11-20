@@ -1,6 +1,6 @@
 {
   "name": "aldermoor",
-  "version": "0.37.0",
+  "version": "0.38.0",
   "private": true,
   "description": "Aldermoor — Académie des Arcanes : RPG de sorcier 3D web (Three.js) avec maître du jeu IA",
   "scripts": {
@@ -8,7 +8,8 @@
     "check": "node build.js && node tests/check.js",
     "test": "node build.js --test && node tests/partie.js",
     "capture": "node build.js --test && node tests/capture.js",
-    "serve": "node build.js && npx --yes serve dist -l 5173"
+    "serve": "node build.js && npx --yes serve dist -l 5173",
+    "publier": "node tools/publier.js"
   },
   "devDependencies": {
     "@gltf-transform/core": "^4.5.1",

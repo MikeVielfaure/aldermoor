@@ -255,7 +255,7 @@ body.induel #tracker,body.inwave #tracker,body.boss #tracker{visibility:hidden}
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/SkeletonUtils.js"></script>
-<script>window.__CATALOGUE={"creatures":["abeille","alien","arbre","cactus","cerf","champignon","chauvesouris","cochon","crabe","crane","cyclope","demon","diablotin","dragon","fantome","panda","pingouin","poule","poulpe","yeti"],"persos":["clerc","guerrier","moine","rodeuse","sorcier","voleur"]};window.__CONTENU={"creatures":[]};</script>
+<script>window.__CATALOGUE={"creatures":["abeille","alien","arbre","cactus","cerf","champignon","chauvesouris","cochon","crabe","crane","cyclope","demon","diablotin","dragon","fantome","panda","pingouin","poule","poulpe","yeti"],"persos":["clerc","guerrier","moine","rodeuse","sorcier","voleur"]};window.__CONTENU={"creatures":[],"monde":[],"sorts":[]};</script>
 <script>
 (function(){
 'use strict';
@@ -415,8 +415,8 @@ const ptsTotal=()=>lvl()-1+(S.relics||0)+ELS.reduce((a,e)=>a+Math.floor(mLvl(e)/
 const ptsSpent=()=>Object.values(S.talents||{}).reduce((a,b)=>a+b,0);
 const ptsFree=()=>ptsTotal()-ptsSpent();
 let CAST_K=1; // rang du sort en cours de lancement (19b-sorts-uniques)
-let CRITNOW=false,CHGNOW=0,CRIT_FORCE=false; // CHGNOW : sort chargé (0 à 1), CRIT_FORCE : charge pleine = critique (20g-charge-enchant) // un coup critique est en cours : sort sous sa forme majeure (20d-critiques-garde)
-const pow=el=>(1+0.25*tal(el+'_pow')+0.03*mLvl(el))*wMul(el)*(BUFF.puissance?1.3:1)*karmaMul(el)*CAST_K*(CRITNOW?1.4:1)*(1+0.6*CHGNOW)*petMul(el)*gearMul(el);
+let CRITNOW=false,CHGNOW=0,CRIT_FORCE=false,CPOW=1; // CPOW : puissance d’un sort créé dans l’Atelier (20u) // CHGNOW : sort chargé (0 à 1), CRIT_FORCE : charge pleine = critique (20g-charge-enchant) // un coup critique est en cours : sort sous sa forme majeure (20d-critiques-garde)
+const pow=el=>(1+0.25*tal(el+'_pow')+0.03*mLvl(el))*wMul(el)*(BUFF.puissance?1.3:1)*karmaMul(el)*CAST_K*(CRITNOW?1.4:1)*(1+0.6*CHGNOW)*petMul(el)*gearMul(el)*CPOW;
 const manaMax=()=>100+25*tal('reserve')+gearMana(); // gearMana : robe (20n-equipement)
 const manaRegen=()=>9*gearRegen()*(1+0.3*tal('flux'))*(lvl()>=15?1.5:1)*(typeof player!=='undefined'&&player.grounded&&player.spd<0.05&&!FLY.on?1.8:1); // immobile : méditation
 function migrate(s){s.inv=s.inv||{};s.rep=s.rep||{};s.zone='monde';s.talents=s.talents||{};s.mastery=s.mastery||{};s.combos=s.combos||[];
@@ -1471,7 +1471,7 @@ function creaDress(e,m,T){const D=e.data;if(!ENT.includes(e)||D.M)return;
  r.traverse(o=>{if(o.isMesh){o.material=o.material.clone();if(o.material.map&&o.material.map.encoding!==THREE.LinearEncoding){o.material.map.encoding=THREE.LinearEncoding;o.material.map.needsUpdate=true;}o.material.needsUpdate=true;o.material.color.copy(tint);o.castShadow=true;o.frustumCulled=false;mats.push(o.material);}});
  const k=(vol?1.1:1.45)/T.h;r.scale.setScalar(k);r.position.y=vol?0.9:0; // l'objet entier est déjà à l'échelle de la créature (sc)
  e.obj.add(r);e.obj.children.forEach(o=>{if(o.isMesh&&o!==r)o.visible=false;});if(D.gl){D.gl.scale.multiplyScalar(0.6);D.gl.material.opacity=0.35;}
- const mx=new THREE.AnimationMixer(r),A={};for(const n in T.clips)A[n]=mx.clipAction(T.clips[n]);
+ const mx=new THREE.AnimationMixer(r),A={};for(const n in T.clips)A[n]=mx.clipAction(T.clips[n]);if(typeof creaAlias==='function')creaAlias(A,D); /* noms d’animation des modèles importés (20t) */
  D.M={r,mx,A,mats,tint,vol,cur:null,lx:e.x,lz:e.z,hp:D.hp,hitT:0};creaPlay(D,vol?'Flying':'Idle');void sc;}
 function creaPlay(D,n){const M=D.M,a=M.A[n];if(!a||M.cur===n)return;const old=M.cur&&M.A[M.cur];a.reset().play();if(old)old.crossFadeTo(a,0.2,false);M.cur=n;}
 {const _s=spawnCreatureAt;spawnCreatureAt=function(x,z,name,weak,look,hp,extra){const e=_s.apply(this,arguments);
@@ -4298,7 +4298,7 @@ function vieTick(dt){if(!started)return;
  // vie : morsures, retour au calme
  {const m=vieMax();if(m>VIE.max)VIE.hp+=m-VIE.max;VIE.max=m;}if(VIE.hp>VIE.max)VIE.hp=VIE.max;
  if(!vieBusy()&&S.zone==='monde'&&!FLY.on){for(const e of ENT){if(e.kind!=='creature')continue;const D=e.data;if(D.calme||D.duel||D.wave||D.dragon||D.frozen>0||D.confused>0)continue;
-   D.biteT=(D.biteT||0)-dt;const dp=Math.hypot(player.x-e.x,player.z-e.z);if(dp<1.25&&player.y-gh(player.x,player.z)<1.5&&D.biteT<=0){D.biteT=1.1;vieHurt(e.x>1500?8:5);}}}
+   D.biteT=(D.biteT||0)-dt;const dp=Math.hypot(player.x-e.x,player.z-e.z);if(dp<1.25&&player.y-gh(player.x,player.z)<1.5&&D.biteT<=0){D.biteT=1.1;vieHurt(D.bite||(e.x>1500?8:5));if(D.eff)playerEff(D.eff,e.x,e.z);}}}
  VIE.calm-=dt;if(VIE.calm<=0&&VIE.hp<VIE.max&&!VIE.faint){const med=player.grounded&&player.spd<0.05;VIE.hp=Math.min(VIE.max,VIE.hp+dt*(med?14:6)*(S.pet&&S.pet.sp==='panda'?2:1));}
  vieHud();
  // barres de vie des créatures
@@ -4325,8 +4325,8 @@ function vieTick(dt){if(!started)return;
    - Balai : le champ de vision s'élargit avec la vitesse (sensation de vitesse). */
 const CSHOT=[],RANGED_EL=['feu','glace','arcane','lumiere','ombre'];
 function creaShoot(e){const D=e.data,c=ELEM[D.look].c,oy=gh(e.x,e.z)+(D.y||1.2)*(e.obj.scale.x||1)+0.2;const o=glow(c,1.3,0.95);o.position.set(e.x,oy,e.z);scene.add(o);
- const lead=0.35,tx=player.x+player.vx*lead,tz=player.z+player.vz*lead,ty=player.y+1,L=Math.hypot(tx-e.x,ty-oy,tz-e.z)||1,sp=11;
- CSHOT.push({o,x:e.x,y:oy,z:e.z,vx:(tx-e.x)/L*sp,vy:(ty-oy)/L*sp,vz:(tz-e.z)/L*sp,life:2.2,el:D.look,dmg:e.x>1500?9:6});sfx('cast',D.look,'trait',e.x,e.z);}
+ const lead=0.35,tx=player.x+player.vx*lead,tz=player.z+player.vz*lead,ty=player.y+1,L=Math.hypot(tx-e.x,ty-oy,tz-e.z)||1,sp=D.shotSpd||11;
+ CSHOT.push({o,x:e.x,y:oy,z:e.z,vx:(tx-e.x)/L*sp,vy:(ty-oy)/L*sp,vz:(tz-e.z)/L*sp,life:2.2*(D.shotRange?D.shotRange/15:1),el:D.look,dmg:D.shotDmg||(e.x>1500?9:6),eff:D.eff});sfx('cast',D.look,'trait',e.x,e.z);}
 /* obstacle pour un projectile : comme hitsSolid, mais un objet bas (banc, muret) laisse passer ce qui vole au-dessus */
 function shotSolid(x,y,z){for(const c of COLS){if(c.lake||c.off||(c.bot!==undefined&&y<c.bot))continue;if(c.h!==undefined&&y>c.h)continue;if(c.r!==undefined){if(Math.abs(x-c.x)<c.r&&Math.abs(z-c.z)<c.r&&Math.hypot(x-c.x,z-c.z)<c.r)return c;}else if(Math.abs(x-c.x)<c.hw&&Math.abs(z-c.z)<c.hd)return c;}return null;}
 function combatTick(dt){if(!started)return;
@@ -4336,14 +4336,14 @@ function combatTick(dt){if(!started)return;
   if(D.calme){if(D.hp0!==undefined&&D.hp<(D.lastHp??D.hp0))D.fleeT=4;D.lastHp=D.hp;if(D.fleeT>0){D.fleeT-=dt;const dx=e.x-player.x,dz=e.z-player.z,d=Math.hypot(dx,dz)||1;D.tx=e.x+dx/d*6;D.tz=e.z+dz/d*6;const o={x:e.x+dx/d*3*dt,z:e.z+dz/d*3*dt};pushOut(o,0.5);e.x=o.x;e.z=o.z;}continue;}
   if(D.ranged===undefined)D.ranged=RANGED_EL.includes(D.look)&&Math.random()<0.4;if(!D.ranged||vieBusy()||S.zone!=='monde'||D.frozen>0||D.confused>0)continue;
   const dp=Math.hypot(player.x-e.x,player.z-e.z);D.shotT=(D.shotT===undefined?rnd(1,3):D.shotT)-dt;
-  if(D.charge>0){D.charge-=dt;if(Math.random()<dt*30)PA.emit(e.x+rnd(-.4,.4),gh(e.x,e.z)+1.4+rnd(-.3,.3),e.z+rnd(-.4,.4),0,rnd(.3,1),0,ELEM[D.look].c,0.3,0.05,0.4,0,1);if(D.charge<=0&&dp<17)creaShoot(e);}
-  else if(D.shotT<=0&&dp>5&&dp<15&&!BUFF.invis&&stealth<=0){D.shotT=rnd(3,4.5);D.charge=0.6;}}
+  if(D.charge>0){D.charge-=dt;if(Math.random()<dt*30)PA.emit(e.x+rnd(-.4,.4),gh(e.x,e.z)+1.4+rnd(-.3,.3),e.z+rnd(-.4,.4),0,rnd(.3,1),0,ELEM[D.look].c,0.3,0.05,0.4,0,1);if(D.charge<=0&&dp<(D.shotRange||15)+2)creaShoot(e);}
+  else if(D.shotT<=0&&dp>5&&dp<(D.shotRange||15)&&!BUFF.invis&&stealth<=0){D.shotT=D.shotRate?D.shotRate*rnd(0.8,1.2):rnd(3,4.5);D.charge=0.6;}}
  for(let i=CSHOT.length-1;i>=0;i--){const s=CSHOT[i];s.life-=dt;s.x+=s.vx*dt;s.y+=s.vy*dt;s.z+=s.vz*dt;s.o.position.set(s.x,s.y,s.z);if(Math.random()<dt*25)PA.emit(s.x,s.y,s.z,rnd(-.3,.3),rnd(-.3,.3),rnd(-.3,.3),ELEM[s.el].c,0.28,0.05,0.35,0,1);
   const hitP=Math.hypot(s.x-player.x,s.z-player.z)<0.75&&Math.abs(s.y-(player.y+1))<1.1;
   const Wb=typeof inWall==='function'?inWall(s.x,s.y,s.z,0.1):null;if(Wb&&Wb.kind==='glace'&&s.el==='feu')Wb.life-=2;
   const sc=shotSolid(s.x,s.y,s.z);if(sc&&sc.bld&&typeof bldDamage==='function')bldDamage(sc.bld,s.dmg||6,s.el);
   const blocked=!!Wb||!!sc||s.y<gh(s.x,s.z)||(typeof AEGIS!=='undefined'&&AEGIS&&Math.hypot(s.x-player.x,s.z-player.z)<1.8);
-  if(hitP&&!blocked)vieHurt(s.dmg);
+  if(hitP&&!blocked){vieHurt(s.dmg);if(s.eff)playerEff(s.eff,s.x-s.vx,s.z-s.vz);}
   if(hitP||blocked||s.life<=0){burst(s.x,s.y,s.z,ELEM[s.el].c,10,3);scene.remove(s.o);CSHOT.splice(i,1);}}}
 {const _w=world4Tick;world4Tick=function(dt){const r=_w.apply(this,arguments);try{combatTick(dt);}catch(e){console.error(e);}return r;};}
 {const _ez=enterZone;enterZone=function(){CSHOT.splice(0).forEach(s=>scene.remove(s.o));return _ez.apply(this,arguments);};}
@@ -5323,6 +5323,102 @@ function contTick(dt){if(!started||S.zone!=='monde')return;const now=performance
 {const _sg=startGame;startGame=function(){const r=_sg.apply(this,arguments);const m=/[?&]voir=([^&]+)/.exec(location.search);if(m){const c=CONTC.find(c=>c.id===decodeURIComponent(m[1]));const L=c&&LOCBY[c.lieu];
   if(L)setTimeout(()=>{const go=()=>{bot0(L.spot.x+6,L.spot.z+6);say('🛠 Test de l’Atelier : <b>'+esc(c.nom)+'</b> arrive près de '+esc(L.name)+'.','gm');};if(L.x>1500&&player.x<1500){landesGo(false);setTimeout(go,1600);}else go();},1800);}return r;};}
 function bot0(x,z){player.x=x;player.z=z;player.y=gh(x,z);player.vx=player.vz=player.vy=0;}
+/* ---------- modèles importés : noms d'animation, orientation, vol ---------- */
+// les modèles importés nomment leurs animations à leur façon : la fiche peut choisir, sinon on devine
+function creaAlias(A,D){const c=D&&D.cid&&CONTC.find(c=>c.id===D.cid),map=(c&&c.anims)||{},names=Object.keys(A),g=re=>names.find(n=>re.test(n));
+ const want={Idle:map.Idle||(!A.Idle&&g(/idle|stand|breath|rest/i)),Walk:map.Walk||(!A.Walk&&g(/walk|run|move|gallop/i)),Bite_InPlace:map.Bite_InPlace||(!A.Bite_InPlace&&!A.Bite_Front&&g(/attack|bite|punch|slash|strike/i)),
+  Death:map.Death||(!A.Death&&g(/death|die|dead/i)),HitRecieve:map.HitRecieve||(!A.HitRecieve&&g(/hit|hurt|damage|recei?ve/i)),Flying:map.Flying||(!A.Flying&&g(/fly|flap|hover/i))};
+ for(const k in want)if(want[k]&&A[want[k]])A[k]=A[want[k]];}
+{const _d=creaDress;creaDress=function(e,m,T){const r=_d.apply(this,arguments);const c=e.data.cid&&CONTC.find(c=>c.id===e.data.cid);if(c&&e.data.M){if(c.rotY)e.data.M.r.rotation.y=c.rotY*Math.PI/180;}return r;};}
+CONTC.forEach(c=>{if(c.vol)CREA_VOL[c.modele]=1;});
+// attaques de la fiche → données de la créature (lues par 20e : morsure, tirs, effet)
+{const _sp=spawnCreatureAt;spawnCreatureAt=function(x,z,name,weak,look,hp,extra){const e=_sp.apply(this,arguments);const c=extra&&extra.cid&&CONTC.find(c=>c.id===extra.cid);
+  if(c&&c.attaque){const A=c.attaque,D=e.data;if(A.morsure)D.bite=A.morsure;if(A.tir)D.shotDmg=A.tir;if(A.cadence)D.shotRate=A.cadence;if(A.portee)D.shotRange=A.portee;if(A.vitesse)D.shotSpd=A.vitesse;if(A.effet&&A.effet!=='aucun')D.eff=A.effet;}return e;};}
+/* ---------- effets sur le joueur : brûlure, poison, gel (ralenti), repousse ---------- */
+const PEFF={burn:0,poison:0,slow:0,t:0};
+function playerEff(eff,fx,fz){if(eff==='brulure'){PEFF.burn=3;floatAt(player.x,player.z,'🔥 Brûlure','#ffb070');}else if(eff==='poison'){PEFF.poison=6;floatAt(player.x,player.z,'☠ Poison','#a0ff7a');}
+ else if(eff==='gel'){PEFF.slow=3;floatAt(player.x,player.z,'❄ Ralenti','#bfefff');}else if(eff==='repousse'&&fx!==undefined){const dx=player.x-fx,dz=player.z-fz,d=Math.hypot(dx,dz)||1;player.vx+=dx/d*10;player.vz+=dz/d*10;player.vy=Math.max(player.vy,4);}}
+function peffTick(dt){if(!started)return;PEFF.slow=Math.max(0,PEFF.slow-dt);PEFF.t-=dt;
+ if(PEFF.slow>0&&Math.random()<dt*10)PA.emit(player.x+rnd(-.4,.4),player.y+rnd(0,1.8),player.z+rnd(-.4,.4),0,0.3,0,0xcff4ff,0.2,0.05,0.5,0,1);
+ if((PEFF.burn>0||PEFF.poison>0)&&PEFF.t<=0){PEFF.t=1;if(PEFF.burn>0){PEFF.burn--;vieHurt(3);fireAt(player.x,player.y+1,player.z,0.4,1);}if(PEFF.poison>0){PEFF.poison--;vieHurt(2);burst(player.x,player.y+1.2,player.z,0x7aff4a,8,2);}}}
+{const _w=world4Tick;world4Tick=function(dt){const r=_w.apply(this,arguments);try{peffTick(dt);}catch(e){}return r;};}
+// modèles importés depuis l'Atelier (avant reconstruction du jeu) : ajoutés au catalogue
+try{const imp=JSON.parse(localStorage.getItem('aldermoor-atelier-imports')||'[]');window.__CATALOGUE=window.__CATALOGUE||{creatures:[]};imp.forEach(m=>{if(!window.__CATALOGUE.creatures.includes(m))window.__CATALOGUE.creatures.push(m);});}catch(e){}
+/* ================= SORTS CRÉÉS DANS L'ATELIER =================
+   Fiche : {id, nom, incantation, description, element, forme:'trait'|'zone'|'util', cout, recharge, puissance (×),
+   effet, obtention:'depart'|'parchemin', lieu}. Le sort s'appuie sur le sort de base de l'élément et ajoute son effet :
+   - attaque (trait) : explosion (à l'impact), multi (3 projectiles en éventail), rebond (saute de créature en créature) ;
+   - zone : grande (rayon ×1,6), attire (aspire les créatures), souffle (les repousse loin) ;
+   - utilitaire : plateforme (briques de cristal sous les pieds / au point visé), teleport (jusqu'au point visé, 22 m),
+     soin (+40 vie), bouclier (petite bulle Proteggo), bond (grand saut plané).
+   Obtention : « départ » = connu dès le lancement ; « parchemin » = un parchemin apparaît chaque jour au lieu choisi.
+   Sources : src/contenu/sorts.json + localStorage de l'Atelier. « ?test&sort=<id> » : sort placé en 1er emplacement. */
+const CONT_SKEY='aldermoor-atelier-sorts';
+function contSpellsList(){const base=((window.__CONTENU||{}).sorts||[]).slice();let loc=[];try{loc=JSON.parse(localStorage.getItem(CONT_SKEY)||'[]');}catch(e){}const by={};base.concat(loc).forEach(c=>{if(c&&c.id)by[c.id]=c;});return Object.values(by);}
+const CSPELLS=contSpellsList();
+const cSpell=c=>({name:c.nom,inc:c.incantation||c.nom,el:c.element,form:c.forme,desc:c.description||'',special:'c-'+c.id,legend:true,cost:c.cout||20,cd:c.recharge||1,id:'c-'+c.id,cfg:c});
+const cfgOf=sp=>sp&&sp.special&&sp.special.startsWith('c-')?(CSPELLS.find(c=>'c-'+c.id===sp.special)||sp.cfg):null;
+const plain=sp=>Object.assign({},sp,{special:undefined,legend:undefined});
+// attaque
+{const _t=doTrait;doTrait=function(sp){const c=cfgOf(sp);if(!c)return _t.apply(this,arguments);const n0=PROJ.length;CPOW=c.puissance||1;try{_t.call(this,plain(sp));}finally{CPOW=1;}
+  const news=PROJ.slice(n0);news.forEach(p=>{p.cfx=c.effet;p.cpow=c.puissance||1;p.chain=c.effet==='rebond'?3:0;p.hitList=[];});
+  if(c.effet==='multi')news.forEach(p=>{[-0.28,0.28].forEach(a=>{const ca=Math.cos(a),sa=Math.sin(a),o=p.o.clone();scene.add(o);PROJ.push(Object.assign({},p,{o,vx:p.vx*ca-p.vz*sa,vz:p.vx*sa+p.vz*ca,ht:null,light:null,cfx:null}));});});};}
+// impact des projectiles « spéciaux » : on regarde ceux qui ont disparu pendant la mise à jour
+{const _u=updProj;updProj=function(dt){const before=PROJ.filter(p=>p.cfx);const r=_u.apply(this,arguments);for(const p of before){if(PROJ.includes(p))continue;const o=p.o.position;cImpact(p,o.x,o.y,o.z);}return r;};}
+function cImpact(p,x,y,z){const el=p.el;
+ if(p.cfx==='explosion'){const R=4*Math.min(2,p.cpow||1);shockRing(x,z,ELEM[el].c,R);SHAKE=Math.max(SHAKE,0.4);for(let i=0;i<50;i++){const a=Math.random()*TAU,v=rnd(3,9);PA.emit(x,y,z,Math.cos(a)*v,rnd(1,5),Math.sin(a)*v,i%2?ELEM[el].c:0xffffff,rnd(.3,.6),0.05,rnd(.5,.9),4,1);}
+  ENT.filter(e=>e.kind==='creature'&&!e.data.calme&&!e.data.pet&&Math.hypot(e.x-x,e.z-z)<R).forEach(e=>hurtCreature(e,el,x,z));if(typeof elemHit==='function')elemHit(el,x,z,R);}
+ if(p.cfx==='rebond'&&p.chain>0){let best=null,bd=11;for(const e of ENT){if(e.kind!=='creature'||e.data.calme||e.data.pet||p.hitList.includes(e.id))continue;const d=Math.hypot(e.x-x,e.z-z);if(d<bd&&d>0.5){bd=d;best=e;}}
+  const hit=ENT.find(e=>e.kind==='creature'&&Math.hypot(e.x-x,e.z-z)<1.6);if(hit)p.hitList.push(hit.id);
+  if(best){const ty=gh(best.x,best.z)+1.2,dx=best.x-x,dy=ty-y,dz=best.z-z,L=Math.hypot(dx,dy,dz)||1,sp=22,o=p.o.clone();o.position.set(x,y,z);scene.add(o);
+   PROJ.push({o,el,vx:dx/L*sp,vy:dy/L*sp,vz:dz/L*sp,life:L/sp+0.3,grav:0,c:ELEM[el].c,light:null,t:0,ht:{kind:'crea',ref:best},tp:null,cfx:'rebond',chain:p.chain-1,hitList:p.hitList.concat(best.id),cpow:p.cpow});flash(x,y,z,ELEM[el].c,2,0.2);}}}
+// zone
+{const _z=doZone;doZone=function(sp){const c=cfgOf(sp);if(!c)return _z.apply(this,arguments);CPOW=(c.puissance||1)*(c.effet==='grande'?1.6:1);try{_z.call(this,plain(sp));}finally{CPOW=1;}
+  if(c.effet==='attire'||c.effet==='souffle'){const s=c.effet==='attire'?-1:1;ENT.forEach(e=>{if(e.kind!=='creature'||e.data.calme||e.data.pet||e.data.dragon||e.data.duel)return;const d=Math.hypot(e.x-player.x,e.z-player.z);if(d<12&&d>0.5){e.data.kx=(e.data.kx||0)+s*(e.x-player.x)/d*(s<0?Math.min(14,d*1.6):18);e.data.kz=(e.data.kz||0)+s*(e.z-player.z)/d*(s<0?Math.min(14,d*1.6):18);}});
+   for(let i=0;i<60;i++){const a=i/60*TAU,r=s<0?10:1;PA.emit(player.x+Math.cos(a)*r,player.y+0.6,player.z+Math.sin(a)*r,Math.cos(a)*8*s,0.5,Math.sin(a)*8*s,ELEM[c.element].c,0.35,0.05,0.8,0,1);}}};}
+// utilitaire
+{const _u=doUtil;doUtil=function(sp){const c=cfgOf(sp);if(!c)return _u.apply(this,arguments);const col=ELEM[c.element].c,P=utilPt(22);
+  if(c.effet==='plateforme'){const air=FLY.on||!player.grounded,cx=P&&!air?P.x:player.x,cz=P&&!air?P.z:player.z,cy=P&&!air?gh(cx,cz):player.y-0.95;
+   for(const [dx,dz] of [[0,0],[0.9,0],[-0.9,0],[0,0.9],[0,-0.9]]){const b={id:++BRKN,t:'cristal',x:Math.round((cx+dx)/0.9)*0.9,y:cy,z:Math.round((cz+dz)/0.9)*0.9,rot:0,hp:BRK_T.cristal.hp,vx:0,vy:0,vz:0,lev:0,awake:false};BRK.push(b);brkCol(b);}brkSync();BRKSAVE=1;sfx('shield');}
+  else if(c.effet==='teleport'){const [dx,dz]=fwd();let tx=P?P.x:player.x+dx*14,tz=P?P.z:player.z+dz*14;if(!isFree({x:tx,z:tz},0.4)){tx=player.x+dx*6;tz=player.z+dz*6;}
+   for(let i=0;i<30;i++)PA.emit(player.x+rnd(-.4,.4),player.y+rnd(0,2),player.z+rnd(-.4,.4),0,rnd(.5,2),0,col,0.35,0.05,0.7,0,1);player.x=tx;player.z=tz;player.y=Math.max(player.y,gh(tx,tz));player.vx=player.vz=0;flash(tx,player.y+1,tz,col,3,0.4);}
+  else if(c.effet==='soin'){if(typeof VIE!=='undefined')VIE.hp=Math.min(VIE.max,VIE.hp+40*(c.puissance||1));for(let i=0;i<40;i++){const a=Math.random()*TAU;PA.emit(player.x+Math.cos(a)*0.6,player.y+rnd(0,2),player.z+Math.sin(a)*0.6,0,rnd(1,2),0,col,0.3,0.05,1,0,0.5);}sfx('learn');}
+  else if(c.effet==='bouclier'){CHGNOW=0;const S0={id:++PSHN,x:player.x,y:player.y,z:player.z,str:45*(c.puissance||1),max:false,hitT:0.6};pshLook(S0);PSH.push(S0);sfx('shield');}
+  else{player.vy=16*Math.min(1.5,c.puissance||1);player.grounded=false;player.glide=3;for(let i=0;i<30;i++)PA.emit(player.x,player.y+0.2,player.z,rnd(-2,2),rnd(1,3),rnd(-2,2),col,0.3,0.05,0.8,0,1);}};}
+// obtention, test
+function cSpellsGive(){CSPELLS.forEach(c=>{if(c.obtention==='depart'&&!S.spells.some(s=>s.special==='c-'+c.id))S.spells.push(cSpell(c));});}
+{const _sg=startGame;startGame=function(){const r=_sg.apply(this,arguments);try{cSpellsGive();CSPELLS.forEach(c=>{if(c.obtention==='parchemin'&&LOCBY[c.lieu]&&!S.spells.some(s=>s.special==='c-'+c.id))spawnScroll(c.lieu,cSpell(c),1440);});const m=/[?&]sort=([^&]+)/.exec(location.search);if(m){const c=CSPELLS.find(c=>c.id===decodeURIComponent(m[1]));if(c){if(!S.spells.some(s=>s.special==='c-'+c.id))S.spells.push(cSpell(c));S.slots[0]='c-'+c.id;renderSlots();setTimeout(()=>say('🛠 Test de l’Atelier : <b>'+esc(c.nom)+'</b> est dans ton 1er emplacement.','gm'),1500);}}}catch(e){console.error(e);}return r;};}
+{const _n=nightfall;nightfall=function(){const r=_n.apply(this,arguments);try{CSPELLS.forEach(c=>{if(c.obtention==='parchemin'&&LOCBY[c.lieu]&&!S.spells.some(s=>s.special==='c-'+c.id))spawnScroll(c.lieu,cSpell(c),1440);});}catch(e){}return r;};}
+/* ================= LE MONDE DE L'ATELIER : lieux et portails =================
+   Fiche « lieu » : {id, type:'lieu', nom, x, z, rayon, style (recette de décor automatique : campagne, foret, ruines,
+   montagne, ferme… ou aucun), repere (pierre levée lumineuse)}. Le lieu rejoint la liste du jeu (nom affiché,
+   quêtes, créatures et sorts de l'Atelier peuvent l'utiliser), avec son décor automatique et son repère.
+   Fiche « portail » : {id, type:'portail', nom, ax, az, bx, bz, couleur} : deux arches reliées ; on entre dans l'une,
+   on sort de l'autre (même entre la vallée et les Landes) : pour éviter les longs détours par les montagnes.
+   Sources : src/contenu/monde.json + localStorage de l'Atelier. « ?test&lieu=<id> » : la partie de test commence là. */
+const CONT_MKEY='aldermoor-atelier-monde';
+function contWorldList(){const base=((window.__CONTENU||{}).monde||[]).slice();let loc=[];try{loc=JSON.parse(localStorage.getItem(CONT_MKEY)||'[]');}catch(e){}const by={};base.concat(loc).forEach(c=>{if(c&&c.id)by[c.id]=c;});return Object.values(by);}
+const CWORLD=contWorldList();const CPORT=[];
+const inWorld=(x,z)=>x>1500?Math.hypot(x-2000,z)<160:Math.hypot(x,z)<88;
+// lieux : ajoutés à la liste dès le chargement (les autres contenus peuvent s'y référer)
+CWORLD.filter(c=>c.type==='lieu'&&inWorld(c.x,c.z)&&!LOCBY[c.id]).forEach(c=>{const L={id:c.id,name:c.nom,x:c.x,z:c.z,r:c.rayon||10,spot:{x:c.x+2,z:c.z+2},region:c.x>1500?'landes':undefined,hidden:c.x>1500,atelier:true};LOCS.push(L);LOCBY[c.id]=L;LOC_STYLE[c.id]=c.style&&c.style!=='aucun'?c.style:null;});
+function buildMonde(){dkMats();
+ for(const c of CWORLD){if(c.type==='lieu'&&LOCBY[c.id]&&c.repere!==false){const y=gh(c.x,c.z);dkAt(c.x,c.z,0);dCyl('stone',0x8f8a80,0.6,0.8,0.4,0,0.2,0,8);dBox('stone',0x9a958a,0.5,2.2,0.4,0,1.5,0,0.1);
+   const g=glow(0xbfe8ff,2,0.6);g.position.set(c.x,y+2.8,c.z);scene.add(g);addCol({x:c.x,z:c.z,r:0.8,h:y+2.6});}
+  if(c.type==='portail'&&inWorld(c.ax,c.az)&&inWorld(c.bx,c.bz)){const col=c.couleur?parseInt(String(c.couleur).replace('#',''),16):0xb48cff;
+   const P={c,a:portalArch(c.ax,c.az,c.bx,c.bz,col),b:portalArch(c.bx,c.bz,c.ax,c.az,col),cd:0};CPORT.push(P);}}
+ dkFlush();} /* le décor automatique des nouveaux lieux est posé par buildDecor (11c), qui passe après */
+function portalArch(x,z,tx,tz,col){const y=gh(x,z),g=new THREE.Group();g.position.set(x,y,z);g.rotation.y=Math.atan2(tx-x,tz-z);dkMats();
+ const st=mat(0x8f8a80,{flatShading:true});for(const s of [-1,1]){const p=new THREE.Mesh(new THREE.BoxGeometry(0.5,3.4,0.5),st);p.position.set(s*1.4,1.7,0);p.castShadow=true;g.add(p);}const top=new THREE.Mesh(new THREE.BoxGeometry(3.4,0.5,0.6),st);top.position.y=3.5;g.add(top);
+ const v=new THREE.Mesh(new THREE.PlaneGeometry(2.3,3),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.45,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));v.position.y=1.6;g.add(v);
+ const gl=glow(col,3.5,0.7);gl.position.y=1.8;g.add(gl);scene.add(g);addCol({x:x+Math.cos(g.rotation.y)*1.4,z:z-Math.sin(g.rotation.y)*1.4,r:0.35});addCol({x:x-Math.cos(g.rotation.y)*1.4,z:z+Math.sin(g.rotation.y)*1.4,r:0.35});return {x,z,g,v};}
+{const _b=buildLandes;buildLandes=function(){const r=_b.apply(this,arguments);try{buildMonde();}catch(e){console.error(e);}return r;};}
+function portTo(x,z){fade(()=>{const toL=x>1500,fromL=player.x>1500;player.x=x+rnd(-1,1);player.z=z+rnd(-1,1);player.y=gh(player.x,player.z)+0.2;player.vx=player.vz=player.vy=0;if(toL!==fromL&&typeof LANDES!=='undefined')LANDES.seen=true;sfx('learn');});}
+function portTick(dt){if(!started||S.zone!=='monde')return;const t=performance.now()/1000;
+ for(const P of CPORT){P.cd-=dt;for(const [A,B] of [[P.a,P.b],[P.b,P.a]]){A.v.material.opacity=0.35+0.15*Math.sin(t*3);if(Math.random()<dt*8)PA.emit(A.x+rnd(-1,1),gh(A.x,A.z)+rnd(0.3,3),A.z+rnd(-0.3,0.3),0,0.3,0,0xffffff,0.25,0.05,0.6,0,1);
+  if(P.cd<=0&&Math.hypot(player.x-A.x,player.z-A.z)<1.3&&!FLY.on){P.cd=3;const a=Math.atan2(player.x-B.x,player.z-B.z);portTo(B.x+Math.sin(B.g.rotation.y)*2.5,B.z+Math.cos(B.g.rotation.y)*2.5);say('🌀 '+esc(P.c.nom||'Portail')+'.','sys');}}}}
+{const _w=world4Tick;world4Tick=function(dt){const r=_w.apply(this,arguments);try{portTick(dt);}catch(e){}return r;};}
+{const _sg=startGame;startGame=function(){const r=_sg.apply(this,arguments);const q=/[?&]pos=(-?[d.]+),(-?[d.]+)/.exec(location.search);if(q){const x=+q[1],z=+q[2];setTimeout(()=>{if(x>1500&&player.x<1500){landesGo(false);setTimeout(()=>bot0(x,z),1600);}else bot0(x,z);},1800);}const m=/[?&]lieu=([^&]+)/.exec(location.search);if(m){const L=LOCBY[decodeURIComponent(m[1])];if(L)setTimeout(()=>{if(L.x>1500&&player.x<1500){landesGo(false);setTimeout(()=>bot0(L.spot.x,L.spot.z),1600);}else bot0(L.spot.x,L.spot.z);say('🛠 Test de l’Atelier : <b>'+esc(L.name)+'</b>.','gm');},1800);}return r;};}
 let PLBACK=false; // joystick tiré en arrière : le joueur recule, face à l’avant (pas de demi-tour)
 let CAMD=8,CAMPS=0.38; // caméra : distance et inclinaison lissées
 /* hauteur du sommet d'un obstacle (absolue), mise en cache */
@@ -5361,7 +5457,7 @@ function update(dt){
   const mag=Math.min(1,Math.hypot(ix,iy));const slick=onSlick(player);
   let tvx=0,tvz=0;
   PLBACK=false;if(mag<=0.08)moveYaw(false);
-  if(mag>0.08){const by=moveYaw(true),fx=Math.sin(by),fz=Math.cos(by),rx=-fz,rz=fx;let mx=fx*iy+rx*ix,mz=fz*iy+rz*ix;const l=Math.hypot(mx,mz);mx/=l;mz/=l;const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95;PLBACK=!FLY.on&&!player.swim&&iy<-0.35&&Math.abs(ix)<Math.abs(iy)*0.8;const sp=(PLBACK?(run?5.2:3.8):run?8.5:4.5)*mag*(1+0.1*tal('agil'))*(slick?1.6:1)*(player.swim?0.45:1)*(player.wade?0.6:1)*(BUFF.celerite?1.5:1)*(S.pet&&S.pet.sp==='cerf'?1.12:1)*gearSpeed();if(FLY.on){const fs=(run?18:11)*mag*(S.elan?1.3:1);tvx=mx*fs;tvz=mz*fs;}else{tvx=mx*sp;tvz=mz*sp;}
+  if(mag>0.08){const by=moveYaw(true),fx=Math.sin(by),fz=Math.cos(by),rx=-fz,rz=fx;let mx=fx*iy+rx*ix,mz=fz*iy+rz*ix;const l=Math.hypot(mx,mz);mx/=l;mz/=l;const run=keys.ShiftLeft||keys.ShiftRight||mag>0.95;PLBACK=!FLY.on&&!player.swim&&iy<-0.35&&Math.abs(ix)<Math.abs(iy)*0.8;const sp=(PLBACK?(run?5.2:3.8):run?8.5:4.5)*mag*(1+0.1*tal('agil'))*(slick?1.6:1)*(player.swim?0.45:1)*(player.wade?0.6:1)*(BUFF.celerite?1.5:1)*(S.pet&&S.pet.sp==='cerf'?1.12:1)*gearSpeed()*(typeof PEFF!=='undefined'&&PEFF.slow>0?0.55:1);if(FLY.on){const fs=(run?18:11)*mag*(S.elan?1.3:1);tvx=mx*fs;tvz=mz*fs;}else{tvx=mx*sp;tvz=mz*sp;}
    let tr=Math.atan2(mx,mz)+(PLBACK?Math.PI:0),d=tr-player.ry;d=Math.atan2(Math.sin(d),Math.cos(d));player.ry+=d*Math.min(1,dt*12);}
   const acc=FLY.on?2.6:player.dash>0?0:(slick?1.1:(player.grounded?14:5));
   player.vx+=(tvx-player.vx)*Math.min(1,dt*acc);player.vz+=(tvz-player.vz)*Math.min(1,dt*acc);
@@ -5534,75 +5630,147 @@ function testState(name){const s=newState(name||'Testeur');
  b.onclick=()=>{try{const cur=localStorage.getItem(SAVE_KEY);if(cur&&!/"Partie de test/.test(cur)&&!localStorage.getItem(TEST_BACKUP))localStorage.setItem(TEST_BACKUP,cur);}catch(e){}
   startGame(testState($('#name').value.trim()||'Testeur'),true);setTimeout(()=>say('🧪 <b>Partie de test</b> : niveau 50, 24 sorts au rang III + Oubli, 3 jeux de 6 sorts (bouton ⇄) : A combat, B les 4 légendaires, C les 4 sorts de garde, balai 🧹 et tous les objets. Ta partie normale est mise de côté (écran d’accueil avec ?test).','gm'),1500);};})();
 /* ================= L'ATELIER (sur ordinateur : adresse du jeu + « ?atelier ») =================
-   v1 : les CRÉATURES. À gauche la liste des fiches, au centre l'aperçu 3D (tourner à la souris, molette = zoom,
-   boutons d'animation), à droite la fiche. « Enregistrer » : garde la fiche sur cet ordinateur (le jeu local la voit
-   aussitôt) et écrit src/contenu/creatures.json dans le projet (Chrome / Edge : on choisit une fois le dossier
-   src/contenu ; Firefox : le fichier est téléchargé, à placer dans src/contenu). « Tester » : ouvre une partie de
-   test à côté du groupe. Ensuite : objets, personnages, sorts, lieux, sur le même modèle. */
+   Onglets : CRÉATURES (fiche, aperçu 3D animé, import de modèles .glb, animations, attaques), SORTS (variantes de sorts
+   avec effets), MONDE (carte : lieux et portails, clic pour placer). Barre « IA » : une phrase → ton Claude remplit la
+   fiche (clé du Maître du Jeu IA de cet ordinateur), tu relis puis tu enregistres.
+   Enregistrer : la fiche est gardée sur cet ordinateur (le jeu local la voit aussitôt) et écrite dans le projet
+   (Chrome / Edge : on choisit une fois le dossier du projet « aldermoor-projet » ; il est retenu) :
+   src/contenu/<type>.json, et les modèles importés dans src/assets/creatures (+ dist/assets pour tester sans reconstruire).
+   Firefox : les fichiers sont téléchargés, à ranger à la main. « Tester » : ouvre une partie de test au bon endroit. */
 (function(){if(!/[?&]atelier\b/.test(location.search))return;
- const css=`#atelier{position:fixed;inset:0;z-index:60;display:grid;grid-template-columns:230px 1fr 330px;background:#0d0a1e;color:var(--ink);font:13px Inter,sans-serif}
- #atelier h2{font-family:Cinzel,serif;color:var(--gold);font-size:15px;margin:12px 12px 6px}#at-l,#at-f{overflow:auto;border-right:1px solid rgba(255,255,255,.08);padding-bottom:20px}#at-f{border-right:none;border-left:1px solid rgba(255,255,255,.08);padding:0 12px 20px}
- .at-tabs{display:flex;gap:4px;flex-wrap:wrap;margin:0 10px 8px}.at-tabs b{padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.08);font-weight:600;font-size:11px}.at-tabs b.on{background:var(--gold);color:#241a05}.at-tabs b.off{opacity:.4}
+ const css=`#atelier{position:fixed;inset:0;z-index:60;display:grid;grid-template-columns:240px 1fr 340px;grid-template-rows:1fr auto;background:#0d0a1e;color:var(--ink);font:13px Inter,sans-serif}
+ #atelier h2{font-family:Cinzel,serif;color:var(--gold);font-size:15px;margin:12px 12px 6px}#at-l,#at-f{overflow:auto;padding-bottom:20px}#at-l{border-right:1px solid rgba(255,255,255,.08);grid-row:1/3}#at-f{border-left:1px solid rgba(255,255,255,.08);padding:0 12px 20px;grid-row:1/3;grid-column:3}
+ .at-tabs{display:flex;gap:4px;flex-wrap:wrap;margin:0 10px 8px}.at-tabs b{padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.08);font-weight:600;font-size:11.5px;cursor:pointer}.at-tabs b.on{background:var(--gold);color:#241a05}.at-tabs b.off{opacity:.35;cursor:default}
  .at-it{padding:8px 12px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05)}.at-it:hover{background:rgba(255,255,255,.05)}.at-it.on{background:rgba(243,207,122,.15)}
- #at-f label{display:block;margin:9px 0 3px;color:var(--mute);font-size:11.5px}#at-f input,#at-f select{width:100%;background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:6px 8px;font:13px Inter,sans-serif}
- #at-f input[type=range]{padding:0}.at-row{display:flex;gap:8px}.at-row>div{flex:1}.at-b{margin:12px 6px 0 0;padding:8px 12px;border-radius:9px;border:none;font:700 12.5px Inter,sans-serif;cursor:pointer}
- #at-c{position:relative}#at-c canvas{width:100%;height:100%;display:block}#at-anim{position:absolute;left:10px;bottom:10px;display:flex;gap:5px;flex-wrap:wrap}#at-anim button{background:rgba(16,12,36,.8);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:5px 9px;cursor:pointer;font:12px Inter,sans-serif}
- #at-msg{position:absolute;left:10px;top:10px;color:var(--mute);font-size:12px;max-width:70%}`;
+ #at-f label{display:block;margin:9px 0 3px;color:var(--mute);font-size:11.5px}#at-f input,#at-f select,#at-f textarea,#at-ia input{width:100%;background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:6px 8px;font:13px Inter,sans-serif}
+ #at-f input[type=range]{padding:0}#at-f input[type=checkbox]{width:auto}.at-row{display:flex;gap:8px}.at-row>div{flex:1}.at-b{margin:10px 6px 0 0;padding:8px 12px;border-radius:9px;border:none;font:700 12.5px Inter,sans-serif;cursor:pointer}
+ #at-c{position:relative;grid-column:2}#at-c canvas{width:100%;height:100%;display:block}#at-anim{position:absolute;left:10px;bottom:10px;display:flex;gap:5px;flex-wrap:wrap}#at-anim button{background:rgba(16,12,36,.8);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:5px 9px;cursor:pointer;font:12px Inter,sans-serif}
+ #at-msg{position:absolute;left:10px;top:10px;color:var(--mute);font-size:12px;max-width:75%}#at-ia{grid-column:2;display:flex;gap:8px;padding:8px;border-top:1px solid rgba(255,255,255,.08)}#at-ia button{white-space:nowrap}.at-sec{color:var(--gold);font:700 12px Cinzel,serif;margin:16px 0 0}`;
  const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
  const box=document.createElement('div');box.id='atelier';document.body.appendChild(box);$('#start').classList.add('hidden');
- box.innerHTML=`<div id="at-l"><h2>🛠 L’Atelier</h2><div class="at-tabs"><b class="on">Créatures</b><b class="off" title="bientôt">Objets</b><b class="off">Personnages</b><b class="off">Sorts</b><b class="off">Lieux</b></div><div id="at-list"></div><div style="padding:10px"><button class="at-b gold" id="at-new">＋ Nouvelle créature</button></div></div>
- <div id="at-c"><canvas id="at-cv"></canvas><div id="at-msg">Glisse pour tourner, molette pour zoomer.</div><div id="at-anim"></div></div><div id="at-f"></div>`;
- // ---------- données ----------
- const local=()=>{try{return JSON.parse(localStorage.getItem(CONT_KEY)||'[]');}catch(e){return [];}};
- let list=contCreatures(),cur=null,dirH=null;
- const blank=()=>({id:'creature-'+Date.now().toString(36),nom:'Nouvelle créature',modele:'yeti',element:'glace',faiblesse:'feu',pv:3,nombre:3,taille:1,comportement:'hostile',tireur:0.3,lieu:'foret',rayon:10,actif:true});
- // ---------- aperçu 3D ----------
+ box.innerHTML=`<div id="at-l"><h2>🛠 L’Atelier</h2><div class="at-tabs" id="at-tabs"></div><div id="at-list"></div><div style="padding:10px" id="at-news"></div><div class="mu" id="at-dir" style="padding:0 12px;line-height:1.5"></div></div>
+ <div id="at-c"><canvas id="at-cv"></canvas><canvas id="at-map" style="display:none;cursor:crosshair"></canvas><div id="at-msg"></div><div id="at-anim"></div></div>
+ <div id="at-ia"><input id="at-ia-in" placeholder="✨ Décris ce que tu veux créer, l’IA remplit la fiche (ex. : « un loup des glaces très agressif qui crache du givre dans les Landes »)"><button class="at-b gold" id="at-ia-go" style="margin:0">Créer avec l’IA</button></div><div id="at-f"></div>`;
+ /* ---------- dossier du projet (retenu dans IndexedDB) ---------- */
+ let ROOT=null;const idb=(mode,fn)=>new Promise(res=>{const r=indexedDB.open('aldermoor-atelier',1);r.onupgradeneeded=()=>r.result.createObjectStore('h');r.onsuccess=()=>{const t=r.result.transaction('h',mode),s=t.objectStore('h');const q=fn(s);q.onsuccess=()=>res(q.result);q.onerror=()=>res(null);};r.onerror=()=>res(null);});
+ idb('readonly',s=>s.get('root')).then(h=>{if(h){ROOT=h;dirInfo();}});
+ function dirInfo(){$('#at-dir').innerHTML=window.showDirectoryPicker?(ROOT?'📁 Projet : <b>'+esc(ROOT.name)+'</b>':'📁 Le dossier du projet sera demandé au premier enregistrement.'):'🦊 Firefox : les fichiers seront téléchargés.';}dirInfo();
+ async function root(){if(!window.showDirectoryPicker)return null;if(ROOT){if(await ROOT.queryPermission({mode:'readwrite'})==='granted')return ROOT;if(await ROOT.requestPermission({mode:'readwrite'})==='granted')return ROOT;}
+  const h=await window.showDirectoryPicker({id:'aldermoor-projet',mode:'readwrite'});try{await h.getDirectoryHandle('src');}catch(e){alert('Choisis le dossier du projet « aldermoor-projet » (celui qui contient src).');return null;}ROOT=h;idb('readwrite',s=>s.put(h,'root'));dirInfo();return h;}
+ async function writeTo(path,data){const h=await root();if(!h)return false;const parts=path.split('/');let d=h;for(const p of parts.slice(0,-1)){try{d=await d.getDirectoryHandle(p,{create:p!=='dist'});}catch(e){return false;}}const f=await d.getFileHandle(parts[parts.length-1],{create:true}),w=await f.createWritable();await w.write(data);await w.close();return true;}
+ const download=(name,data)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data]));a.download=name;a.click();};
+ /* ---------- aperçu 3D ---------- */
  const cv=$('#at-cv'),R=new THREE.WebGLRenderer({canvas:cv,antialias:true});R.outputEncoding=THREE.LinearEncoding;const SC=new THREE.Scene();SC.background=new THREE.Color(0x1a1530);
  const CAM=new THREE.PerspectiveCamera(40,1,0.1,100);SC.add(new THREE.HemisphereLight(0xdde8ff,0x40304a,1.1));const dl=new THREE.DirectionalLight(0xffffff,1.2);dl.position.set(3,5,4);SC.add(dl);
- const floor=new THREE.Mesh(new THREE.CircleGeometry(2.2,48).rotateX(-Math.PI/2),new THREE.MeshStandardMaterial({color:0x2a2440,roughness:1}));SC.add(floor);
- let V={o:null,mx:null,A:{},yaw:0.6,dist:4.2,drag:null};
- function size(){const r=$('#at-c').getBoundingClientRect();R.setSize(r.width,r.height,false);CAM.aspect=r.width/Math.max(1,r.height);CAM.updateProjectionMatrix();}addEventListener('resize',size);
+ SC.add(new THREE.Mesh(new THREE.CircleGeometry(2.4,48).rotateX(-Math.PI/2),new THREE.MeshStandardMaterial({color:0x2a2440,roughness:1})));
+ const V={o:null,mx:null,A:{},yaw:0.6,dist:4.2,drag:null,size:1};let TAB='creatures',cur=null;
+ function size(){const r=$('#at-c').getBoundingClientRect();R.setSize(r.width,r.height,false);CAM.aspect=r.width/Math.max(1,r.height);CAM.updateProjectionMatrix();const m=$('#at-map');m.width=r.width;m.height=r.height;if(TAB==='monde')drawMap();}addEventListener('resize',size);
  cv.addEventListener('pointerdown',e=>{V.drag=e.clientX;});addEventListener('pointerup',()=>V.drag=null);addEventListener('pointermove',e=>{if(V.drag!==null){V.yaw+=(e.clientX-V.drag)*0.01;V.drag=e.clientX;}});
  cv.addEventListener('wheel',e=>{e.preventDefault();V.dist=clamp(V.dist*Math.exp(e.deltaY*0.001),1.5,12);},{passive:false});
- function show(c){if(V.o)SC.remove(V.o);V.o=null;V.mx=null;$('#at-anim').innerHTML='';$('#at-msg').textContent='Chargement du modèle « '+c.modele+' »…';
-  creaTpl(c.modele).then(T=>{if(cur!==c)return;const r=THREE.SkeletonUtils.clone(T.scene),tint=new THREE.Color(0xffffff).lerp(new THREE.Color(ELEM[c.element].c),0.25);
-   r.traverse(o=>{if(o.isMesh){o.material=o.material.clone();if(o.material.map)o.material.map.encoding=THREE.LinearEncoding;o.material.color.copy(tint);o.frustumCulled=false;}});
-   const k=1.45/T.h*(c.taille||1);r.scale.setScalar(k);SC.add(r);V.o=r;V.mx=new THREE.AnimationMixer(r);V.A={};for(const n in T.clips)V.A[n]=V.mx.clipAction(T.clips[n]);
-   const play=n=>{for(const a of Object.values(V.A))a.stop();if(V.A[n])V.A[n].reset().play();};play(V.A.Idle?'Idle':V.A.Flying?'Flying':Object.keys(V.A)[0]);
-   const fr={Idle:'Repos',Walk:'Marche',Flying:'Vol',Bite_Front:'Attaque',HitRecieve:'Coup reçu',Death:'Mort',Dance:'Danse',Jump:'Saut'};
-   $('#at-anim').innerHTML=Object.keys(V.A).filter(n=>fr[n]).map(n=>'<button data-a="'+n+'">'+fr[n]+'</button>').join('');$('#at-anim').querySelectorAll('button').forEach(b=>b.onclick=()=>play(b.dataset.a));
-   $('#at-msg').textContent=c.nom+' — modèle « '+c.modele+' », '+Object.keys(V.A).length+' animations.';}).catch(()=>{$('#at-msg').textContent='Modèle introuvable : '+c.modele;});}
- let last=performance.now();(function loop(){requestAnimationFrame(loop);const now=performance.now(),dt=Math.min(0.05,(now-last)/1000);last=now;if(V.mx)V.mx.update(dt);
-  const t=(cur&&cur.taille)||1;CAM.position.set(Math.sin(V.yaw)*V.dist*t,(0.9+0.5*V.dist/4.2)*t,Math.cos(V.yaw)*V.dist*t);CAM.lookAt(0,0.7*t,0); /* la caméra recule avec la taille */R.render(SC,CAM);})();
- // ---------- liste et fiche ----------
- function renderList(){$('#at-list').innerHTML=list.map(c=>'<div class="at-it'+(cur&&cur.id===c.id?' on':'')+'" data-id="'+esc(c.id)+'">'+(c.comportement==='calme'?'🕊 ':'⚔ ')+esc(c.nom)+'<br><span class="mu">'+esc(c.modele)+' · '+esc((LOCBY[c.lieu]||{}).name||c.lieu)+'</span></div>').join('')||'<div class="mu" style="padding:12px">Aucune créature pour l’instant.</div>';
-  $('#at-list').querySelectorAll('.at-it').forEach(d=>d.onclick=()=>edit(list.find(c=>c.id===d.dataset.id)));}
- const opt=(arr,v)=>arr.map(([k,n])=>'<option value="'+esc(k)+'"'+(k===v?' selected':'')+'>'+esc(n)+'</option>').join('');
- function edit(c){cur=c;renderList();const els=ELS.map(e=>[e,ELEM[e].n]),lieux=LOCS.filter(L=>LOCBY[L.id]).map(L=>[L.id,(L.x>1500?'Landes · ':'Vallée · ')+L.name]);
-  $('#at-f').innerHTML=`<h2>Fiche</h2><label>Nom (au pluriel : c’est un groupe)</label><input id="f-nom" value="${esc(c.nom)}">
-  <label>Modèle 3D</label><select id="f-modele">${opt((window.__CATALOGUE||{}).creatures.map(m=>[m,m]),c.modele)}</select>
-  <div class="at-row"><div><label>Élément</label><select id="f-element">${opt(els,c.element)}</select></div><div><label>Faiblesse</label><select id="f-faiblesse">${opt(els,c.faiblesse)}</select></div></div>
-  <div class="at-row"><div><label>Comportement</label><select id="f-comportement">${opt([['hostile','⚔ hostile'],['calme','🕊 paisible']],c.comportement)}</select></div><div><label>Points de vie</label><input id="f-pv" type="number" min="1" max="30" value="${c.pv}"></div></div>
-  <div class="at-row"><div><label>Nombre dans le groupe</label><input id="f-nombre" type="number" min="1" max="12" value="${c.nombre}"></div><div><label>Rayon d’apparition (m)</label><input id="f-rayon" type="number" min="3" max="40" value="${c.rayon}"></div></div>
-  <label>Taille : <b id="f-taille-v">${c.taille}</b></label><input id="f-taille" type="range" min="0.5" max="2.5" step="0.1" value="${c.taille}">
-  <label>Tireuse (chance d’attaquer de loin) : <b id="f-tireur-v">${Math.round(c.tireur*100)} %</b></label><input id="f-tireur" type="range" min="0" max="1" step="0.1" value="${c.tireur}">
-  <label>Lieu d’apparition</label><select id="f-lieu">${opt(lieux,c.lieu)}</select>
-  <label><input id="f-actif" type="checkbox" style="width:auto" ${c.actif!==false?'checked':''}> active dans le jeu</label>
-  <button class="at-b gold" id="f-save">💾 Enregistrer</button><button class="at-b" id="f-test" style="background:#3a7ad8;color:#fff">▶ Tester dans le jeu</button><button class="at-b" id="f-del" style="background:rgba(255,90,90,.2);color:#ffb0b0">🗑 Supprimer</button>
-  <div class="mu" id="f-info" style="margin-top:10px;line-height:1.5"></div>`;
-  const up=()=>{c.nom=$('#f-nom').value.trim()||'Créatures';['modele','element','faiblesse','comportement','lieu'].forEach(k=>c[k]=$('#f-'+k).value);['pv','nombre','rayon'].forEach(k=>c[k]=+$('#f-'+k).value);c.taille=+$('#f-taille').value;c.tireur=+$('#f-tireur').value;c.actif=$('#f-actif').checked;
-   $('#f-taille-v').textContent=c.taille;$('#f-tireur-v').textContent=Math.round(c.tireur*100)+' %';renderList();};
-  $('#at-f').querySelectorAll('input,select').forEach(i=>i.oninput=i.onchange=()=>{const m=c.modele,el=c.element,t=c.taille;up();if(m!==c.modele||el!==c.element||t!==c.taille)show(c);});
-  $('#f-save').onclick=()=>save1(c);$('#f-test').onclick=()=>{save1(c,true);window.open(location.pathname+'?test&voir='+encodeURIComponent(c.id),'_blank');};
-  $('#f-del').onclick=()=>{list=list.filter(x=>x!==c);cur=null;persist();$('#at-f').innerHTML='';renderList();if(V.o){SC.remove(V.o);V.o=null;}};show(c);}
- function persist(){try{localStorage.setItem(CONT_KEY,JSON.stringify(list));}catch(e){}}
- async function save1(c,quiet){if(!list.includes(c))list.push(c);persist();renderList();const json=JSON.stringify(list,null,1),info=$('#f-info');
-  if(window.showDirectoryPicker){try{if(!dirH){dirH=await window.showDirectoryPicker({id:'aldermoor-contenu',mode:'readwrite'});}const fh=await dirH.getFileHandle('creatures.json',{create:true}),w=await fh.createWritable();await w.write(json+'\n');await w.close();
-    info.innerHTML='✔ Enregistré dans <b>'+esc(dirH.name)+'/creatures.json</b>. Ce PC la voit déjà ; pour le téléphone, le jeu doit être reconstruit et publié.';return;}catch(e){if(quiet){info.textContent='✔ Gardé sur cet ordinateur (test).';return;}info.textContent='Dossier non choisi : '+e.message;}}
-  if(!quiet){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([json+'\n'],{type:'application/json'}));a.download='creatures.json';a.click();info.innerHTML='✔ Gardé sur cet ordinateur. Fichier <b>creatures.json</b> téléchargé : place-le dans <b>src/contenu</b> du projet.';}}
- $('#at-new').onclick=()=>{const c=blank();list.push(c);edit(c);};
- setTimeout(()=>{size();renderList();if(list[0])edit(list[0]);},50);
- // l'Atelier ne lance pas la partie : on coupe la boucle du jeu derrière
+ const clear3d=()=>{if(V.o)SC.remove(V.o);V.o=null;V.mx=null;$('#at-anim').innerHTML='';};
+ let last=performance.now();(function loop(){requestAnimationFrame(loop);const now=performance.now(),dt=Math.min(0.05,(now-last)/1000);last=now;if(V.mx)V.mx.update(dt);if(V.spin&&V.o)V.o.rotation.y+=dt;
+  const t=V.size;CAM.position.set(Math.sin(V.yaw)*V.dist*t,(0.9+0.5*V.dist/4.2)*t,Math.cos(V.yaw)*V.dist*t);CAM.lookAt(0,0.7*t,0);if(TAB!=='monde')R.render(SC,CAM);})();
+ /* ---------- les types de fiches ---------- */
+ const els=()=>ELS.map(e=>[e,ELEM[e].n]),lieux=()=>LOCS.filter(L=>LOCBY[L.id]).map(L=>[L.id,(L.x>1500?'Landes · ':'Vallée · ')+L.name]);
+ const opt=(arr,v)=>arr.map(([k,n])=>'<option value="'+esc(k)+'"'+(String(k)===String(v)?' selected':'')+'>'+esc(n)+'</option>').join('');
+ const uid=p=>p+'-'+Date.now().toString(36);
+ const TYPES={
+  creatures:{t:'Créatures',key:CONT_KEY,file:'creatures.json',news:[['＋ Nouvelle créature',()=>({id:uid('creature'),nom:'Nouvelles créatures',modele:'yeti',element:'glace',faiblesse:'feu',pv:3,nombre:3,taille:1,comportement:'hostile',tireur:0.3,lieu:'foret',rayon:10,actif:true,rotY:0,vol:false,anims:{},attaque:{morsure:5,tir:6,cadence:3.5,portee:15,vitesse:11,effet:'aucun'}})]],
+   item:c=>(c.comportement==='calme'?'🕊 ':'⚔ ')+esc(c.nom)+'<br><span class="mu">'+esc(c.modele)+' · '+esc((LOCBY[c.lieu]||{}).name||c.lieu)+'</span>',test:c=>'?test&voir='+encodeURIComponent(c.id)},
+  sorts:{t:'Sorts',key:CONT_SKEY,file:'sorts.json',news:[['＋ Nouveau sort',()=>({id:uid('sort'),nom:'Nouveau sort',incantation:'Incantatem',description:'',element:'feu',forme:'trait',effet:'explosion',cout:20,recharge:1.5,puissance:1,obtention:'depart',lieu:'cour'})]],
+   item:c=>esc(c.nom)+'<br><span class="mu">'+esc(ELEM[c.element].n)+' · '+({trait:'attaque',zone:'zone',util:'utilitaire'})[c.forme]+' · '+esc(c.effet)+'</span>',test:c=>'?test&sort='+encodeURIComponent(c.id)},
+  monde:{t:'Monde',key:CONT_MKEY,file:'monde.json',news:[['＋ Nouveau lieu',()=>({id:uid('lieu'),type:'lieu',nom:'Nouveau lieu',x:20,z:20,rayon:10,style:'campagne',repere:true})],['＋ Nouveau portail',()=>({id:uid('portail'),type:'portail',nom:'Portail',ax:10,az:10,bx:1900,bz:0,couleur:'#b48cff'})]],
+   item:c=>(c.type==='portail'?'🌀 ':'📍 ')+esc(c.nom)+'<br><span class="mu">'+(c.type==='portail'?'('+Math.round(c.ax)+','+Math.round(c.az)+') ↔ ('+Math.round(c.bx)+','+Math.round(c.bz)+')':(c.x>1500?'Landes':'Vallée')+' · '+(c.style||'aucun'))+'</span>',test:c=>c.type==='lieu'?'?test&lieu='+encodeURIComponent(c.id):'?test&pos='+Math.round(c.ax+3)+','+Math.round(c.az+3)},
+  persos:{t:'Personnages',off:true},objets:{t:'Objets',off:true}};
+ const lists={};for(const k in TYPES)if(TYPES[k].key){try{lists[k]=JSON.parse(localStorage.getItem(TYPES[k].key)||'null');}catch(e){}if(!lists[k])lists[k]=k==='creatures'?contCreatures():k==='sorts'?contSpellsList():contWorldList();}
+ function tabs(){$('#at-tabs').innerHTML=Object.entries(TYPES).map(([k,T])=>'<b data-t="'+k+'" class="'+(k===TAB?'on':'')+(T.off?' off':'')+'"'+(T.off?' title="bientôt"':'')+'>'+T.t+'</b>').join('');
+  $('#at-tabs').querySelectorAll('b').forEach(b=>b.onclick=()=>{if(TYPES[b.dataset.t].off)return;TAB=b.dataset.t;cur=null;$('#at-f').innerHTML='';clear3d();tabs();renderList();size();});
+  $('#at-news').innerHTML=(TYPES[TAB].news||[]).map((n,i)=>'<button class="at-b gold" data-n="'+i+'">'+n[0]+'</button>').join('')+(TAB==='creatures'?'<button class="at-b" id="at-imp" style="background:#3a7ad8;color:#fff">📥 Importer un modèle</button><input type="file" id="at-file" accept=".glb" style="display:none">':'');
+  $('#at-news').querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{const c=TYPES[TAB].news[+b.dataset.n][1]();lists[TAB].push(c);edit(c);});
+  if($('#at-imp')){$('#at-imp').onclick=()=>$('#at-file').click();$('#at-file').onchange=e=>importModel(e.target.files[0]);}
+  const map=TAB==='monde';cv.style.display=map?'none':'block';$('#at-map').style.display=map?'block':'none';$('#at-msg').textContent=map?'Clique sur la carte pour placer le lieu sélectionné (ou les deux bouts d’un portail).':'Glisse pour tourner, molette pour zoomer.';}
+ function renderList(){const L=lists[TAB],T=TYPES[TAB];$('#at-list').innerHTML=L.map(c=>'<div class="at-it'+(cur&&cur.id===c.id?' on':'')+'" data-id="'+esc(c.id)+'">'+T.item(c)+'</div>').join('')||'<div class="mu" style="padding:12px">Rien pour l’instant.</div>';
+  $('#at-list').querySelectorAll('.at-it').forEach(d=>d.onclick=()=>edit(L.find(c=>c.id===d.dataset.id)));if(TAB==='monde')drawMap();}
+ /* ---------- formulaires ---------- */
+ const F={
+  creatures:c=>{const A=c.attaque||(c.attaque={}),an=c.anims||(c.anims={});const clips=Object.keys(V.A||{});const aopt=v=>'<option value="">(auto)</option>'+clips.map(n=>'<option'+(n===v?' selected':'')+'>'+esc(n)+'</option>').join('');
+   return `<label>Nom (au pluriel : c’est un groupe)</label><input data-k="nom" value="${esc(c.nom)}"><label>Modèle 3D</label><select data-k="modele">${opt((window.__CATALOGUE||{}).creatures.map(m=>[m,m]),c.modele)}</select>
+   <div class="at-row"><div><label>Élément</label><select data-k="element">${opt(els(),c.element)}</select></div><div><label>Faiblesse</label><select data-k="faiblesse">${opt(els(),c.faiblesse)}</select></div></div>
+   <div class="at-row"><div><label>Comportement</label><select data-k="comportement">${opt([['hostile','⚔ hostile'],['calme','🕊 paisible']],c.comportement)}</select></div><div><label>Points de vie</label><input data-k="pv" data-n type="number" min="1" max="60" value="${c.pv}"></div></div>
+   <div class="at-row"><div><label>Nombre</label><input data-k="nombre" data-n type="number" min="1" max="12" value="${c.nombre}"></div><div><label>Rayon (m)</label><input data-k="rayon" data-n type="number" min="3" max="40" value="${c.rayon}"></div></div>
+   <label>Taille : ${c.taille}</label><input data-k="taille" data-n type="range" min="0.4" max="3" step="0.1" value="${c.taille}"><label>Lieu d’apparition</label><select data-k="lieu">${opt(lieux(),c.lieu)}</select>
+   <div class="at-row"><div><label>Tourner le modèle (°)</label><input data-k="rotY" data-n type="number" step="15" value="${c.rotY||0}"></div><div><label><input data-k="vol" type="checkbox" ${c.vol?'checked':''}> vole</label><label><input data-k="actif" type="checkbox" ${c.actif!==false?'checked':''}> active</label></div></div>
+   <div class="at-sec">⚔ Attaques</div><div class="at-row"><div><label>Morsure (dégâts)</label><input data-a="morsure" type="number" min="0" max="60" value="${A.morsure??5}"></div><div><label>Tir (dégâts)</label><input data-a="tir" type="number" min="0" max="60" value="${A.tir??6}"></div></div>
+   <label>Chance de tirer de loin : ${Math.round((c.tireur||0)*100)} %</label><input data-k="tireur" data-n type="range" min="0" max="1" step="0.1" value="${c.tireur}">
+   <div class="at-row"><div><label>Cadence (s)</label><input data-a="cadence" type="number" min="0.5" max="10" step="0.5" value="${A.cadence??3.5}"></div><div><label>Portée (m)</label><input data-a="portee" type="number" min="5" max="40" value="${A.portee??15}"></div><div><label>Vitesse</label><input data-a="vitesse" type="number" min="4" max="40" value="${A.vitesse??11}"></div></div>
+   <label>Effet sur toi</label><select data-a="effet">${opt([['aucun','aucun'],['brulure','🔥 brûlure'],['poison','☠ poison'],['gel','❄ gel (ralentit)'],['repousse','💨 repousse']],A.effet||'aucun')}</select>
+   <div class="at-sec">🎞 Animations du modèle</div><div class="mu">Pour les modèles importés : quelle animation joue quoi (sinon deviné).</div>
+   <div class="at-row"><div><label>Repos</label><select data-m="Idle">${aopt(an.Idle)}</select></div><div><label>Marche</label><select data-m="Walk">${aopt(an.Walk)}</select></div></div>
+   <div class="at-row"><div><label>Attaque</label><select data-m="Bite_InPlace">${aopt(an.Bite_InPlace)}</select></div><div><label>Mort</label><select data-m="Death">${aopt(an.Death)}</select></div></div>
+   <div class="at-row"><div><label>Coup reçu</label><select data-m="HitRecieve">${aopt(an.HitRecieve)}</select></div><div><label>Vol</label><select data-m="Flying">${aopt(an.Flying)}</select></div></div>`;},
+  sorts:c=>{const eff={trait:[['aucun','aucun'],['explosion','💥 explosion'],['multi','🔱 multi (3 projectiles)'],['rebond','⚡ rebond (3 cibles)']],zone:[['aucun','aucun'],['grande','◎ grande zone'],['attire','🌀 attire'],['souffle','💨 souffle']],util:[['plateforme','🧱 plateforme'],['teleport','✨ téléportation'],['soin','💚 soin'],['bouclier','🛡 bouclier'],['bond','🦘 bond']]}[c.forme]||[];
+   return `<label>Nom</label><input data-k="nom" value="${esc(c.nom)}"><label>Incantation</label><input data-k="incantation" value="${esc(c.incantation||'')}"><label>Description</label><input data-k="description" value="${esc(c.description||'')}">
+   <div class="at-row"><div><label>Élément</label><select data-k="element">${opt(els(),c.element)}</select></div><div><label>Forme</label><select data-k="forme">${opt([['trait','➶ attaque'],['zone','◎ zone'],['util','✧ utilitaire']],c.forme)}</select></div></div>
+   <label>Effet</label><select data-k="effet">${opt(eff,c.effet)}</select><div class="at-row"><div><label>Coût (mana)</label><input data-k="cout" data-n type="number" min="0" max="150" value="${c.cout}"></div><div><label>Recharge (s)</label><input data-k="recharge" data-n type="number" min="0.2" max="60" step="0.1" value="${c.recharge}"></div></div>
+   <label>Puissance : ×${c.puissance}</label><input data-k="puissance" data-n type="range" min="0.5" max="3" step="0.1" value="${c.puissance}">
+   <div class="at-row"><div><label>Obtention</label><select data-k="obtention">${opt([['depart','connu dès le départ'],['parchemin','parchemin à trouver']],c.obtention)}</select></div><div><label>Lieu du parchemin</label><select data-k="lieu">${opt(lieux(),c.lieu)}</select></div></div>`;},
+  monde:c=>c.type==='portail'?`<label>Nom</label><input data-k="nom" value="${esc(c.nom)}"><label>Couleur</label><input data-k="couleur" type="color" value="${esc(c.couleur||'#b48cff')}"><div class="mu" style="margin-top:8px">Clique sur la carte : 1er clic = arche A, 2e clic = arche B (prochain : <b id="f-ab">${PORT_AB}</b>).</div>
+   <div class="at-row"><div><label>A : x</label><input data-k="ax" data-n type="number" value="${Math.round(c.ax)}"></div><div><label>A : z</label><input data-k="az" data-n type="number" value="${Math.round(c.az)}"></div></div><div class="at-row"><div><label>B : x</label><input data-k="bx" data-n type="number" value="${Math.round(c.bx)}"></div><div><label>B : z</label><input data-k="bz" data-n type="number" value="${Math.round(c.bz)}"></div></div>`
+   :`<label>Nom</label><input data-k="nom" value="${esc(c.nom)}"><div class="at-row"><div><label>x</label><input data-k="x" data-n type="number" value="${Math.round(c.x)}"></div><div><label>z</label><input data-k="z" data-n type="number" value="${Math.round(c.z)}"></div><div><label>Rayon</label><input data-k="rayon" data-n type="number" min="4" max="40" value="${c.rayon}"></div></div>
+   <label>Décor automatique</label><select data-k="style">${opt([['aucun','aucun']].concat(Object.keys(DECOR_STYLES).map(k=>[k,k])),c.style||'aucun')}</select><label><input data-k="repere" type="checkbox" ${c.repere!==false?'checked':''}> pierre-repère lumineuse</label>
+   <div class="mu" style="margin-top:8px">Clique sur la carte pour placer le lieu. Le relief reste celui du monde actuel ; les nouvelles régions viendront ensuite.</div>`};
+ let PORT_AB='A';
+ function edit(c){cur=c;renderList();const T=TYPES[TAB];
+  $('#at-f').innerHTML='<h2>Fiche</h2>'+F[TAB](c)+'<div><button class="at-b gold" id="f-save">💾 Enregistrer</button><button class="at-b" id="f-test" style="background:#3a7ad8;color:#fff">▶ Tester dans le jeu</button><button class="at-b" id="f-del" style="background:rgba(255,90,90,.2);color:#ffb0b0">🗑</button></div><div class="mu" id="f-info" style="margin-top:10px;line-height:1.5"></div>';
+  $('#at-f').querySelectorAll('[data-k],[data-a],[data-m]').forEach(i=>i.oninput=i.onchange=()=>{const v=i.type==='checkbox'?i.checked:(i.dataset.n!==undefined||i.type==='number'||i.type==='range')?+i.value:i.value;
+   if(i.dataset.k)c[i.dataset.k]=v;if(i.dataset.a)(c.attaque=c.attaque||{})[i.dataset.a]=i.type==='number'?+i.value:i.value;if(i.dataset.m)(c.anims=c.anims||{})[i.dataset.m]=i.value||undefined;
+   renderList();if(['modele','element','taille','rotY'].includes(i.dataset.k)||i.dataset.k==='forme'){if(i.dataset.k==='forme'){c.effet=({trait:'explosion',zone:'grande',util:'plateforme'})[c.forme];edit(c);}else preview(c);}if(i.type==='range')$('#at-f').querySelectorAll('label').forEach(()=>{});});
+  $('#f-save').onclick=()=>save1(c);$('#f-test').onclick=async()=>{await save1(c,true);window.open(location.pathname+T.test(c),'_blank');};
+  $('#f-del').onclick=()=>{lists[TAB]=lists[TAB].filter(x=>x!==c);cur=null;persist();$('#at-f').innerHTML='';renderList();clear3d();};preview(c);}
+ function preview(c){V.spin=false;if(TAB==='creatures'){clear3d();V.size=c.taille||1;$('#at-msg').textContent='Chargement du modèle « '+c.modele+' »…';
+   creaTpl(c.modele).then(T=>{if(cur!==c)return;const r=THREE.SkeletonUtils.clone(T.scene),tint=new THREE.Color(0xffffff).lerp(new THREE.Color(ELEM[c.element].c),0.25);
+    r.traverse(o=>{if(o.isMesh){o.material=o.material.clone();if(o.material.map)o.material.map.encoding=THREE.LinearEncoding;if(o.material.color)o.material.color.copy(tint);o.frustumCulled=false;}});
+    r.scale.setScalar(1.45/T.h*(c.taille||1));r.rotation.y=(c.rotY||0)*Math.PI/180;SC.add(r);V.o=r;V.mx=new THREE.AnimationMixer(r);V.A={};for(const n in T.clips)V.A[n]=V.mx.clipAction(T.clips[n]);
+    const names=Object.keys(V.A),play=n=>{for(const a of Object.values(V.A))a.stop();if(V.A[n])V.A[n].reset().play();};play((c.anims&&c.anims.Idle)||names.find(n=>/idle/i.test(n))||names[0]);
+    $('#at-anim').innerHTML=names.slice(0,14).map(n=>'<button data-a="'+esc(n)+'">'+esc(n)+'</button>').join('');$('#at-anim').querySelectorAll('button').forEach(b=>b.onclick=()=>play(b.dataset.a));
+    $('#at-msg').textContent=c.nom+' — « '+c.modele+' », '+names.length+' animations.';if(names.length&&!$('#at-f').querySelector('[data-m] option:nth-child(2)'))edit(c); /* remplit les listes d’animations (une seule fois) */}).catch(()=>{$('#at-msg').textContent='Modèle introuvable : '+c.modele;});}
+  else if(TAB==='sorts'){clear3d();V.size=1;const col=ELEM[c.element].c,g=new THREE.Group();g.add(new THREE.Mesh(new THREE.IcosahedronGeometry(0.35,2),new THREE.MeshBasicMaterial({color:col})));const gl=glow(col,2.5,0.9);g.add(gl);g.position.y=0.9;SC.add(g);V.o=g;V.spin=true;
+   $('#at-msg').textContent='« '+(c.incantation||c.nom)+' » — '+ELEM[c.element].n+', '+({trait:'attaque',zone:'zone',util:'utilitaire'})[c.forme]+', effet : '+c.effet+'. Teste-le pour le voir en action.';}}
+ /* ---------- carte du monde ---------- */
+ const MAPR={v:{x:0,z:0,r:92,n:'Vallée d’Aldermoor'},l:{x:2000,z:0,r:168,n:'Landes d’Ombrelune'}};
+ function mapT(){const m=$('#at-map'),W=m.width,H=m.height,s=Math.min((W-60)/(2*92+2*168+40),(H-40)/(2*168));const ox=30+92*s,lx=30+(2*92+40+168)*s,cy=H/2;return {s,P:(x,z)=>x>1500?[lx+(x-2000)*s,cy+z*s]:[ox+x*s,cy+z*s],U:(px,py)=>{const dv=Math.hypot(px-ox,py-cy)/s,dl=Math.hypot(px-lx,py-cy)/s;return dl<dv?{x:2000+(px-lx)/s,z:(py-cy)/s}:{x:(px-ox)/s,z:(py-cy)/s};}};}
+ function drawMap(){const m=$('#at-map'),g=m.getContext('2d'),{s,P}=mapT();g.fillStyle='#0d0a1e';g.fillRect(0,0,m.width,m.height);
+  for(const k in MAPR){const Z=MAPR[k],[x,y]=P(Z.x,Z.z);g.fillStyle=k==='v'?'#24452a':'#2f3a28';g.beginPath();g.arc(x,y,Z.r*s,0,TAU);g.fill();g.fillStyle='#b9b2d8';g.font='600 12px Inter';g.fillText(Z.n,x-50,y-Z.r*s-8);}
+  g.font='11px Inter';for(const L of LOCS){if(L.atelier)continue;const [x,y]=P(L.x,L.z);g.fillStyle='rgba(255,255,255,.55)';g.beginPath();g.arc(x,y,3,0,TAU);g.fill();g.fillText(L.name,x+5,y+3);}
+  for(const c of lists.monde){const on=cur===c;if(c.type==='portail'){const a=P(c.ax,c.az),b=P(c.bx,c.bz);g.strokeStyle=c.couleur||'#b48cff';g.setLineDash([6,5]);g.lineWidth=on?2.5:1.5;g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.stroke();g.setLineDash([]);
+    for(const [p,t] of [[a,'A'],[b,'B']]){g.fillStyle=c.couleur||'#b48cff';g.beginPath();g.arc(p[0],p[1],on?7:5,0,TAU);g.fill();g.fillStyle='#fff';g.fillText(t,p[0]-3,p[1]+4);}}
+   else{const [x,y]=P(c.x,c.z);g.strokeStyle='#f3cf7a';g.lineWidth=on?2.5:1.2;g.beginPath();g.arc(x,y,Math.max(4,c.rayon*s),0,TAU);g.stroke();g.fillStyle='#f3cf7a';g.fillText('📍 '+c.nom,x+6,y-6);}}}
+ $('#at-map').addEventListener('click',e=>{if(!cur||TAB!=='monde')return;const r=e.target.getBoundingClientRect(),{U}=mapT(),w=U(e.clientX-r.left,e.clientY-r.top);w.x=Math.round(w.x);w.z=Math.round(w.z);
+  if(cur.type==='portail'){if(PORT_AB==='A'){cur.ax=w.x;cur.az=w.z;PORT_AB='B';}else{cur.bx=w.x;cur.bz=w.z;PORT_AB='A';}}else{cur.x=w.x;cur.z=w.z;}edit(cur);});
+ /* ---------- enregistrer ---------- */
+ function persist(){try{localStorage.setItem(TYPES[TAB].key,JSON.stringify(lists[TAB]));}catch(e){}}
+ async function save1(c,quiet){const T=TYPES[TAB];if(!lists[TAB].includes(c))lists[TAB].push(c);persist();renderList();const json=JSON.stringify(lists[TAB],null,1)+'\n',info=$('#f-info');
+  try{if(window.showDirectoryPicker){if(await writeTo('src/contenu/'+T.file,json)){info.innerHTML='✔ Enregistré dans <b>src/contenu/'+T.file+'</b>. Le jeu de ce PC le voit déjà ; pour le téléphone : reconstruire et publier (<b>npm run publier</b>).';return;}}}catch(e){if(quiet){info.textContent='✔ Gardé sur cet ordinateur (test).';return;}info.textContent='Pas enregistré dans le projet : '+e.message;}
+  if(!quiet){download(T.file,json);info.innerHTML='✔ Gardé sur cet ordinateur. Fichier <b>'+T.file+'</b> téléchargé : range-le dans <b>src/contenu</b>.';}}
+ /* ---------- importer un modèle .glb ---------- */
+ async function importModel(file){if(!file)return;const name=file.name.replace(/\.glb$/i,'').toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'modele';const buf=await file.arrayBuffer();
+  $('#at-msg').textContent='Import de « '+name+' »…';
+  try{const g=await new Promise((res,rej)=>new THREE.GLTFLoader().parse(buf.slice(0),'',res,rej));const b=new THREE.Box3().setFromObject(g.scene),c={};g.animations.forEach(a=>c[a.name]=a);CREA_T[name]=Promise.resolve({scene:g.scene,clips:c,h:Math.max(0.1,b.max.y-b.min.y)});}
+  catch(e){$('#at-msg').textContent='Ce fichier ne se lit pas : '+e.message+' (il faut un .glb).';return;}
+  const cat=window.__CATALOGUE.creatures;if(!cat.includes(name))cat.push(name);let imp=[];try{imp=JSON.parse(localStorage.getItem('aldermoor-atelier-imports')||'[]');}catch(e){}if(!imp.includes(name)){imp.push(name);localStorage.setItem('aldermoor-atelier-imports',JSON.stringify(imp));}
+  let ok=false;try{ok=await writeTo('src/assets/creatures/'+name+'.glb',buf);if(ok)await writeTo('dist/assets/creatures/'+name+'.glb',buf).catch(()=>{});}catch(e){}if(!ok&&!window.showDirectoryPicker)download(name+'.glb',buf);
+  const c=TYPES.creatures.news[0][1]();c.nom=name.replace(/-/g,' ');c.modele=name;lists.creatures.push(c);edit(c);
+  $('#f-info').innerHTML=ok?'✔ Modèle copié dans <b>src/assets/creatures/'+name+'.glb</b> (et dist pour tester tout de suite).':'Modèle chargé pour l’aperçu. Range <b>'+name+'.glb</b> dans src/assets/creatures du projet.';}
+ /* ---------- l'IA remplit la fiche ---------- */
+ $('#at-ia-go').onclick=async()=>{const q=$('#at-ia-in').value.trim();if(!q)return;const b=$('#at-ia-go');b.disabled=true;b.textContent='L’IA réfléchit…';
+  const ctx={creatures:'Une fiche CRÉATURE : {nom (pluriel, français), modele (un de : '+window.__CATALOGUE.creatures.join(', ')+'), element et faiblesse (parmi '+ELS.join(', ')+'), pv (1-30), nombre (1-8), taille (0.5-2.5), comportement ("hostile"|"calme"), tireur (0-1), lieu (id parmi : '+lieux().map(l=>l[0]).join(', ')+'), rayon (5-25), vol (bool), attaque:{morsure (0-30), tir (0-30), cadence (s), portee (m), vitesse, effet ("aucun"|"brulure"|"poison"|"gel"|"repousse")}}.',
+   sorts:'Une fiche SORT : {nom, incantation (latin de fantaisie), description (1 phrase), element (parmi '+ELS.join(', ')+'), forme ("trait"|"zone"|"util"), effet (trait : aucun|explosion|multi|rebond ; zone : aucun|grande|attire|souffle ; util : plateforme|teleport|soin|bouclier|bond), cout (5-80), recharge (0.5-20), puissance (0.5-3), obtention ("depart"|"parchemin"), lieu (id parmi : '+lieux().map(l=>l[0]).join(', ')+')}.',
+   monde:'Une fiche LIEU : {type:"lieu", nom, x, z, rayon (6-25), style (parmi aucun, '+Object.keys(DECOR_STYLES).join(', ')+'), repere:true} OU PORTAIL : {type:"portail", nom, ax, az, bx, bz, couleur "#rrggbb"}. La vallée est un disque de rayon 88 centré en (0,0) ; les Landes un disque de rayon 160 centré en (2000,0). Lieux existants : '+LOCS.slice(0,40).map(L=>L.id+'('+Math.round(L.x)+','+Math.round(L.z)+')').join(', ')+'.'}[TAB];
+  try{const o=await mjCall('Tu es l’assistant de création du jeu Aldermoor (RPG de sorciers, univers original). Réponds UNIQUEMENT par un objet JSON valide, sans texte autour. '+ctx+' Demande du créateur : « '+q+' ».');
+   const c=Object.assign(TYPES[TAB].news[TAB==='monde'&&o.type==='portail'?1:0][1](),o);lists[TAB].push(c);edit(c);$('#f-info').innerHTML='✨ Proposé par l’IA : relis la fiche, puis <b>Enregistrer</b>.';}
+  catch(e){alert('L’IA n’a pas pu répondre ('+(e.message||e)+'). Branche ta clé Claude dans le jeu : Options ⚙ → Maître du Jeu IA.');}
+  b.disabled=false;b.textContent='Créer avec l’IA';};
+ tabs();setTimeout(()=>{size();renderList();if(lists[TAB][0])edit(lists[TAB][0]);},60);
  window.addEventListener('keydown',e=>e.stopPropagation(),true);
 })();
 })();

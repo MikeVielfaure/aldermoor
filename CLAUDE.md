@@ -88,10 +88,12 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 20r-briques | briques physiques `BRK` (`BRK_T`, `brkPlace`, empilement `brkFloor` cherché sous la position d’avant le mouvement, réveil des briques portées `brkWake`, forces des sorts `brkForce`, collision décor `brkWorld`), InstancedMesh par type, `S.bricks` |
 | 20s-construction-roue | mode construction `BMODE` : roulette dans les boutons de sort (`BITEMS`), aperçu `bghost`, écoute en capture sur document |
 | 20t-contenu | créatures créées dans l'Atelier (`contCreatures` : src/contenu/creatures.json + localStorage de l'Atelier), apparition par groupe près de leur lieu, `?test&voir=<id>` |
+| 20u-contenu-sorts | sorts de l'Atelier (`CSPELLS`, effets explosion / multi / rebond, grande / attire / souffle, plateforme / teleport / soin / bouclier / bond ; `CPOW` dans pow), `?test&sort=<id>` |
+| 20v-contenu-monde | lieux et portails de l'Atelier (`CWORLD`, ajoutés à LOCS, décor auto, arches `CPORT`), `?test&lieu=<id>`, `?test&pos=x,z` |
 | 21-boucle | `update(dt)`, `loop()`, `startGame()`, puis la séquence de construction du monde |
 | 22-appli | plein écran, écran qui reste allumé, enregistrement du mode hors-ligne |
 | 22b-partie-test | partie de test niveau 50 (`?test` dans l'adresse), sauvegarde normale mise de côté |
-| 22c-atelier | **L'Atelier** (`?atelier`, sur ordinateur) : fiches de créatures, aperçu 3D animé, enregistrement dans src/contenu (File System Access, sinon téléchargement), bouton Tester |
+| 22c-atelier | **L'Atelier** (`?atelier`, sur ordinateur) : onglets Créatures (import .glb, animations, attaques, effets), Sorts, Monde (carte, lieux, portails) ; barre IA (`mjCall`, clé du MJ) ; enregistrement dans le dossier du projet (File System Access, retenu en IndexedDB) ; `npm run publier` |
 
 Autres : `src/styles.css`, `src/body.html` (HUD/modales + balises `<script>` Three.js en CDN),
 `src/head.html`, `src/tail.html`, `src/static/` (icône, manifeste, `sw.js` : copiés tels quels dans

@@ -17,7 +17,7 @@ function creaDress(e,m,T){const D=e.data;if(!ENT.includes(e)||D.M)return;
  r.traverse(o=>{if(o.isMesh){o.material=o.material.clone();if(o.material.map&&o.material.map.encoding!==THREE.LinearEncoding){o.material.map.encoding=THREE.LinearEncoding;o.material.map.needsUpdate=true;}o.material.needsUpdate=true;o.material.color.copy(tint);o.castShadow=true;o.frustumCulled=false;mats.push(o.material);}});
  const k=(vol?1.1:1.45)/T.h;r.scale.setScalar(k);r.position.y=vol?0.9:0; // l'objet entier est déjà à l'échelle de la créature (sc)
  e.obj.add(r);e.obj.children.forEach(o=>{if(o.isMesh&&o!==r)o.visible=false;});if(D.gl){D.gl.scale.multiplyScalar(0.6);D.gl.material.opacity=0.35;}
- const mx=new THREE.AnimationMixer(r),A={};for(const n in T.clips)A[n]=mx.clipAction(T.clips[n]);
+ const mx=new THREE.AnimationMixer(r),A={};for(const n in T.clips)A[n]=mx.clipAction(T.clips[n]);if(typeof creaAlias==='function')creaAlias(A,D); /* noms d’animation des modèles importés (20t) */
  D.M={r,mx,A,mats,tint,vol,cur:null,lx:e.x,lz:e.z,hp:D.hp,hitT:0};creaPlay(D,vol?'Flying':'Idle');void sc;}
 function creaPlay(D,n){const M=D.M,a=M.A[n];if(!a||M.cur===n)return;const old=M.cur&&M.A[M.cur];a.reset().play();if(old)old.crossFadeTo(a,0.2,false);M.cur=n;}
 {const _s=spawnCreatureAt;spawnCreatureAt=function(x,z,name,weak,look,hp,extra){const e=_s.apply(this,arguments);

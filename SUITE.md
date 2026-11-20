@@ -138,6 +138,9 @@
 - v37 : briques incassables (case ✨ de la roulette) ; **Atelier v1 (créatures)** : ?atelier sur PC, fiche + aperçu 3D +
   enregistrement dans src/contenu + test en jeu. Suite prévue : objets, personnages, sorts, lieux ; structures
   toutes faites ; IA créatrice branchée sur l'Atelier.
+- v38 : Atelier v2 : import de modèles .glb, animations au choix, attaques (morsure, tir, cadence, portée, effets
+  brûlure / poison / gel / repousse) ; onglet Sorts (variantes) ; onglet Monde (carte, lieux, portails) ; IA qui
+  remplit les fiches ; npm run publier. À faire : Personnages, Objets ; régions nouvelles (grande carte) ; minage.
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Idées autour de la construction (vision du joueur : conquête, protection de village)

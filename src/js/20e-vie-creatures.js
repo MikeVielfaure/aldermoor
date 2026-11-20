@@ -41,7 +41,7 @@ function vieTick(dt){if(!started)return;
  // vie : morsures, retour au calme
  {const m=vieMax();if(m>VIE.max)VIE.hp+=m-VIE.max;VIE.max=m;}if(VIE.hp>VIE.max)VIE.hp=VIE.max;
  if(!vieBusy()&&S.zone==='monde'&&!FLY.on){for(const e of ENT){if(e.kind!=='creature')continue;const D=e.data;if(D.calme||D.duel||D.wave||D.dragon||D.frozen>0||D.confused>0)continue;
-   D.biteT=(D.biteT||0)-dt;const dp=Math.hypot(player.x-e.x,player.z-e.z);if(dp<1.25&&player.y-gh(player.x,player.z)<1.5&&D.biteT<=0){D.biteT=1.1;vieHurt(e.x>1500?8:5);}}}
+   D.biteT=(D.biteT||0)-dt;const dp=Math.hypot(player.x-e.x,player.z-e.z);if(dp<1.25&&player.y-gh(player.x,player.z)<1.5&&D.biteT<=0){D.biteT=1.1;vieHurt(D.bite||(e.x>1500?8:5));if(D.eff)playerEff(D.eff,e.x,e.z);}}}
  VIE.calm-=dt;if(VIE.calm<=0&&VIE.hp<VIE.max&&!VIE.faint){const med=player.grounded&&player.spd<0.05;VIE.hp=Math.min(VIE.max,VIE.hp+dt*(med?14:6)*(S.pet&&S.pet.sp==='panda'?2:1));}
  vieHud();
  // barres de vie des créatures
@@ -68,8 +68,8 @@ function vieTick(dt){if(!started)return;
    - Balai : le champ de vision s'élargit avec la vitesse (sensation de vitesse). */
 const CSHOT=[],RANGED_EL=['feu','glace','arcane','lumiere','ombre'];
 function creaShoot(e){const D=e.data,c=ELEM[D.look].c,oy=gh(e.x,e.z)+(D.y||1.2)*(e.obj.scale.x||1)+0.2;const o=glow(c,1.3,0.95);o.position.set(e.x,oy,e.z);scene.add(o);
- const lead=0.35,tx=player.x+player.vx*lead,tz=player.z+player.vz*lead,ty=player.y+1,L=Math.hypot(tx-e.x,ty-oy,tz-e.z)||1,sp=11;
- CSHOT.push({o,x:e.x,y:oy,z:e.z,vx:(tx-e.x)/L*sp,vy:(ty-oy)/L*sp,vz:(tz-e.z)/L*sp,life:2.2,el:D.look,dmg:e.x>1500?9:6});sfx('cast',D.look,'trait',e.x,e.z);}
+ const lead=0.35,tx=player.x+player.vx*lead,tz=player.z+player.vz*lead,ty=player.y+1,L=Math.hypot(tx-e.x,ty-oy,tz-e.z)||1,sp=D.shotSpd||11;
+ CSHOT.push({o,x:e.x,y:oy,z:e.z,vx:(tx-e.x)/L*sp,vy:(ty-oy)/L*sp,vz:(tz-e.z)/L*sp,life:2.2*(D.shotRange?D.shotRange/15:1),el:D.look,dmg:D.shotDmg||(e.x>1500?9:6),eff:D.eff});sfx('cast',D.look,'trait',e.x,e.z);}
 /* obstacle pour un projectile : comme hitsSolid, mais un objet bas (banc, muret) laisse passer ce qui vole au-dessus */
 function shotSolid(x,y,z){for(const c of COLS){if(c.lake||c.off||(c.bot!==undefined&&y<c.bot))continue;if(c.h!==undefined&&y>c.h)continue;if(c.r!==undefined){if(Math.abs(x-c.x)<c.r&&Math.abs(z-c.z)<c.r&&Math.hypot(x-c.x,z-c.z)<c.r)return c;}else if(Math.abs(x-c.x)<c.hw&&Math.abs(z-c.z)<c.hd)return c;}return null;}
 function combatTick(dt){if(!started)return;
@@ -79,14 +79,14 @@ function combatTick(dt){if(!started)return;
   if(D.calme){if(D.hp0!==undefined&&D.hp<(D.lastHp??D.hp0))D.fleeT=4;D.lastHp=D.hp;if(D.fleeT>0){D.fleeT-=dt;const dx=e.x-player.x,dz=e.z-player.z,d=Math.hypot(dx,dz)||1;D.tx=e.x+dx/d*6;D.tz=e.z+dz/d*6;const o={x:e.x+dx/d*3*dt,z:e.z+dz/d*3*dt};pushOut(o,0.5);e.x=o.x;e.z=o.z;}continue;}
   if(D.ranged===undefined)D.ranged=RANGED_EL.includes(D.look)&&Math.random()<0.4;if(!D.ranged||vieBusy()||S.zone!=='monde'||D.frozen>0||D.confused>0)continue;
   const dp=Math.hypot(player.x-e.x,player.z-e.z);D.shotT=(D.shotT===undefined?rnd(1,3):D.shotT)-dt;
-  if(D.charge>0){D.charge-=dt;if(Math.random()<dt*30)PA.emit(e.x+rnd(-.4,.4),gh(e.x,e.z)+1.4+rnd(-.3,.3),e.z+rnd(-.4,.4),0,rnd(.3,1),0,ELEM[D.look].c,0.3,0.05,0.4,0,1);if(D.charge<=0&&dp<17)creaShoot(e);}
-  else if(D.shotT<=0&&dp>5&&dp<15&&!BUFF.invis&&stealth<=0){D.shotT=rnd(3,4.5);D.charge=0.6;}}
+  if(D.charge>0){D.charge-=dt;if(Math.random()<dt*30)PA.emit(e.x+rnd(-.4,.4),gh(e.x,e.z)+1.4+rnd(-.3,.3),e.z+rnd(-.4,.4),0,rnd(.3,1),0,ELEM[D.look].c,0.3,0.05,0.4,0,1);if(D.charge<=0&&dp<(D.shotRange||15)+2)creaShoot(e);}
+  else if(D.shotT<=0&&dp>5&&dp<(D.shotRange||15)&&!BUFF.invis&&stealth<=0){D.shotT=D.shotRate?D.shotRate*rnd(0.8,1.2):rnd(3,4.5);D.charge=0.6;}}
  for(let i=CSHOT.length-1;i>=0;i--){const s=CSHOT[i];s.life-=dt;s.x+=s.vx*dt;s.y+=s.vy*dt;s.z+=s.vz*dt;s.o.position.set(s.x,s.y,s.z);if(Math.random()<dt*25)PA.emit(s.x,s.y,s.z,rnd(-.3,.3),rnd(-.3,.3),rnd(-.3,.3),ELEM[s.el].c,0.28,0.05,0.35,0,1);
   const hitP=Math.hypot(s.x-player.x,s.z-player.z)<0.75&&Math.abs(s.y-(player.y+1))<1.1;
   const Wb=typeof inWall==='function'?inWall(s.x,s.y,s.z,0.1):null;if(Wb&&Wb.kind==='glace'&&s.el==='feu')Wb.life-=2;
   const sc=shotSolid(s.x,s.y,s.z);if(sc&&sc.bld&&typeof bldDamage==='function')bldDamage(sc.bld,s.dmg||6,s.el);
   const blocked=!!Wb||!!sc||s.y<gh(s.x,s.z)||(typeof AEGIS!=='undefined'&&AEGIS&&Math.hypot(s.x-player.x,s.z-player.z)<1.8);
-  if(hitP&&!blocked)vieHurt(s.dmg);
+  if(hitP&&!blocked){vieHurt(s.dmg);if(s.eff)playerEff(s.eff,s.x-s.vx,s.z-s.vz);}
   if(hitP||blocked||s.life<=0){burst(s.x,s.y,s.z,ELEM[s.el].c,10,3);scene.remove(s.o);CSHOT.splice(i,1);}}}
 {const _w=world4Tick;world4Tick=function(dt){const r=_w.apply(this,arguments);try{combatTick(dt);}catch(e){console.error(e);}return r;};}
 {const _ez=enterZone;enterZone=function(){CSHOT.splice(0).forEach(s=>scene.remove(s.o));return _ez.apply(this,arguments);};}

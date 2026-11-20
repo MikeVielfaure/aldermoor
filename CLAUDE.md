@@ -95,7 +95,8 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 21-boucle | `update(dt)`, `loop()`, `startGame()`, puis la séquence de construction du monde |
 | 22-appli | plein écran, écran qui reste allumé, enregistrement du mode hors-ligne |
 | 22b-partie-test | partie de test niveau 50 (`?test` dans l'adresse), sauvegarde normale mise de côté |
-| 22c-atelier | **L'Atelier** (`?atelier`, sur ordinateur) : onglets Créatures (import .glb, animations, attaques, effets), Sorts, Monde (carte, lieux, portails), Personnages, Objets (import .glb, choix sur la carte) ; barre IA (`mjCall`, clé du MJ) ; enregistrement dans le dossier du projet (File System Access, retenu en IndexedDB) ; `npm run publier` |
+| 20x-structures | structures de l'Atelier en vraies briques (`CSTRUCT`, modèles `STRUCT_MODELES` : mur, tour, maison, pont, escalier, arche ; `stGen` → briques locales, `stBuild` les pose « fixées » `b.fixed`, `b.st` = id). Une brique frappée, poussée ou privée d'appui redevient physique : la structure s'effondre. Hors sauvegarde : reconstruite à chaque partie |
+| 22c-atelier | **L'Atelier** (`?atelier`, sur ordinateur) : onglets Créatures (import .glb, animations, attaques, effets), Sorts, Monde (carte, lieux, portails), Personnages, Objets (import .glb, choix sur la carte), Structures, **Assistant** (`ASST` : on lui parle, l'IA renvoie `{reponse, operations:[ajouter/modifier/retirer]}` appliquées à toutes les listes, historique `ASST.hist` pour annuler, `asstSchema()` décrit tous les champs : à tenir à jour quand une fiche change) ; barre IA (`mjCall`, clé du MJ) ; enregistrement dans le dossier du projet (File System Access, retenu en IndexedDB) ; `npm run publier` |
 
 Autres : `src/styles.css`, `src/body.html` (HUD/modales + balises `<script>` Three.js en CDN),
 `src/head.html`, `src/tail.html`, `src/static/` (icône, manifeste, `sw.js` : copiés tels quels dans

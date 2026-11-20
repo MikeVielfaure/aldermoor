@@ -141,6 +141,11 @@
 - v38 : Atelier v2 : import de modèles .glb, animations au choix, attaques (morsure, tir, cadence, portée, effets
   brûlure / poison / gel / repousse) ; onglet Sorts (variantes) ; onglet Monde (carte, lieux, portails) ; IA qui
   remplit les fiches ; npm run publier. Puis onglets Personnages et Objets (v39). À discuter : régions nouvelles (grande carte), minage.
+- v40 : Structures en vraies briques (mur, tour, maison, pont, escalier, arche ; elles s'effondrent sous les sorts) ;
+  **Assistant** de l'Atelier (on lui parle, il ajoute / modifie / retire tout type de contenu, annulation).
+  Plan validé par le joueur (2026-11-20), dans l'ordre : 3) onglet Quêtes avec IA (donneur, étapes parler / aller /
+  ramasser / vaincre N, récompense) ; 4) grande carte continue « B » chargée par morceaux + onglet Terrain (pinceaux,
+  biomes) ; 5) minage (creuser le relief, récolter pierre / minerai / cristal). À faire aussi : zoom sur la carte de l'Atelier.
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Idées autour de la construction (vision du joueur : conquête, protection de village)

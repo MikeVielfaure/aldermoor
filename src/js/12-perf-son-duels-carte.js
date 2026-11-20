@@ -350,7 +350,7 @@ function buildMapBase(){const N=360,c=document.createElement('canvas');c.width=c
 function openMap(){if(!MAPBASE)buildMapBase();$('#map').classList.remove('hidden');drawMap();}
 /* taille de la carte : tient en largeur ET en hauteur (téléphone en paysage : titre et légende autour) */
 function mapSize(){return Math.max(160,Math.min(window.innerWidth-24,window.innerHeight-96,560));}
-function drawMap(){const cv=$('#map-c'),W=mapSize();cv.width=W*2;cv.height=W*2;cv.style.width=cv.style.height=W+'px';const g=cv.getContext('2d');g.setTransform(2,0,0,2,0,0);
+function drawMap(){$('#map h3').textContent='Carte d’Aldermoor';const cv=$('#map-c'),W=mapSize();cv.width=W*2;cv.height=W*2;cv.style.width=cv.style.height=W+'px';const g=cv.getContext('2d');g.setTransform(2,0,0,2,0,0);
  g.drawImage(MAPBASE,0,0,W,W);g.strokeStyle='rgba(243,207,122,.5)';g.lineWidth=1;g.strokeRect(0.5,0.5,W-1,W-1);
  const P=(x,z)=>mapXY(x,z,W);const inside=S.zone!=='monde';let px=player.x,pz=player.z;if(inside){const Z=ZONES[S.zone];if(Z&&Z.door){px=Z.door.x;pz=Z.door.z;}else if(GRATE){px=GRATE.x;pz=GRATE.z;}}
  g.font='600 11px Inter, sans-serif';g.textAlign='center';

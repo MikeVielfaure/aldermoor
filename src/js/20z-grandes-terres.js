@@ -171,9 +171,9 @@ function terMapImg(){if(TER.img)return TER.img;const n=200,cv=document.createEle
  for(let j=0;j<n;j++)for(let i=0;i<n;i++){const u=(i+0.5)/n*2*TER.H-TER.H,v=(j+0.5)/n*2*TER.H-TER.H,h=terH0(u,v)+terEd(TER.dh,u,v);
   if(h<0)c.setHex(h<-6?0x2a5a86:0x3a7fb0);else{c.setHex(TER_BIO[terBiome(u,v,h)].c[0]);c.multiplyScalar(0.8+clamp(h/80,0,0.3));}const k=(j*n+i)*4;im.data[k]=c.r*255;im.data[k+1]=c.g*255;im.data[k+2]=c.b*255;im.data[k+3]=255;}
  g.putImageData(im,0,0);TER.img=cv;return cv;}
-{const _d=drawMap;drawMap=function(){if(!inTerres()||S.zone!=='monde')return _d.apply(this,arguments);const cv=$('#map-c'),W=mapSize();cv.width=W*2;cv.height=W*2;cv.style.width=cv.style.height=W+'px';const g=cv.getContext('2d');g.setTransform(2,0,0,2,0,0);
+{const _d=drawMap;drawMap=function(){if(!inTerres()||S.zone!=='monde')return _d.apply(this,arguments);$('#map h3').textContent='Grandes Terres';const cv=$('#map-c'),W=mapSize();cv.width=W*2;cv.height=W*2;cv.style.width=cv.style.height=W+'px';const g=cv.getContext('2d');g.setTransform(2,0,0,2,0,0);
  g.imageSmoothingEnabled=true;g.drawImage(terMapImg(),0,0,W,W);const k=W/(2*TER.H),P=(x,z)=>[(x-TER.c.x+TER.H)*k,(z-TER.c.z+TER.H)*k];
- g.font='600 11px Inter,sans-serif';g.textAlign='center';TER_LIEUX.forEach(L=>{const o=LOCBY[L.id],[a,b]=P(o.x,o.z);g.fillStyle='#f3cf7a';g.beginPath();g.arc(a,b,3.5,0,TAU);g.fill();g.fillStyle='#fff';g.strokeStyle='rgba(0,0,0,.6)';g.lineWidth=3;g.strokeText(L.n,a,b-7);g.fillText(L.n,a,b-7);});
+ g.font='600 11px Inter,sans-serif';g.textAlign='center';TER_LIEUX.forEach(L=>{const o=LOCBY[L.id],[a,b]=P(o.x,o.z);g.fillStyle='#f3cf7a';g.beginPath();g.arc(a,b,3.5,0,TAU);g.fill();g.fillStyle='#fff';g.strokeStyle='rgba(0,0,0,.6)';g.lineWidth=3;const tw=g.measureText(L.n).width/2+3,ax=clamp(a,tw,W-tw);g.strokeText(L.n,ax,b-7);g.fillText(L.n,ax,b-7);});
  const [px,pz]=P(player.x,player.z);g.save();g.translate(px,pz);g.rotate(-player.ry+Math.PI);g.fillStyle='#ff7ae0';g.beginPath();g.moveTo(0,-8);g.lineTo(5,6);g.lineTo(-5,6);g.closePath();g.fill();g.restore();
  $('#map-s').innerHTML='Tu es dans les <b>Grandes Terres</b>. Retour : les portails de la Halte de l’Aube, au centre.';cv.onclick=null;};}
 /* le MJ connaît la région */

@@ -103,12 +103,12 @@ function landesTick(dt){if(!started)return;skyMesh.position.copy(camera.position
  if(inLandes()){LANDES.popT-=dt;if(LANDES.popT<=0){LANDES.popT=2.5;landesPop();}}}
 {const _w=world4Tick;world4Tick=function(dt){landesTick(dt);return _w.apply(this,arguments);};}
 /* ---------- carte de la région ---------- */
-{const _d=drawMap;drawMap=function(){if(!inLandes())return _d.apply(this,arguments);const cv=$('#map-c'),W=mapSize();cv.width=W*2;cv.height=W*2;cv.style.width=cv.style.height=W+'px';const g=cv.getContext('2d');g.setTransform(2,0,0,2,0,0);
+{const _d=drawMap;drawMap=function(){if(!inLandes())return _d.apply(this,arguments);$('#map h3').textContent='Landes d’Ombrelune';const cv=$('#map-c'),W=mapSize();cv.width=W*2;cv.height=W*2;cv.style.width=cv.style.height=W+'px';const g=cv.getContext('2d');g.setTransform(2,0,0,2,0,0);
  const C=LANDES.c,k=W/2/175,P=(x,z)=>[W/2+(x-C.x)*k,W/2+(z-C.z)*k];
  g.fillStyle='#2a2438';g.fillRect(0,0,W,W);const gr=g.createRadialGradient(W/2,W/2,0,W/2,W/2,W/2);gr.addColorStop(0,'#5d8a44');gr.addColorStop(0.78,'#4d7a3a');gr.addColorStop(0.86,'#7a7566');gr.addColorStop(1,'#3a3644');g.fillStyle=gr;g.beginPath();g.arc(W/2,W/2,W/2-2,0,TAU);g.fill();
  const blob=(x,z,r,col)=>{const [a,b]=P(C.x+x,C.z+z);g.fillStyle=col;g.beginPath();g.arc(a,b,r*k,0,TAU);g.fill();};
  blob(55,70,42,'rgba(40,80,36,.85)');blob(85,-105,24,'rgba(235,240,248,.9)');blob(-50,95,18,'rgba(170,160,95,.8)');blob(120,15,14,'rgba(80,60,52,.9)');blob(5,-55,26,'#3a7fb0');
- g.font='600 11px Inter,sans-serif';g.textAlign='center';LANDES_LIEUX.forEach(([id,name,x,z])=>{const [a,b]=P(C.x+x,C.z+z);g.fillStyle='#f3cf7a';g.beginPath();g.arc(a,b,3.5,0,TAU);g.fill();g.fillStyle='#fff';g.fillText(name,a,b-7);});
+ g.font='600 11px Inter,sans-serif';g.textAlign='center';LANDES_LIEUX.forEach(([id,name,x,z])=>{const [a,b]=P(C.x+x,C.z+z);g.fillStyle='#f3cf7a';g.beginPath();g.arc(a,b,3.5,0,TAU);g.fill();const tw=g.measureText(name).width/2+3;g.fillStyle='#fff';g.fillText(name,clamp(a,tw,W-tw),b-7);});
  const [px,pz]=P(player.x,player.z);g.save();g.translate(px,pz);g.rotate(-player.ry+Math.PI);g.fillStyle='#ff7ae0';g.beginPath();g.moveTo(0,-8);g.lineTo(5,6);g.lineTo(-5,6);g.closePath();g.fill();g.restore();
  $('#map-s').innerHTML='Tu es dans les <b>Landes d’Ombrelune</b>. Retour à Aldermoor : la Pierre-Portail à l’ouest, ou les crêtes en balai.';cv.onclick=null;};}
 // le MJ connaît la région

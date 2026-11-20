@@ -17,6 +17,7 @@ réponses au joueur sont en français, simples et courtes.
 - `npm test` : un bot joue une partie complète dans Chrome sans écran (≈5 min). Doit finir par
   `OK` et `ERR []`. Nécessite `npm install` (puppeteer). Sinon `CHROME_PATH=/chemin/chrome npm test`.
 - `npm run capture -- x z regardeX regardeZ fichier.png` : capture d'écran du jeu à un endroit.
+- **Atelier** : `npm run serve` puis http://localhost:5173/?atelier (Chrome / Edge : enregistre directement dans `src/contenu`). `build.js` intègre le catalogue des modèles (`window.__CATALOGUE`) et `src/contenu/*.json` (`window.__CONTENU`).
 - `npm run serve` : sert `dist/` sur http://localhost:5173 pour jouer.
 
 ## Architecture
@@ -86,9 +87,11 @@ closure `(function(){ ... })();`. Conséquences importantes :
 | 20q-construction | Construo / Reparo, pièces `BLD` (`BLD_T`, `bldPlace`, `bldDamage`, `bldBreak`, ruines), COLS `bld` (porte : `c.gate` laisse passer le joueur), récolte bois / pierre (`GATHER`, carrières), `S.builds`. Seules les constructions du joueur cassent |
 | 20r-briques | briques physiques `BRK` (`BRK_T`, `brkPlace`, empilement `brkFloor` cherché sous la position d’avant le mouvement, réveil des briques portées `brkWake`, forces des sorts `brkForce`, collision décor `brkWorld`), InstancedMesh par type, `S.bricks` |
 | 20s-construction-roue | mode construction `BMODE` : roulette dans les boutons de sort (`BITEMS`), aperçu `bghost`, écoute en capture sur document |
+| 20t-contenu | créatures créées dans l'Atelier (`contCreatures` : src/contenu/creatures.json + localStorage de l'Atelier), apparition par groupe près de leur lieu, `?test&voir=<id>` |
 | 21-boucle | `update(dt)`, `loop()`, `startGame()`, puis la séquence de construction du monde |
 | 22-appli | plein écran, écran qui reste allumé, enregistrement du mode hors-ligne |
 | 22b-partie-test | partie de test niveau 50 (`?test` dans l'adresse), sauvegarde normale mise de côté |
+| 22c-atelier | **L'Atelier** (`?atelier`, sur ordinateur) : fiches de créatures, aperçu 3D animé, enregistrement dans src/contenu (File System Access, sinon téléchargement), bouton Tester |
 
 Autres : `src/styles.css`, `src/body.html` (HUD/modales + balises `<script>` Three.js en CDN),
 `src/head.html`, `src/tail.html`, `src/static/` (icône, manifeste, `sw.js` : copiés tels quels dans

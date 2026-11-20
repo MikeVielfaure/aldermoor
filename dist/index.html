@@ -255,6 +255,7 @@ body.induel #tracker,body.inwave #tracker,body.boss #tracker{visibility:hidden}
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/SkeletonUtils.js"></script>
+<script>window.__CATALOGUE={"creatures":["abeille","alien","arbre","cactus","cerf","champignon","chauvesouris","cochon","crabe","crane","cyclope","demon","diablotin","dragon","fantome","panda","pingouin","poule","poulpe","yeti"],"persos":["clerc","guerrier","moine","rodeuse","sorcier","voleur"]};window.__CONTENU={"creatures":[]};</script>
 <script>
 (function(){
 'use strict';
@@ -5191,7 +5192,7 @@ function brkInst(t){if(BRKI[t])return BRKI[t];const T=BRK_T[t],geo=new THREE.Box
 function brkSync(){const by={};for(const b of BRK)(by[b.t]=by[b.t]||[]).push(b);
  for(const t in BRK_T){const L=by[t]||[];if(!L.length&&!BRKI[t])continue;const I=brkInst(t);I.count=Math.min(256,L.length);
   L.slice(0,256).forEach((b,i)=>{BRQ.setFromAxisAngle(BRUP,b.rot);BRP.set(b.x,b.y,b.z);if(b.lev>0||b.tilt){const e=new THREE.Euler(b.tilt||0,b.rot,b.tilt?b.tilt*0.6:0);BRQ.setFromEuler(e);}BRM.compose(BRP,BRQ,BRS);I.setMatrixAt(i,BRM);
-   const k=b.hp/BRK_T[t].hp;BRC.setHex(BRK_T[t].col).multiplyScalar(0.45+0.55*k);if(b.frozen>0)BRC.lerp(new THREE.Color(0xcff4ff),0.6);if(b.burn>0)BRC.lerp(new THREE.Color(0xff7a2e),0.35);I.setColorAt(i,BRC);});
+   const k=b.hp/BRK_T[t].hp;BRC.setHex(BRK_T[t].col).multiplyScalar(0.45+0.55*k);if(b.frozen>0)BRC.lerp(new THREE.Color(0xcff4ff),0.6);if(b.burn>0)BRC.lerp(new THREE.Color(0xff7a2e),0.35);if(b.inc)BRC.lerp(new THREE.Color(0xffd24a),0.3);I.setColorAt(i,BRC);});
   I.instanceMatrix.needsUpdate=true;if(I.instanceColor)I.instanceColor.needsUpdate=true;}}
 function brkCol(b){const T=BRK_T[b.t],q=Math.abs(Math.sin(b.rot))>0.5;b.hw=(q?T.d:T.w)/2;b.hd=(q?T.w:T.d)/2;if(!b.col){b.col={brk:b};COLS.push(b.col);}Object.assign(b.col,{x:b.x,z:b.z,hw:b.hw,hd:b.hd,h:b.y+T.h,bot:b.y});}
 // le dessus le plus haut sous une emprise (sol ou briques)
@@ -5261,7 +5262,7 @@ function brkTick(dt){if(!started||!BRK.length||S.zone!=='monde')return;let moved
  for(const e of ENT){if(e.kind!=='creature'||e.data.calme||e.data.pet||e.data.charmed||e.data.dragon||e.data.duel)continue;const ey=gh(e.x,e.z);
   for(const b of BRK){const T=BRK_T[b.t];if(ey+1.4<b.y||ey>b.y+T.h)continue;const r=(e.data.rad||0.6)*0.7,dx=e.x-b.x,dz=e.z-b.z,px=b.hw+r-Math.abs(dx),pz=b.hd+r-Math.abs(dz);
    if(px>0&&pz>0){if(px<pz)e.x+=(dx>=0?1:-1)*px;else e.z+=(dz>=0?1:-1)*pz;b.sT=(b.sT||0)-dt;if(b.sT<=0){b.sT=1;brkDamage(b,4,e.data.look);}}}}
- brkSync();if(BRKSAVE>0)BRKSAVE+=dt*(moved?0:1);if(BRKSAVE>3){BRKSAVE=0;S.bricks=BRK.map(b=>({t:b.t,x:+b.x.toFixed(2),y:+b.y.toFixed(2),z:+b.z.toFixed(2),rot:b.rot,hp:Math.round(b.hp)}));save();}}
+ brkSync();if(BRKSAVE>0)BRKSAVE+=dt*(moved?0:1);if(BRKSAVE>3){BRKSAVE=0;S.bricks=BRK.map(b=>({t:b.t,x:+b.x.toFixed(2),y:+b.y.toFixed(2),z:+b.z.toFixed(2),rot:b.rot,hp:Math.round(b.hp),inc:!!b.inc}));save();}}
 {const _w=world4Tick;world4Tick=function(dt){const r=_w.apply(this,arguments);try{brkTick(dt);}catch(e){console.error(e);}return r;};}
 {const _sg=startGame;startGame=function(){const r=_sg.apply(this,arguments);try{BRK.splice(0).forEach(b=>{const i=COLS.indexOf(b.col);if(i>=0)COLS.splice(i,1);});(S.bricks||[]).forEach(s=>{if(!BRK_T[s.t])return;const b=Object.assign({id:++BRKN,vx:0,vy:0,vz:0,lev:0,awake:false},s);BRK.push(b);brkCol(b);});brkSync();}catch(e){console.error(e);}return r;};}
 /* ================= CONSTRUO EN ROULETTE + APERÇU LUMINEUX =================
@@ -5270,8 +5271,13 @@ function brkTick(dt){if(!started||!BRK.length||S.zone!=='monde')return;let moved
    2e toucher sur le même bouton : poser. ⇄ (ou relancer Construo) : quitter le mode construction. */
 const BMODE={on:false,page:0,sel:null,ghost:null};
 const BITEMS=[['b:pierre','🧱','Brique'],['b:bois','🪵','Bois'],['b:cristal','💎','Cristal'],['b:poutre','➖','Poutre'],['b:dalle','⬛','Dalle'],
- ['w:pierre','🏰','Mur'],['w:bois','🚪','Mur bois'],['w:palissade','🪓','Palissade'],['w:porte','🚪','Porte'],['w:tour','🗼','Tour'],['w:plateforme','🟫','Plateforme'],['w:cristal','🔷','Mur cristal']];
-const bItem=k=>{const [t,n]=k.split(':');return t==='b'?BRK_T[n]:BLD_T[n];};
+ ['w:pierre','🏰','Mur'],['w:bois','🚪','Mur bois'],['w:palissade','🪓','Palissade'],['w:porte','🚪','Porte'],['w:tour','🗼','Tour'],['w:plateforme','🟫','Plateforme'],['w:cristal','🔷','Mur cristal'],['x:inc','✨','Incassable']];
+const XITEMS={inc:{n:'Rendre incassable (zone de 5 m)',w:5,h:0.15,d:5,cost:{essence:1,cristal:1}}};
+/* incassabilité : les briques et constructions autour du point visé (1 essence + 1 cristal par lot de 6) */
+function incAt(Q){const L=BRK.filter(b=>!b.inc&&Math.hypot(b.x-Q.x,b.z-Q.z)<2.6),P=BLD.filter(p=>!p.ruin&&!p.inc&&Math.hypot(p.x-Q.x,p.z-Q.z)<3);const lots=Math.ceil((L.length+P.length*3)/6);
+ if(!lots){say('✨ Rien à enchanter ici (vise tes briques ou tes constructions).','sys');return;}if((S.inv.essence||0)<lots||(S.inv.cristal||0)<lots){say('✨ Il faut '+lots+' essence(s) et '+lots+' cristal(aux).','sys');return;}
+ S.inv.essence-=lots;S.inv.cristal-=lots;L.forEach(b=>{b.inc=true;burst(b.x,b.y+0.5,b.z,0xffd24a,6,2);});P.forEach(p=>{p.inc=true;p.burn=0;p.hp=BLD_T[p.t].hp;bldUnmake(p);bldMake(p);});brkSync();BRKSAVE=1;if(P.length)bldSave();floatAt(Q.x,Q.z,'✨ '+(L.length+P.length)+' incassable(s)','#ffd24a');sfx('learn');}
+const bItem=k=>{const [t,n]=k.split(':');return t==='b'?BRK_T[n]:t==='x'?XITEMS[n]:BLD_T[n];};
 function bmodeSet(on){BMODE.on=on;BMODE.page=0;BMODE.sel=null;if(BMODE.ghost)BMODE.ghost.visible=false;document.querySelectorAll('.slot').forEach(b=>b.dataset.k='');renderSlots();if(on)say('🧱 Mode construction : touche un objet pour voir où il ira, touche-le encore pour le poser. ⇄ pour quitter.','sys');}
 {const _c=castConstruo;castConstruo=function(sp){if(S.zone!=='monde')return _c.apply(this,arguments);bmodeSet(!BMODE.on);};}
 {const _r=renderSlots;renderSlots=function(){if(!BMODE||!BMODE.on)return _r.apply(this,arguments);
@@ -5283,17 +5289,40 @@ function bmodeSet(on){BMODE.on=on;BMODE.page=0;BMODE.sel=null;if(BMODE.ghost)BMO
 document.addEventListener('pointerdown',e=>{if(!BMODE.on||!started||anyModal())return;const b=e.target.closest&&e.target.closest('.slot,#b-set');if(!b)return;e.preventDefault();e.stopPropagation();
  if(b.id==='b-set'){bmodeSet(false);return;}const i=+b.dataset.s;if(i===5){BMODE.page=(BMODE.page+1)%Math.ceil(BITEMS.length/5);BMODE.sel=null;renderSlots();sfx('click');return;}
  const it=BITEMS[BMODE.page*5+i];if(!it)return;if(BMODE.sel!==it[0]){BMODE.sel=it[0];sfx('click');renderSlots();floatAt(player.x,player.z,bItem(it[0]).n,'#9fffb0');return;}
- const [t,n]=it[0].split(':');BLDQ=bldTarget();if(t==='b')brkPlace(n);else bldPlace(n);renderSlots();},true);
+ const [t,n]=it[0].split(':');BLDQ=bldTarget();if(t==='x')incAt(BLDQ);else if(t==='b')brkPlace(n);else bldPlace(n);renderSlots();},true);
 // aperçu lumineux
 function bghost(){if(BMODE.ghost)return BMODE.ghost;const g=new THREE.Group(),m=new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({color:0x9fffb0,transparent:true,opacity:0.3,blending:THREE.AdditiveBlending,depthWrite:false}));m.position.y=0.5;g.add(m);
  const w=new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({color:0xd8ffe0,wireframe:true,transparent:true,opacity:0.7}));w.position.y=0.5;g.add(w);const gl=glow(0x9fffb0,2.5,0.6);gl.position.y=0.5;g.add(gl);g.visible=false;scene.add(g);BMODE.ghost=g;return g;}
 function bmodeTick(){if(!BMODE.on)return;if(S.zone!=='monde'){bmodeSet(false);return;}const g=bghost();if(!BMODE.sel){g.visible=false;return;}
  const [t,n]=BMODE.sel.split(':'),T=bItem(BMODE.sel),Q=bldTarget(),q=Math.abs(Math.sin(Q.rot))>0.5;let x,z,y;
- if(t==='b'){x=Math.round(Q.x/0.9)*0.9;z=Math.round(Q.z/0.9)*0.9;const hw=(q?T.d:T.w)/2,hd=(q?T.w:T.d)/2;y=T.float&&Q.air?Q.y:brkFloor(x,z,hw,hd,1e9,null);}
+ if(t==='x'){x=Q.x;z=Q.z;y=gh(x,z);}else if(t==='b'){x=Math.round(Q.x/0.9)*0.9;z=Math.round(Q.z/0.9)*0.9;const hw=(q?T.d:T.w)/2,hd=(q?T.w:T.d)/2;y=T.float&&Q.air?Q.y:brkFloor(x,z,hw,hd,1e9,null);}
  else if(T.air&&Q.air){x=Q.x;z=Q.z;y=Q.y;}else{x=Math.round(Q.x/1.5)*1.5;z=Math.round(Q.z/1.5)*1.5;y=gh(x,z);}
  g.visible=true;g.position.set(x,y,z);g.rotation.y=Q.rot;g.children[0].scale.set(T.w,T.h,T.d);g.children[1].scale.set(T.w,T.h,T.d);g.children[0].position.y=g.children[1].position.y=T.h/2;g.children[2].position.y=T.h/2;
  g.children[0].material.opacity=0.22+0.12*Math.sin(performance.now()/200);}
 {const _w=world4Tick;world4Tick=function(dt){const r=_w.apply(this,arguments);try{bmodeTick();}catch(e){}return r;};}
+/* ================= CONTENU CRÉÉ DANS L'ATELIER (créatures) =================
+   Sources : src/contenu/creatures.json (intégré au jeu par build.js → window.__CONTENU) + l'atelier de cet
+   ordinateur (localStorage 'aldermoor-atelier-creatures', pour tester tout de suite sans reconstruire le jeu).
+   Une fiche : {id, nom, modele, element, faiblesse, pv, nombre, taille, comportement:'hostile'|'calme', tireur:0-1,
+   lieu (id d'un lieu), rayon, actif}. Quand le joueur approche du lieu, le groupe apparaît (jusqu'à « nombre »,
+   une par seconde, et revient 60 s après la dernière perte) ; loin (> 150 m), il disparaît pour économiser.
+   Adresse « ?test&voir=<id> » : la partie de test commence à côté du groupe (bouton « Tester » de l'Atelier). */
+const CONT_KEY='aldermoor-atelier-creatures';
+function contCreatures(){const base=((window.__CONTENU||{}).creatures||[]).slice();let loc=[];try{loc=JSON.parse(localStorage.getItem(CONT_KEY)||'[]');}catch(e){}
+ const by={};base.concat(loc).forEach(c=>{if(c&&c.id)by[c.id]=c;});return Object.values(by);}
+let CONTC=contCreatures();const CONTT={};
+{const _m=creaModel;creaModel=function(name,look){const c=CONTC.find(c=>c.nom===name);if(c&&c.modele)return c.modele;return _m.apply(this,arguments);};}
+function contTick(dt){if(!started||S.zone!=='monde')return;const now=performance.now()/1000;
+ for(const c of CONTC){if(c.actif===false)continue;const L=LOCBY[c.lieu];if(!L)continue;const d=Math.hypot(player.x-L.x,player.z-L.z),mine=ENT.filter(e=>e.kind==='creature'&&e.data.cid===c.id);
+  if(d>150){mine.forEach(removeEnt);continue;}if(d>95)continue;const T=CONTT[c.id]||(CONTT[c.id]={n:mine.length,t:0});
+  if(mine.length<T.n)T.t=now+60;T.n=mine.length;if(mine.length>=(c.nombre||1)||now<T.t)continue;T.t=now+1;
+  const p=freePoint(L,c.rayon||10),e=spawnCreatureAt(p.x,p.z,c.nom,c.faiblesse||'feu',c.element||'nature',c.pv||2,{cid:c.id,calme:c.comportement==='calme',scale:c.taille||1});
+  e.data.ranged=c.comportement!=='calme'&&Math.random()<(c.tireur||0);T.n++;}}
+{const _w=world4Tick;world4Tick=function(dt){const r=_w.apply(this,arguments);try{CONTT.k=(CONTT.k||0)+dt;if(CONTT.k>0.5){CONTT.k=0;contTick(dt);}}catch(e){console.error(e);}return r;};}
+// « Tester dans le jeu » : on arrive près du groupe
+{const _sg=startGame;startGame=function(){const r=_sg.apply(this,arguments);const m=/[?&]voir=([^&]+)/.exec(location.search);if(m){const c=CONTC.find(c=>c.id===decodeURIComponent(m[1]));const L=c&&LOCBY[c.lieu];
+  if(L)setTimeout(()=>{const go=()=>{bot0(L.spot.x+6,L.spot.z+6);say('🛠 Test de l’Atelier : <b>'+esc(c.nom)+'</b> arrive près de '+esc(L.name)+'.','gm');};if(L.x>1500&&player.x<1500){landesGo(false);setTimeout(go,1600);}else go();},1800);}return r;};}
+function bot0(x,z){player.x=x;player.z=z;player.y=gh(x,z);player.vx=player.vz=player.vy=0;}
 let PLBACK=false; // joystick tiré en arrière : le joueur recule, face à l’avant (pas de demi-tour)
 let CAMD=8,CAMPS=0.38; // caméra : distance et inclinaison lissées
 /* hauteur du sommet d'un obstacle (absolue), mise en cache */
@@ -5504,6 +5533,78 @@ function testState(name){const s=newState(name||'Testeur');
   r.onclick=()=>{try{localStorage.setItem(SAVE_KEY,old);localStorage.removeItem(TEST_BACKUP);}catch(e){}location.href=location.pathname;};}
  b.onclick=()=>{try{const cur=localStorage.getItem(SAVE_KEY);if(cur&&!/"Partie de test/.test(cur)&&!localStorage.getItem(TEST_BACKUP))localStorage.setItem(TEST_BACKUP,cur);}catch(e){}
   startGame(testState($('#name').value.trim()||'Testeur'),true);setTimeout(()=>say('🧪 <b>Partie de test</b> : niveau 50, 24 sorts au rang III + Oubli, 3 jeux de 6 sorts (bouton ⇄) : A combat, B les 4 légendaires, C les 4 sorts de garde, balai 🧹 et tous les objets. Ta partie normale est mise de côté (écran d’accueil avec ?test).','gm'),1500);};})();
+/* ================= L'ATELIER (sur ordinateur : adresse du jeu + « ?atelier ») =================
+   v1 : les CRÉATURES. À gauche la liste des fiches, au centre l'aperçu 3D (tourner à la souris, molette = zoom,
+   boutons d'animation), à droite la fiche. « Enregistrer » : garde la fiche sur cet ordinateur (le jeu local la voit
+   aussitôt) et écrit src/contenu/creatures.json dans le projet (Chrome / Edge : on choisit une fois le dossier
+   src/contenu ; Firefox : le fichier est téléchargé, à placer dans src/contenu). « Tester » : ouvre une partie de
+   test à côté du groupe. Ensuite : objets, personnages, sorts, lieux, sur le même modèle. */
+(function(){if(!/[?&]atelier\b/.test(location.search))return;
+ const css=`#atelier{position:fixed;inset:0;z-index:60;display:grid;grid-template-columns:230px 1fr 330px;background:#0d0a1e;color:var(--ink);font:13px Inter,sans-serif}
+ #atelier h2{font-family:Cinzel,serif;color:var(--gold);font-size:15px;margin:12px 12px 6px}#at-l,#at-f{overflow:auto;border-right:1px solid rgba(255,255,255,.08);padding-bottom:20px}#at-f{border-right:none;border-left:1px solid rgba(255,255,255,.08);padding:0 12px 20px}
+ .at-tabs{display:flex;gap:4px;flex-wrap:wrap;margin:0 10px 8px}.at-tabs b{padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.08);font-weight:600;font-size:11px}.at-tabs b.on{background:var(--gold);color:#241a05}.at-tabs b.off{opacity:.4}
+ .at-it{padding:8px 12px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05)}.at-it:hover{background:rgba(255,255,255,.05)}.at-it.on{background:rgba(243,207,122,.15)}
+ #at-f label{display:block;margin:9px 0 3px;color:var(--mute);font-size:11.5px}#at-f input,#at-f select{width:100%;background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:6px 8px;font:13px Inter,sans-serif}
+ #at-f input[type=range]{padding:0}.at-row{display:flex;gap:8px}.at-row>div{flex:1}.at-b{margin:12px 6px 0 0;padding:8px 12px;border-radius:9px;border:none;font:700 12.5px Inter,sans-serif;cursor:pointer}
+ #at-c{position:relative}#at-c canvas{width:100%;height:100%;display:block}#at-anim{position:absolute;left:10px;bottom:10px;display:flex;gap:5px;flex-wrap:wrap}#at-anim button{background:rgba(16,12,36,.8);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:5px 9px;cursor:pointer;font:12px Inter,sans-serif}
+ #at-msg{position:absolute;left:10px;top:10px;color:var(--mute);font-size:12px;max-width:70%}`;
+ const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+ const box=document.createElement('div');box.id='atelier';document.body.appendChild(box);$('#start').classList.add('hidden');
+ box.innerHTML=`<div id="at-l"><h2>🛠 L’Atelier</h2><div class="at-tabs"><b class="on">Créatures</b><b class="off" title="bientôt">Objets</b><b class="off">Personnages</b><b class="off">Sorts</b><b class="off">Lieux</b></div><div id="at-list"></div><div style="padding:10px"><button class="at-b gold" id="at-new">＋ Nouvelle créature</button></div></div>
+ <div id="at-c"><canvas id="at-cv"></canvas><div id="at-msg">Glisse pour tourner, molette pour zoomer.</div><div id="at-anim"></div></div><div id="at-f"></div>`;
+ // ---------- données ----------
+ const local=()=>{try{return JSON.parse(localStorage.getItem(CONT_KEY)||'[]');}catch(e){return [];}};
+ let list=contCreatures(),cur=null,dirH=null;
+ const blank=()=>({id:'creature-'+Date.now().toString(36),nom:'Nouvelle créature',modele:'yeti',element:'glace',faiblesse:'feu',pv:3,nombre:3,taille:1,comportement:'hostile',tireur:0.3,lieu:'foret',rayon:10,actif:true});
+ // ---------- aperçu 3D ----------
+ const cv=$('#at-cv'),R=new THREE.WebGLRenderer({canvas:cv,antialias:true});R.outputEncoding=THREE.LinearEncoding;const SC=new THREE.Scene();SC.background=new THREE.Color(0x1a1530);
+ const CAM=new THREE.PerspectiveCamera(40,1,0.1,100);SC.add(new THREE.HemisphereLight(0xdde8ff,0x40304a,1.1));const dl=new THREE.DirectionalLight(0xffffff,1.2);dl.position.set(3,5,4);SC.add(dl);
+ const floor=new THREE.Mesh(new THREE.CircleGeometry(2.2,48).rotateX(-Math.PI/2),new THREE.MeshStandardMaterial({color:0x2a2440,roughness:1}));SC.add(floor);
+ let V={o:null,mx:null,A:{},yaw:0.6,dist:4.2,drag:null};
+ function size(){const r=$('#at-c').getBoundingClientRect();R.setSize(r.width,r.height,false);CAM.aspect=r.width/Math.max(1,r.height);CAM.updateProjectionMatrix();}addEventListener('resize',size);
+ cv.addEventListener('pointerdown',e=>{V.drag=e.clientX;});addEventListener('pointerup',()=>V.drag=null);addEventListener('pointermove',e=>{if(V.drag!==null){V.yaw+=(e.clientX-V.drag)*0.01;V.drag=e.clientX;}});
+ cv.addEventListener('wheel',e=>{e.preventDefault();V.dist=clamp(V.dist*Math.exp(e.deltaY*0.001),1.5,12);},{passive:false});
+ function show(c){if(V.o)SC.remove(V.o);V.o=null;V.mx=null;$('#at-anim').innerHTML='';$('#at-msg').textContent='Chargement du modèle « '+c.modele+' »…';
+  creaTpl(c.modele).then(T=>{if(cur!==c)return;const r=THREE.SkeletonUtils.clone(T.scene),tint=new THREE.Color(0xffffff).lerp(new THREE.Color(ELEM[c.element].c),0.25);
+   r.traverse(o=>{if(o.isMesh){o.material=o.material.clone();if(o.material.map)o.material.map.encoding=THREE.LinearEncoding;o.material.color.copy(tint);o.frustumCulled=false;}});
+   const k=1.45/T.h*(c.taille||1);r.scale.setScalar(k);SC.add(r);V.o=r;V.mx=new THREE.AnimationMixer(r);V.A={};for(const n in T.clips)V.A[n]=V.mx.clipAction(T.clips[n]);
+   const play=n=>{for(const a of Object.values(V.A))a.stop();if(V.A[n])V.A[n].reset().play();};play(V.A.Idle?'Idle':V.A.Flying?'Flying':Object.keys(V.A)[0]);
+   const fr={Idle:'Repos',Walk:'Marche',Flying:'Vol',Bite_Front:'Attaque',HitRecieve:'Coup reçu',Death:'Mort',Dance:'Danse',Jump:'Saut'};
+   $('#at-anim').innerHTML=Object.keys(V.A).filter(n=>fr[n]).map(n=>'<button data-a="'+n+'">'+fr[n]+'</button>').join('');$('#at-anim').querySelectorAll('button').forEach(b=>b.onclick=()=>play(b.dataset.a));
+   $('#at-msg').textContent=c.nom+' — modèle « '+c.modele+' », '+Object.keys(V.A).length+' animations.';}).catch(()=>{$('#at-msg').textContent='Modèle introuvable : '+c.modele;});}
+ let last=performance.now();(function loop(){requestAnimationFrame(loop);const now=performance.now(),dt=Math.min(0.05,(now-last)/1000);last=now;if(V.mx)V.mx.update(dt);
+  const t=(cur&&cur.taille)||1;CAM.position.set(Math.sin(V.yaw)*V.dist*t,(0.9+0.5*V.dist/4.2)*t,Math.cos(V.yaw)*V.dist*t);CAM.lookAt(0,0.7*t,0); /* la caméra recule avec la taille */R.render(SC,CAM);})();
+ // ---------- liste et fiche ----------
+ function renderList(){$('#at-list').innerHTML=list.map(c=>'<div class="at-it'+(cur&&cur.id===c.id?' on':'')+'" data-id="'+esc(c.id)+'">'+(c.comportement==='calme'?'🕊 ':'⚔ ')+esc(c.nom)+'<br><span class="mu">'+esc(c.modele)+' · '+esc((LOCBY[c.lieu]||{}).name||c.lieu)+'</span></div>').join('')||'<div class="mu" style="padding:12px">Aucune créature pour l’instant.</div>';
+  $('#at-list').querySelectorAll('.at-it').forEach(d=>d.onclick=()=>edit(list.find(c=>c.id===d.dataset.id)));}
+ const opt=(arr,v)=>arr.map(([k,n])=>'<option value="'+esc(k)+'"'+(k===v?' selected':'')+'>'+esc(n)+'</option>').join('');
+ function edit(c){cur=c;renderList();const els=ELS.map(e=>[e,ELEM[e].n]),lieux=LOCS.filter(L=>LOCBY[L.id]).map(L=>[L.id,(L.x>1500?'Landes · ':'Vallée · ')+L.name]);
+  $('#at-f').innerHTML=`<h2>Fiche</h2><label>Nom (au pluriel : c’est un groupe)</label><input id="f-nom" value="${esc(c.nom)}">
+  <label>Modèle 3D</label><select id="f-modele">${opt((window.__CATALOGUE||{}).creatures.map(m=>[m,m]),c.modele)}</select>
+  <div class="at-row"><div><label>Élément</label><select id="f-element">${opt(els,c.element)}</select></div><div><label>Faiblesse</label><select id="f-faiblesse">${opt(els,c.faiblesse)}</select></div></div>
+  <div class="at-row"><div><label>Comportement</label><select id="f-comportement">${opt([['hostile','⚔ hostile'],['calme','🕊 paisible']],c.comportement)}</select></div><div><label>Points de vie</label><input id="f-pv" type="number" min="1" max="30" value="${c.pv}"></div></div>
+  <div class="at-row"><div><label>Nombre dans le groupe</label><input id="f-nombre" type="number" min="1" max="12" value="${c.nombre}"></div><div><label>Rayon d’apparition (m)</label><input id="f-rayon" type="number" min="3" max="40" value="${c.rayon}"></div></div>
+  <label>Taille : <b id="f-taille-v">${c.taille}</b></label><input id="f-taille" type="range" min="0.5" max="2.5" step="0.1" value="${c.taille}">
+  <label>Tireuse (chance d’attaquer de loin) : <b id="f-tireur-v">${Math.round(c.tireur*100)} %</b></label><input id="f-tireur" type="range" min="0" max="1" step="0.1" value="${c.tireur}">
+  <label>Lieu d’apparition</label><select id="f-lieu">${opt(lieux,c.lieu)}</select>
+  <label><input id="f-actif" type="checkbox" style="width:auto" ${c.actif!==false?'checked':''}> active dans le jeu</label>
+  <button class="at-b gold" id="f-save">💾 Enregistrer</button><button class="at-b" id="f-test" style="background:#3a7ad8;color:#fff">▶ Tester dans le jeu</button><button class="at-b" id="f-del" style="background:rgba(255,90,90,.2);color:#ffb0b0">🗑 Supprimer</button>
+  <div class="mu" id="f-info" style="margin-top:10px;line-height:1.5"></div>`;
+  const up=()=>{c.nom=$('#f-nom').value.trim()||'Créatures';['modele','element','faiblesse','comportement','lieu'].forEach(k=>c[k]=$('#f-'+k).value);['pv','nombre','rayon'].forEach(k=>c[k]=+$('#f-'+k).value);c.taille=+$('#f-taille').value;c.tireur=+$('#f-tireur').value;c.actif=$('#f-actif').checked;
+   $('#f-taille-v').textContent=c.taille;$('#f-tireur-v').textContent=Math.round(c.tireur*100)+' %';renderList();};
+  $('#at-f').querySelectorAll('input,select').forEach(i=>i.oninput=i.onchange=()=>{const m=c.modele,el=c.element,t=c.taille;up();if(m!==c.modele||el!==c.element||t!==c.taille)show(c);});
+  $('#f-save').onclick=()=>save1(c);$('#f-test').onclick=()=>{save1(c,true);window.open(location.pathname+'?test&voir='+encodeURIComponent(c.id),'_blank');};
+  $('#f-del').onclick=()=>{list=list.filter(x=>x!==c);cur=null;persist();$('#at-f').innerHTML='';renderList();if(V.o){SC.remove(V.o);V.o=null;}};show(c);}
+ function persist(){try{localStorage.setItem(CONT_KEY,JSON.stringify(list));}catch(e){}}
+ async function save1(c,quiet){if(!list.includes(c))list.push(c);persist();renderList();const json=JSON.stringify(list,null,1),info=$('#f-info');
+  if(window.showDirectoryPicker){try{if(!dirH){dirH=await window.showDirectoryPicker({id:'aldermoor-contenu',mode:'readwrite'});}const fh=await dirH.getFileHandle('creatures.json',{create:true}),w=await fh.createWritable();await w.write(json+'\n');await w.close();
+    info.innerHTML='✔ Enregistré dans <b>'+esc(dirH.name)+'/creatures.json</b>. Ce PC la voit déjà ; pour le téléphone, le jeu doit être reconstruit et publié.';return;}catch(e){if(quiet){info.textContent='✔ Gardé sur cet ordinateur (test).';return;}info.textContent='Dossier non choisi : '+e.message;}}
+  if(!quiet){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([json+'\n'],{type:'application/json'}));a.download='creatures.json';a.click();info.innerHTML='✔ Gardé sur cet ordinateur. Fichier <b>creatures.json</b> téléchargé : place-le dans <b>src/contenu</b> du projet.';}}
+ $('#at-new').onclick=()=>{const c=blank();list.push(c);edit(c);};
+ setTimeout(()=>{size();renderList();if(list[0])edit(list[0]);},50);
+ // l'Atelier ne lance pas la partie : on coupe la boucle du jeu derrière
+ window.addEventListener('keydown',e=>e.stopPropagation(),true);
+})();
 })();
 </script>
 </body>

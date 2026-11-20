@@ -13,7 +13,11 @@ if(test){
   if(code.split(a).length!==2)throw new Error('ancre de boucle introuvable');
   code=code.replace(a,'window.__ev=s=>eval(s);\n'+a); // accès à la closure du jeu pour les tests
 }
-const out=read('head.html')+'<style>\n'+read('styles.css')+'</style>\n'+read('body.html')+'<script>\n(function(){\n'+code+'})();\n</script>\n'+read('tail.html');
+// catalogue des modèles 3D (pour l'Atelier) et contenu créé dans l'Atelier (src/contenu/*.json), donnés au jeu avant son code
+const CAT={};for(const d of ['creatures','persos']){const p=R('src','assets',d);CAT[d]=fs.existsSync(p)?fs.readdirSync(p).filter(f=>f.endsWith('.glb')&&f!=='animations.glb').map(f=>f.slice(0,-4)).sort():[];}
+const CONT={};{const cd=R('src','contenu');if(fs.existsSync(cd))for(const f of fs.readdirSync(cd).filter(f=>f.endsWith('.json'))){try{CONT[f.slice(0,-5)]=JSON.parse(fs.readFileSync(path.join(cd,f),'utf8'));}catch(e){throw new Error('src/contenu/'+f+' invalide : '+e.message);}}}
+const DATA='<script>window.__CATALOGUE='+JSON.stringify(CAT)+';window.__CONTENU='+JSON.stringify(CONT)+';</script>\n';
+const out=read('head.html')+'<style>\n'+read('styles.css')+'</style>\n'+read('body.html')+DATA+'<script>\n(function(){\n'+code+'})();\n</script>\n'+read('tail.html');
 let html=out;
 if(test)html=html.split('\n').filter(l=>!l.includes('manifest.webmanifest')&&!l.includes('icone-')).join('\n'); // pas d'icône ni de manifeste dans le build de test
 if(test){ // les tests utilisent les copies locales de Three.js (tests/vendor) : pas besoin d'internet

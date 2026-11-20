@@ -135,6 +135,9 @@
   dispersées par les explosions, brûlées, figées ; s’abîment et cassent ; Reparo ; InstancedMesh par type.
 - v36 : Construo en roulette (les 6 boutons deviennent les constructions, 1er toucher = aperçu lumineux qui suit
   le joueur et la caméra, 2e = poser, ➡ page suivante, ⇄ quitter). À faire : incassabilité des briques.
+- v37 : briques incassables (case ✨ de la roulette) ; **Atelier v1 (créatures)** : ?atelier sur PC, fiche + aperçu 3D +
+  enregistrement dans src/contenu + test en jeu. Suite prévue : objets, personnages, sorts, lieux ; structures
+  toutes faites ; IA créatrice branchée sur l'Atelier.
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Idées autour de la construction (vision du joueur : conquête, protection de village)

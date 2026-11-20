@@ -19,7 +19,7 @@ function brkInst(t){if(BRKI[t])return BRKI[t];const T=BRK_T[t],geo=new THREE.Box
 function brkSync(){const by={};for(const b of BRK)(by[b.t]=by[b.t]||[]).push(b);
  for(const t in BRK_T){const L=by[t]||[];if(!L.length&&!BRKI[t])continue;const I=brkInst(t);I.count=Math.min(256,L.length);
   L.slice(0,256).forEach((b,i)=>{BRQ.setFromAxisAngle(BRUP,b.rot);BRP.set(b.x,b.y,b.z);if(b.lev>0||b.tilt){const e=new THREE.Euler(b.tilt||0,b.rot,b.tilt?b.tilt*0.6:0);BRQ.setFromEuler(e);}BRM.compose(BRP,BRQ,BRS);I.setMatrixAt(i,BRM);
-   const k=b.hp/BRK_T[t].hp;BRC.setHex(BRK_T[t].col).multiplyScalar(0.45+0.55*k);if(b.frozen>0)BRC.lerp(new THREE.Color(0xcff4ff),0.6);if(b.burn>0)BRC.lerp(new THREE.Color(0xff7a2e),0.35);I.setColorAt(i,BRC);});
+   const k=b.hp/BRK_T[t].hp;BRC.setHex(BRK_T[t].col).multiplyScalar(0.45+0.55*k);if(b.frozen>0)BRC.lerp(new THREE.Color(0xcff4ff),0.6);if(b.burn>0)BRC.lerp(new THREE.Color(0xff7a2e),0.35);if(b.inc)BRC.lerp(new THREE.Color(0xffd24a),0.3);I.setColorAt(i,BRC);});
   I.instanceMatrix.needsUpdate=true;if(I.instanceColor)I.instanceColor.needsUpdate=true;}}
 function brkCol(b){const T=BRK_T[b.t],q=Math.abs(Math.sin(b.rot))>0.5;b.hw=(q?T.d:T.w)/2;b.hd=(q?T.w:T.d)/2;if(!b.col){b.col={brk:b};COLS.push(b.col);}Object.assign(b.col,{x:b.x,z:b.z,hw:b.hw,hd:b.hd,h:b.y+T.h,bot:b.y});}
 // le dessus le plus haut sous une emprise (sol ou briques)
@@ -89,6 +89,6 @@ function brkTick(dt){if(!started||!BRK.length||S.zone!=='monde')return;let moved
  for(const e of ENT){if(e.kind!=='creature'||e.data.calme||e.data.pet||e.data.charmed||e.data.dragon||e.data.duel)continue;const ey=gh(e.x,e.z);
   for(const b of BRK){const T=BRK_T[b.t];if(ey+1.4<b.y||ey>b.y+T.h)continue;const r=(e.data.rad||0.6)*0.7,dx=e.x-b.x,dz=e.z-b.z,px=b.hw+r-Math.abs(dx),pz=b.hd+r-Math.abs(dz);
    if(px>0&&pz>0){if(px<pz)e.x+=(dx>=0?1:-1)*px;else e.z+=(dz>=0?1:-1)*pz;b.sT=(b.sT||0)-dt;if(b.sT<=0){b.sT=1;brkDamage(b,4,e.data.look);}}}}
- brkSync();if(BRKSAVE>0)BRKSAVE+=dt*(moved?0:1);if(BRKSAVE>3){BRKSAVE=0;S.bricks=BRK.map(b=>({t:b.t,x:+b.x.toFixed(2),y:+b.y.toFixed(2),z:+b.z.toFixed(2),rot:b.rot,hp:Math.round(b.hp)}));save();}}
+ brkSync();if(BRKSAVE>0)BRKSAVE+=dt*(moved?0:1);if(BRKSAVE>3){BRKSAVE=0;S.bricks=BRK.map(b=>({t:b.t,x:+b.x.toFixed(2),y:+b.y.toFixed(2),z:+b.z.toFixed(2),rot:b.rot,hp:Math.round(b.hp),inc:!!b.inc}));save();}}
 {const _w=world4Tick;world4Tick=function(dt){const r=_w.apply(this,arguments);try{brkTick(dt);}catch(e){console.error(e);}return r;};}
 {const _sg=startGame;startGame=function(){const r=_sg.apply(this,arguments);try{BRK.splice(0).forEach(b=>{const i=COLS.indexOf(b.col);if(i>=0)COLS.splice(i,1);});(S.bricks||[]).forEach(s=>{if(!BRK_T[s.t])return;const b=Object.assign({id:++BRKN,vx:0,vy:0,vz:0,lev:0,awake:false},s);BRK.push(b);brkCol(b);});brkSync();}catch(e){console.error(e);}return r;};}

@@ -38,7 +38,7 @@ function shootTick(dt){NIGHT.nextShoot-=dt;if(NIGHT.nextShoot<=0&&nightK>0.6&&S.
 // ---------- étoiles qui tombent (à ramasser) ----------
 const STARG=new THREE.OctahedronGeometry(0.42,0);
 function starSpot(){for(let k=0;k<30;k++){const a=Math.random()*TAU,r=rnd(28,80),x=player.x+Math.cos(a)*r,z=player.z+Math.sin(a)*r;
-  const ok=x>1500?Math.hypot(x-2000,z)<150:Math.hypot(x,z)<84;if(ok&&!inLake({x,z})&&!inWater({x,z})&&isFree({x,z},1))return {x,z};}return null;}
+  const ok=x>4000?terIn(x,z)&&gh(x,z)>0.6:x>1500?Math.hypot(x-2000,z)<150:Math.hypot(x,z)<84;if(ok&&!inLake({x,z})&&!inWater({x,z})&&isFree({x,z},1))return {x,z};}return null;}
 function starFall(){const p=starSpot();if(!p)return;const y=gh(p.x,p.z);const S0={x:p.x,z:p.z,y,fall:2.2,o:null,beam:null,got:false,head:glow(0xfff1a0,5,1)};S0.head.userData.noCull=true;S0.head.position.set(p.x+40,y+90,p.z-20);scene.add(S0.head);NIGHT.stars.push(S0);
  const d=Math.atan2(p.x-player.x,p.z-player.z)-camYaw,dd=Math.atan2(Math.sin(d),Math.cos(d)),dir=Math.abs(dd)<0.6?'droit devant toi':Math.abs(dd)>2.4?'derrière toi':dd>0?'sur ta gauche':'sur ta droite';
  say('🌠 Une <b>étoile</b> tombe du ciel, '+dir+' ! Va la chercher avant l’aube.','gm');sfx('gong');}

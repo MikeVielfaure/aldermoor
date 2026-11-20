@@ -6,9 +6,9 @@
    Un rayon de lumière coloré signale l'endroit. Bandeau (#wave) pendant les défenses. */
 const SURP={cur:null,next:120};
 function evtBeam(x,z,col){const y=gh(x,z),m=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,80,10,1,true),basic(col,{transparent:true,opacity:0.2,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide,fog:false}));m.position.set(x,y+40,z);scene.add(m);return m;}
-function evtSpot(minD,maxD){const inL=player.x>1500;const L=LOCS.filter(l=>(l.x>1500)===inL&&Math.hypot(l.x-player.x,l.z-player.z)>minD&&Math.hypot(l.x-player.x,l.z-player.z)<maxD&&l.id!=='lac'&&l.id!=='landes_lac');
+function evtSpot(minD,maxD){const L=LOCS.filter(l=>regionOf(l.x)===regionOf(player.x)&&Math.hypot(l.x-player.x,l.z-player.z)>minD&&Math.hypot(l.x-player.x,l.z-player.z)<maxD&&l.id!=='lac'&&l.id!=='landes_lac');
  if(L.length){const l=pick(L);const p=freePoint(l,7);return {x:p.x,z:p.z,name:l.name};}
- for(let k=0;k<30;k++){const a=Math.random()*TAU,r=rnd(minD,maxD),x=player.x+Math.cos(a)*r,z=player.z+Math.sin(a)*r;if((inL?Math.hypot(x-2000,z)<150:Math.hypot(x,z)<84)&&!inWater({x,z})&&isFree({x,z},1.5))return {x,z,name:'non loin d’ici'};}return null;}
+ for(let k=0;k<30;k++){const a=Math.random()*TAU,r=rnd(minD,maxD),x=player.x+Math.cos(a)*r,z=player.z+Math.sin(a)*r;if((x>4000?terIn(x,z)&&gh(x,z)>0.6:x>1500?Math.hypot(x-2000,z)<150:Math.hypot(x,z)<84)&&!inWater({x,z})&&isFree({x,z},1.5))return {x,z,name:'non loin d’ici'};}return null;}
 const evtFoes=()=>SURP.cur?SURP.cur.foes.filter(e=>ENT.includes(e)):[];
 function evtFoe(x,z,name,look,weak,hp){const e=spawnCreatureAt(x,z,name,weak,look,hp);e.ttl=Infinity;e.data.evt=1;return e;}
 function evtEnd(){const E=SURP.cur;if(!E)return;if(E.beam)scene.remove(E.beam);if(E.o)scene.remove(E.o);if(E.st){const j=STATIONS.indexOf(E.st);if(j>=0)STATIONS.splice(j,1);}if(E.col){const j=COLS.indexOf(E.col);if(j>=0)COLS.splice(j,1);}if(E.hud)hud8(false);SURP.cur=null;}
@@ -47,7 +47,7 @@ const canBuy=c=>Object.entries(c).every(([k,n])=>(S.inv[k]||0)>=n);
 function shopMenu(){openPick('🏮 Le Marchand de la nuit','« Des choses rares, pour qui paie en essences et en cristaux… Je pars avant l’aube. » (Tu as '+(S.inv.essence||0)+' essences, '+(S.inv.cristal||0)+' cristaux.)',
  SHOP.filter(([id])=>id!=='tresor'||!S.trCarte||S.trCarte<S.day).map(([id,n,c])=>({t:n,s:costTxt(c),off:!canBuy(c),fn:()=>{for(const k in c)S.inv[k]-=c[k];sfx('pick');
   if(id.startsWith('p_'))S.inv[id]=(S.inv[id]||0)+1;else if(id==='parchemin'){$('#pick').classList.add('hidden');learnSpell(genSpell());}
-  else if(id==='tresor'){S.trCarte=S.day;const L=pick(LOCS.filter(l=>(l.x>1500)===(player.x>1500)&&l.id!=='lac'&&l.id!=='landes_lac'));spawnChest(L.id,null,true);say('🗺 La carte montre un coffre ancien près de <b>'+esc(L.name)+'</b>.','gm');}
+  else if(id==='tresor'){S.trCarte=S.day;const L=pick(LOCS.filter(l=>regionOf(l.x)===regionOf(player.x)&&l.id!=='lac'&&l.id!=='landes_lac'));spawnChest(L.id,null,true);say('🗺 La carte montre un coffre ancien près de <b>'+esc(L.name)+'</b>.','gm');}
   say('🏮 Marché conclu.','sys');save();if(!$('#pick').classList.contains('hidden'))shopMenu();}})));}
 function evMarchand(){if(S.marchand===nightId())return false;const p=evtSpot(14,38);if(!p)return false;S.marchand=nightId();const y=gh(p.x,p.z),g=new THREE.Group();g.position.set(p.x,y,p.z);
  const tent=new THREE.Mesh(new THREE.ConeGeometry(1.8,2.6,8),mat(0x5a2a6a,{flatShading:true}));tent.position.y=1.3;tent.castShadow=true;g.add(tent);const tb=new THREE.Mesh(new THREE.BoxGeometry(1.6,0.8,0.8),mat(0x6a4a2a));tb.position.set(0,0.4,1.8);g.add(tb);

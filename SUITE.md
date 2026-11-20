@@ -148,6 +148,12 @@
   biomes) ; 5) minage (creuser le relief, récolter pierre / minerai / cristal).
 - v41 : onglet Quêtes (donneur, étapes parler / aller / ramasser / lancer / vaincre N, récompense, quête « après »),
   aussi pilotable par l'Assistant ; zoom et déplacement de la carte de l'Atelier.
+- v42 : **Grandes Terres** (2 km × 2 km, chargées par morceaux, 7 biomes, mer, 9 lieux, portails depuis la vallée et
+  les Landes) + onglet Terrain de l'Atelier (pinceaux). À surveiller sur téléphone : construction d'un morceau ≈ 6 ms
+  sur PC (1 par image), 50 à 70 appels de dessin. Idées : rivières, villages, routes, donjons dans les Pics.
+- v43 : **minage** (Grandes Terres seulement : le relief de la vallée et des Landes n'est pas découpé en morceaux) :
+  ⛏ / ⛰ dans la roulette de Construo, minerai de fer → briques de fer, trous gardés dans la sauvegarde.
+  Plan validé (1 à 5) terminé. Idées : galeries souterraines, minerais rares par biome, forge (baguettes en fer).
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Idées autour de la construction (vision du joueur : conquête, protection de village)

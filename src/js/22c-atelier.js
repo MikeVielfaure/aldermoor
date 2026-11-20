@@ -18,7 +18,7 @@
  const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
  const box=document.createElement('div');box.id='atelier';document.body.appendChild(box);$('#start').classList.add('hidden');
  box.innerHTML=`<div id="at-l"><h2>🛠 L’Atelier</h2><div class="at-tabs" id="at-tabs"></div><div id="at-list"></div><div style="padding:10px" id="at-news"></div><div class="mu" id="at-dir" style="padding:0 12px;line-height:1.5"></div></div>
- <div id="at-c"><canvas id="at-cv"></canvas><canvas id="at-map" style="display:none;cursor:crosshair"></canvas><div id="at-msg"></div><div id="at-anim"></div></div>
+ <div id="at-c"><canvas id="at-cv"></canvas><canvas id="at-map" style="display:none;cursor:crosshair"></canvas><div id="at-msg"></div><div id="at-anim"></div><div id="at-reg" class="at-tabs" style="position:absolute;right:4px;top:8px;display:none"><b data-r="vallee">Vallée & Landes</b><b data-r="terres">Grandes Terres</b></div></div>
  <div id="at-ia"><input id="at-ia-in" placeholder="✨ Décris ce que tu veux créer, l’IA remplit la fiche (ex. : « un loup des glaces très agressif qui crache du givre dans les Landes »)"><button class="at-b gold" id="at-ia-go" style="margin:0">Créer avec l’IA</button></div><div id="at-f"></div>`;
  /* ---------- dossier du projet (retenu dans IndexedDB) ---------- */
  let ROOT=null;const idb=(mode,fn)=>new Promise(res=>{const r=indexedDB.open('aldermoor-atelier',1);r.onupgradeneeded=()=>r.result.createObjectStore('h');r.onsuccess=()=>{const t=r.result.transaction('h',mode),s=t.objectStore('h');const q=fn(s);q.onsuccess=()=>res(q.result);q.onerror=()=>res(null);};r.onerror=()=>res(null);});
@@ -33,15 +33,16 @@
  const CAM=new THREE.PerspectiveCamera(40,1,0.1,100);SC.add(new THREE.HemisphereLight(0xdde8ff,0x40304a,1.1));const dl=new THREE.DirectionalLight(0xffffff,1.2);dl.position.set(3,5,4);SC.add(dl);
  SC.add(new THREE.Mesh(new THREE.CircleGeometry(2.4,48).rotateX(-Math.PI/2),new THREE.MeshStandardMaterial({color:0x2a2440,roughness:1})));
  const V={o:null,mx:null,A:{},yaw:0.6,dist:4.2,drag:null,size:1};let TAB='creatures',cur=null,PICK=false;const OBJIMP={};
- function size(){const r=$('#at-c').getBoundingClientRect();R.setSize(r.width,r.height,false);CAM.aspect=r.width/Math.max(1,r.height);CAM.updateProjectionMatrix();const m=$('#at-map');m.width=r.width;m.height=r.height;if(TAB==='monde'||TAB==='assistant'||TAB==='quetes')drawMap();}
+ function size(){const r=$('#at-c').getBoundingClientRect();R.setSize(r.width,r.height,false);CAM.aspect=r.width/Math.max(1,r.height);CAM.updateProjectionMatrix();const m=$('#at-map');m.width=r.width;m.height=r.height;if(mapTab())drawMap();}
+ function mapTab(){return TAB==='monde'||TAB==='assistant'||TAB==='quetes'||TAB==='terrain';}
  function size2(){} addEventListener('resize',size);
  cv.addEventListener('pointerdown',e=>{V.drag=e.clientX;});addEventListener('pointerup',()=>V.drag=null);addEventListener('pointermove',e=>{if(V.drag!==null){V.yaw+=(e.clientX-V.drag)*0.01;V.drag=e.clientX;}});
  cv.addEventListener('wheel',e=>{e.preventDefault();V.dist=clamp(V.dist*Math.exp(e.deltaY*0.001),1.5,12);},{passive:false});
  const clear3d=()=>{if(V.o)SC.remove(V.o);V.o=null;V.mx=null;V.H=null;$('#at-anim').innerHTML='';};
  let last=performance.now();(function loop(){requestAnimationFrame(loop);const now=performance.now(),dt=Math.min(0.05,(now-last)/1000);last=now;if(V.mx)V.mx.update(dt);if(V.H)animHuman(V.H,dt,0,now/1000,false);if(V.spin&&V.o)V.o.rotation.y+=dt;
-  const t=V.size;CAM.position.set(Math.sin(V.yaw)*V.dist*t,(0.9+0.5*V.dist/4.2)*t,Math.cos(V.yaw)*V.dist*t);CAM.lookAt(0,0.7*t,0);if(TAB!=='monde'&&TAB!=='assistant'&&TAB!=='quetes'&&!PICK)R.render(SC,CAM);})();
+  const t=V.size;CAM.position.set(Math.sin(V.yaw)*V.dist*t,(0.9+0.5*V.dist/4.2)*t,Math.cos(V.yaw)*V.dist*t);CAM.lookAt(0,0.7*t,0);if(!mapTab()&&!PICK)R.render(SC,CAM);})();
  /* ---------- les types de fiches ---------- */
- const els=()=>ELS.map(e=>[e,ELEM[e].n]),lieux=()=>LOCS.filter(L=>LOCBY[L.id]).map(L=>[L.id,(L.x>1500?'Landes · ':'Vallée · ')+L.name]);
+ const els=()=>ELS.map(e=>[e,ELEM[e].n]),lieux=()=>LOCS.filter(L=>LOCBY[L.id]).map(L=>[L.id,(L.x>4000?'Terres · ':L.x>1500?'Landes · ':'Vallée · ')+L.name]);
  const opt=(arr,v)=>arr.map(([k,n])=>'<option value="'+esc(k)+'"'+(String(k)===String(v)?' selected':'')+'>'+esc(n)+'</option>').join('');
  const uid=p=>p+'-'+Date.now().toString(36);
  const TYPES={
@@ -59,6 +60,7 @@
    item:c=>'🏰 '+esc(c.nom)+'<br><span class="mu">'+esc(STRUCT_MODELES[c.modele]||c.modele)+' · '+esc(c.materiau)+' · ('+Math.round(c.x)+','+Math.round(c.z)+')</span>',test:c=>'?test&pos='+Math.round(c.x+6)+','+Math.round(c.z+6)},
   quetes:{t:'Quêtes',key:CONT_QKEY,file:'quetes.json',news:[['＋ Nouvelle quête',()=>({id:uid('quete'),titre:'Nouvelle quête',description:'',donneur:'lila',actif:true,apres:'',etapes:[{type:'aller',lieu:'lac',texte:''},{type:'parler',pnj:'lila',texte:''}],recompense:{xp:60,or:20,essence:0,cristal:0,sort:''}})]],
    item:c=>'📜 '+esc(c.titre)+'<br><span class="mu">'+esc((NPCBY[c.donneur]||(lists.persos||[]).find(p=>p.id===c.donneur)||{name:c.donneur}).name||c.donneur)+' · '+(c.etapes||[]).length+' étape'+((c.etapes||[]).length>1?'s':'')+'</span>',test:c=>'?test&quete='+encodeURIComponent(c.id)},
+  terrain:{t:'⛰ Terrain',terrain:true},
   assistant:{t:'✨ Assistant',assistant:true}};
 
  const lists={};for(const k in TYPES)if(TYPES[k].key){try{lists[k]=JSON.parse(localStorage.getItem(TYPES[k].key)||'null');}catch(e){}if(!lists[k])lists[k]=k==='creatures'?contCreatures():k==='sorts'?contSpellsList():k==='monde'?contWorldList():k==='persos'?CPERSOS.slice():k==='structures'?CSTRUCT.slice():k==='quetes'?CQUETES.slice():COBJETS.slice();}
@@ -68,8 +70,8 @@
   $('#at-news').innerHTML=(TYPES[TAB].news||[]).map((n,i)=>'<button class="at-b gold" data-n="'+i+'">'+n[0]+'</button>').join('')+(TAB==='objets'?'<button class="at-b" id="at-imp" style="background:#3a7ad8;color:#fff">📥 Importer un objet</button><input type="file" id="at-file" accept=".glb" style="display:none">':'')+(TAB==='creatures'?'<button class="at-b" id="at-imp" style="background:#3a7ad8;color:#fff">📥 Importer un modèle</button><input type="file" id="at-file" accept=".glb" style="display:none">':'');
   $('#at-news').querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{const c=TYPES[TAB].news[+b.dataset.n][1]();lists[TAB].push(c);edit(c);});
   if($('#at-imp')){$('#at-imp').onclick=()=>$('#at-file').click();$('#at-file').onchange=e=>TAB==='objets'?importObj(e.target.files[0]):importModel(e.target.files[0]);}
-  PICK=false;const map=TAB==='monde'||TAB==='assistant'||TAB==='quetes';$('#at-ia').style.display=TAB==='assistant'?'none':'flex';if(TAB==='assistant'){setTimeout(asstShow,0);}cv.style.display=map?'none':'block';$('#at-map').style.display=map?'block':'none';$('#at-msg').textContent=TAB==='assistant'?'La carte montre ce qui a été créé. Molette : zoom ; glisser : déplacer.':map?'Clique sur la carte pour placer le lieu sélectionné (ou les deux bouts d’un portail).':'Glisse pour tourner, molette pour zoomer.';}
- function renderList(){if(TAB==='assistant'){asstList();drawMap();return;}const L=lists[TAB],T=TYPES[TAB];$('#at-list').innerHTML=L.map(c=>'<div class="at-it'+(cur&&cur.id===c.id?' on':'')+'" data-id="'+esc(c.id)+'">'+T.item(c)+'</div>').join('')||'<div class="mu" style="padding:12px">Rien pour l’instant.</div>';
+  PICK=false;const map=mapTab();$('#at-ia').style.display=TAB==='assistant'||TAB==='terrain'?'none':'flex';if(TAB==='assistant'){setTimeout(asstShow,0);}if(TAB==='terrain'){MAPV.reg='terres';MAPV.k=1;MAPV.px=MAPV.py=0;setTimeout(tbShow,0);}$('#at-reg').style.display=map&&TAB!=='terrain'?'flex':'none';cv.style.display=map?'none':'block';$('#at-map').style.display=map?'block':'none';$('#at-msg').textContent=TAB==='terrain'?'Clic gauche : peindre. Clic droit + glisser : déplacer. Molette : zoom.':TAB==='assistant'?'La carte montre ce qui a été créé. Molette : zoom ; glisser : déplacer.':map?'Clique sur la carte pour placer le lieu sélectionné (ou les deux bouts d’un portail).':'Glisse pour tourner, molette pour zoomer.';}
+ function renderList(){if(TAB==='assistant'){asstList();drawMap();return;}if(TAB==='terrain'){$('#at-list').innerHTML='<div class="mu" style="padding:10px 12px;line-height:1.5">Le relief et les biomes des <b>Grandes Terres</b> (2 km × 2 km). Chaque retouche est gardée dans src/contenu/terrain.json.</div>';$('#at-news').innerHTML='';drawMap();return;}const L=lists[TAB],T=TYPES[TAB];$('#at-list').innerHTML=L.map(c=>'<div class="at-it'+(cur&&cur.id===c.id?' on':'')+'" data-id="'+esc(c.id)+'">'+T.item(c)+'</div>').join('')||'<div class="mu" style="padding:12px">Rien pour l’instant.</div>';
   $('#at-list').querySelectorAll('.at-it').forEach(d=>d.onclick=()=>edit(L.find(c=>c.id===d.dataset.id)));if(TAB==='monde'||TAB==='quetes')drawMap();}
  /* ---------- formulaires ---------- */
  const F={
@@ -129,7 +131,7 @@
    <div class="at-sec">🎁 Récompense</div><div class="at-row"><div><label>XP</label><input data-q="xp" type="number" min="0" max="500" value="${R.xp||0}"></div><div><label>Or</label><input data-q="or" type="number" min="0" value="${R.or||0}"></div><div><label>Essences</label><input data-q="essence" type="number" min="0" value="${R.essence||0}"></div><div><label>Cristaux</label><input data-q="cristal" type="number" min="0" value="${R.cristal||0}"></div></div>
    <label>Sort appris</label><select data-q="sort"><option value="">—</option>${opt((lists.sorts||[]).map(x=>[x.id,x.nom]),R.sort||'')}</select>`;};
  let PORT_AB='A';
- function edit(c){cur=c;renderList();const T=TYPES[TAB];
+ function edit(c){cur=c;{const X=c.x!==undefined?c.x:c.ax;if(X!==undefined){const r=X>4000?'terres':'vallee';if(r!==MAPV.reg){MAPV.reg=r;MAPV.k=1;MAPV.px=MAPV.py=0;}}}renderList();const T=TYPES[TAB];
   $('#at-f').innerHTML='<h2>Fiche</h2>'+F[TAB](c)+'<div><button class="at-b gold" id="f-save">💾 Enregistrer</button><button class="at-b" id="f-test" style="background:#3a7ad8;color:#fff">▶ Tester dans le jeu</button><button class="at-b" id="f-del" style="background:rgba(255,90,90,.2);color:#ffb0b0">🗑</button></div><div class="mu" id="f-info" style="margin-top:10px;line-height:1.5"></div>';
   $('#at-f').querySelectorAll('[data-k],[data-a],[data-m]').forEach(i=>i.oninput=i.onchange=()=>{const v=i.type==='checkbox'?i.checked:(i.dataset.n!==undefined||i.type==='number'||i.type==='range')?+i.value:i.value;
    if(i.dataset.k)c[i.dataset.k]=v;if(i.dataset.a)(c.attaque=c.attaque||{})[i.dataset.a]=i.type==='number'?+i.value:i.value;if(i.dataset.m)(c.anims=c.anims||{})[i.dataset.m]=i.value||undefined;
@@ -142,7 +144,7 @@
   if($('#q-add'))$('#q-add').onclick=()=>{c.etapes.push({type:'aller',lieu:'cour',texte:''});edit(c);};
   $('#at-f').querySelectorAll('[data-q]').forEach(i=>i.oninput=i.onchange=()=>{(c.recompense=c.recompense||{})[i.dataset.q]=i.tagName==='SELECT'?i.value:+i.value;});
   $('#at-f').querySelectorAll('[data-b]').forEach(i=>i.oninput=()=>{(c.butin=c.butin||{})[i.dataset.b]=+i.value;});
-  if($('#f-pick'))$('#f-pick').onclick=()=>{PICK=true;cv.style.display='none';$('#at-map').style.display='block';$('#at-msg').textContent='Clique sur la carte pour poser « '+c.nom+' ».';drawMap();};
+  if($('#f-pick'))$('#f-pick').onclick=()=>{PICK=true;cv.style.display='none';$('#at-map').style.display='block';$('#at-reg').style.display='flex';$('#at-msg').textContent='Clique sur la carte pour poser « '+c.nom+' ».';drawMap();};
   $('#f-save').onclick=()=>save1(c);$('#f-test').onclick=async()=>{await save1(c,true);window.open(location.pathname+T.test(c),'_blank');};
   $('#f-del').onclick=()=>{lists[TAB]=lists[TAB].filter(x=>x!==c);cur=null;persist();$('#at-f').innerHTML='';renderList();clear3d();};preview(c);}
  function preview(c){V.spin=false;if(TAB==='quetes'){drawMap();$('#at-msg').textContent='Le chemin de la quête : donneur ★ puis les étapes dans l’ordre.';return;}
@@ -168,18 +170,25 @@
    $('#at-msg').textContent='« '+(c.incantation||c.nom)+' » — '+ELEM[c.element].n+', '+({trait:'attaque',zone:'zone',util:'utilitaire'})[c.forme]+', effet : '+c.effet+'. Teste-le pour le voir en action.';}}
  /* ---------- carte du monde ---------- */
  const MAPR={v:{x:0,z:0,r:92,n:'Vallée d’Aldermoor'},l:{x:2000,z:0,r:168,n:'Landes d’Ombrelune'}};
- const MAPV={k:1,px:0,py:0,drag:null,moved:false};
+ const MAPV={k:1,px:0,py:0,drag:null,moved:false,reg:'vallee'};
  function mapT(){const T=mapT0(),m=$('#at-map'),cx=m.width/2,cy=m.height/2,k=MAPV.k;return {s:T.s*k,P:(x,z)=>{const [a,b]=T.P(x,z);return [(a-cx)*k+cx+MAPV.px,(b-cy)*k+cy+MAPV.py];},U:(px,py)=>T.U((px-cx-MAPV.px)/k+cx,(py-cy-MAPV.py)/k+cy)};}
  /* molette : zoom vers la souris ; glisser : déplacer la carte (un clic sans glisser place toujours les choses) */
  $('#at-map').addEventListener('wheel',e=>{e.preventDefault();const m=$('#at-map'),r=m.getBoundingClientRect(),mx=e.clientX-r.left-m.width/2,my=e.clientY-r.top-m.height/2,k0=MAPV.k,k=clamp(k0*(e.deltaY<0?1.2:1/1.2),1,12);
   MAPV.px=mx-(mx-MAPV.px)*k/k0;MAPV.py=my-(my-MAPV.py)*k/k0;MAPV.k=k;if(k===1){MAPV.px=0;MAPV.py=0;}drawMap();},{passive:false});
- $('#at-map').addEventListener('mousedown',e=>{MAPV.drag=[e.clientX,e.clientY,MAPV.px,MAPV.py];MAPV.moved=false;});
+ $('#at-map').addEventListener('contextmenu',e=>e.preventDefault());
+ $('#at-reg').querySelectorAll('b').forEach(b=>b.onclick=()=>{MAPV.reg=b.dataset.r;MAPV.k=1;MAPV.px=MAPV.py=0;drawMap();});
+ const mapW=e=>{const r=$('#at-map').getBoundingClientRect(),{U}=mapT();return U(e.clientX-r.left,e.clientY-r.top);};
+ $('#at-map').addEventListener('mousedown',e=>{if(TAB==='terrain'&&e.button===0){const w=mapW(e);TB.mouse=w;TB.t0=TB.base?tbH(w):0;tbBrush(w);clearInterval(TB.iv);TB.iv=setInterval(()=>tbBrush(TB.mouse),70);return;}MAPV.drag=[e.clientX,e.clientY,MAPV.px,MAPV.py];MAPV.moved=false;});
+ $('#at-map').addEventListener('mousemove',e=>{if(TAB!=='terrain')return;const w=mapW(e);TB.hover=w;if(TB.iv)TB.mouse=w;if(!TB.raf){TB.raf=requestAnimationFrame(()=>{TB.raf=0;drawMap();});}});
+ window.addEventListener('mouseup',()=>{if(TB.iv){clearInterval(TB.iv);TB.iv=0;}});
  window.addEventListener('mousemove',e=>{const d=MAPV.drag;if(!d)return;const dx=e.clientX-d[0],dy=e.clientY-d[1];if(Math.abs(dx)+Math.abs(dy)>5)MAPV.moved=true;if(MAPV.moved){MAPV.px=d[2]+dx;MAPV.py=d[3]+dy;$('#at-map').style.cursor='grabbing';drawMap();}});
  window.addEventListener('mouseup',()=>{MAPV.drag=null;$('#at-map').style.cursor='crosshair';});
- function mapT0(){const m=$('#at-map'),W=m.width,H=m.height,s=Math.min((W-60)/(2*92+2*168+40),(H-40)/(2*168));const ox=30+92*s,lx=30+(2*92+40+168)*s,cy=H/2;return {s,P:(x,z)=>x>1500?[lx+(x-2000)*s,cy+z*s]:[ox+x*s,cy+z*s],U:(px,py)=>{const dv=Math.hypot(px-ox,py-cy)/s,dl=Math.hypot(px-lx,py-cy)/s;return dl<dv?{x:2000+(px-lx)/s,z:(py-cy)/s}:{x:(px-ox)/s,z:(py-cy)/s};}};}
- function drawMap(){const m=$('#at-map'),g=m.getContext('2d'),{s,P}=mapT();g.fillStyle='#0d0a1e';g.fillRect(0,0,m.width,m.height);
+ function mapT0(){if(MAPV.reg==='terres'){const m=$('#at-map'),W=m.width,H=m.height,s=Math.min(W-40,H-40)/(2*TER.H),cx=W/2,cy=H/2;return {s,P:(x,z)=>[cx+(x-TER.c.x)*s,cy+(z-TER.c.z)*s],U:(px,py)=>({x:TER.c.x+(px-cx)/s,z:TER.c.z+(py-cy)/s})};}
+  const m=$('#at-map'),W=m.width,H=m.height,s=Math.min((W-60)/(2*92+2*168+40),(H-40)/(2*168));const ox=30+92*s,lx=30+(2*92+40+168)*s,cy=H/2;return {s,P:(x,z)=>x>1500?[lx+(x-2000)*s,cy+z*s]:[ox+x*s,cy+z*s],U:(px,py)=>{const dv=Math.hypot(px-ox,py-cy)/s,dl=Math.hypot(px-lx,py-cy)/s;return dl<dv?{x:2000+(px-lx)/s,z:(py-cy)/s}:{x:(px-ox)/s,z:(py-cy)/s};}};}
+ function drawMap(){const m=$('#at-map'),g=m.getContext('2d'),{s,P}=mapT();g.fillStyle='#0d0a1e';g.fillRect(0,0,m.width,m.height);if(MAPV.reg==='terres'){const [a,b]=P(TER.c.x-TER.H,TER.c.z-TER.H),[c,d]=P(TER.c.x+TER.H,TER.c.z+TER.H);g.imageSmoothingEnabled=MAPV.k<3;g.drawImage(tbImg(),a,b,c-a,d-b);}
+  $('#at-reg').querySelectorAll('b').forEach(b=>b.classList.toggle('on',b.dataset.r===MAPV.reg));
   for(const k in MAPR){const Z=MAPR[k],[x,y]=P(Z.x,Z.z);g.fillStyle=k==='v'?'#24452a':'#2f3a28';g.beginPath();g.arc(x,y,Z.r*s,0,TAU);g.fill();g.fillStyle='#b9b2d8';g.font='600 12px Inter';g.fillText(Z.n,x-50,y-Z.r*s-8);}
-  g.font='11px Inter';for(const L of LOCS){if(L.atelier)continue;const [x,y]=P(L.x,L.z);g.fillStyle='rgba(255,255,255,.55)';g.beginPath();g.arc(x,y,3,0,TAU);g.fill();g.fillText(L.name,x+5,y+3);}
+  g.font='11px Inter';for(const L of LOCS){if(L.atelier)continue;const [x,y]=P(L.x,L.z);if(MAPV.reg==='terres'){g.strokeStyle='rgba(0,0,0,.55)';g.lineWidth=3;g.strokeText(L.name,x+5,y+3);}g.fillStyle=MAPV.reg==='terres'?'#fff':'rgba(255,255,255,.55)';g.beginPath();g.arc(x,y,3,0,TAU);g.fill();g.fillText(L.name,x+5,y+3);}
   for(const c of (lists.structures||[])){const [x,y]=P(c.x,c.z);g.fillStyle=cur===c?'#ffb070':'#e08a40';g.fillRect(x-4,y-4,8,8);g.fillStyle='#ffd0a0';g.fillText('🏰 '+c.nom,x+6,y+4);}
   for(const c of (lists.creatures||[])){const L=LOCBY[c.lieu];if(!L)continue;const [x,y]=P(L.x,L.z);g.fillStyle=c.comportement==='calme'?'#9ad8ff':'#ff6a6a';g.beginPath();g.arc(x+6,y+6,3.5,0,TAU);g.fill();}
   for(const c of (lists.objets||[])){const [x,y]=P(c.x,c.z);g.fillStyle=cur===c?'#7aff9a':'#4ad06a';g.fillRect(x-3,y-3,6,6);if(cur===c)g.fillText('📦 '+c.nom,x+6,y-6);}
@@ -187,10 +196,11 @@
    const pts=[];const g0=where(cur.donneur);if(g0)pts.push([g0,'★']);cur.etapes.forEach((e,i)=>{const p=e.type==='parler'?where(e.pnj||cur.donneur):LOCBY[e.lieu]?[LOCBY[e.lieu].x,LOCBY[e.lieu].z]:null;if(p)pts.push([p,String(i+1)]);});
    g.strokeStyle='#f3cf7a';g.lineWidth=2;g.setLineDash([5,4]);g.beginPath();pts.forEach(([p],i)=>{const [x,y]=P(p[0],p[1]);if(i)g.lineTo(x,y);else g.moveTo(x,y);});g.stroke();g.setLineDash([]);
    pts.forEach(([p,t])=>{const [x,y]=P(p[0],p[1]);g.fillStyle='#f3cf7a';g.beginPath();g.arc(x,y,9,0,TAU);g.fill();g.fillStyle='#1a1430';g.font='bold 11px Inter';g.fillText(t,x-(t.length>1?6:3.5),y+4);});g.font='11px Inter';}
+  if(TAB==='terrain'&&TB.hover){const [x,y]=P(TB.hover.x,TB.hover.z);g.strokeStyle='#fff';g.lineWidth=1.5;g.beginPath();g.arc(x,y,TB.r*s,0,TAU);g.stroke();}
   for(const c of lists.monde){const on=cur===c;if(c.type==='portail'){const a=P(c.ax,c.az),b=P(c.bx,c.bz);g.strokeStyle=c.couleur||'#b48cff';g.setLineDash([6,5]);g.lineWidth=on?2.5:1.5;g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.stroke();g.setLineDash([]);
     for(const [p,t] of [[a,'A'],[b,'B']]){g.fillStyle=c.couleur||'#b48cff';g.beginPath();g.arc(p[0],p[1],on?7:5,0,TAU);g.fill();g.fillStyle='#fff';g.fillText(t,p[0]-3,p[1]+4);}}
    else{const [x,y]=P(c.x,c.z);g.strokeStyle='#f3cf7a';g.lineWidth=on?2.5:1.2;g.beginPath();g.arc(x,y,Math.max(4,c.rayon*s),0,TAU);g.stroke();g.fillStyle='#f3cf7a';g.fillText('📍 '+c.nom,x+6,y-6);}}}
- $('#at-map').addEventListener('click',e=>{if(MAPV.moved){MAPV.moved=false;return;}if(cur&&PICK){const r=e.target.getBoundingClientRect(),{U}=mapT(),w=U(e.clientX-r.left,e.clientY-r.top);cur.x=Math.round(w.x);cur.z=Math.round(w.z);PICK=false;cv.style.display='block';$('#at-map').style.display='none';edit(cur);return;}if(!cur||TAB!=='monde')return;const r=e.target.getBoundingClientRect(),{U}=mapT(),w=U(e.clientX-r.left,e.clientY-r.top);w.x=Math.round(w.x);w.z=Math.round(w.z);
+ $('#at-map').addEventListener('click',e=>{if(MAPV.moved){MAPV.moved=false;return;}if(cur&&PICK){const r=e.target.getBoundingClientRect(),{U}=mapT(),w=U(e.clientX-r.left,e.clientY-r.top);cur.x=Math.round(w.x);cur.z=Math.round(w.z);PICK=false;cv.style.display='block';$('#at-map').style.display='none';$('#at-reg').style.display='none';edit(cur);return;}if(!cur||TAB!=='monde')return;const r=e.target.getBoundingClientRect(),{U}=mapT(),w=U(e.clientX-r.left,e.clientY-r.top);w.x=Math.round(w.x);w.z=Math.round(w.z);
   if(cur.type==='portail'){if(PORT_AB==='A'){cur.ax=w.x;cur.az=w.z;PORT_AB='B';}else{cur.bx=w.x;cur.bz=w.z;PORT_AB='A';}}else{cur.x=w.x;cur.z=w.z;}edit(cur);});
  /* ---------- enregistrer ---------- */
  function persist(){try{localStorage.setItem(TYPES[TAB].key,JSON.stringify(lists[TAB]));}catch(e){}}
@@ -210,6 +220,38 @@
   try{const g=await new Promise((res,rej)=>new THREE.GLTFLoader().parse(buf.slice(0),'',res,rej));OBJIMP['imp:'+name]=g.scene;}catch(e){$('#at-msg').textContent='Ce fichier ne se lit pas (il faut un .glb).';return;}
   const cat=window.__CATALOGUE.objets;if(!cat.includes('imp:'+name))cat.push('imp:'+name);let ok=false;try{ok=await writeTo('src/assets/objets-import/'+name+'.glb',buf);if(ok)await writeTo('dist/assets/objets-import/'+name+'.glb',buf).catch(()=>{});}catch(e){}if(!ok&&!window.showDirectoryPicker)download(name+'.glb',buf);
   const c=TYPES.objets.news[0][1]();c.nom=name.replace(/-/g,' ');c.modele='imp:'+name;c.interaction='aucune';lists.objets.push(c);edit(c);$('#f-info').innerHTML=ok?'✔ Objet copié dans <b>src/assets/objets-import/'+name+'.glb</b>.':'Range <b>'+name+'.glb</b> dans src/assets/objets-import du projet.';}
+ /* ---------- TERRAIN des Grandes Terres : la carte est une image de la grille de retouches (1 pixel = 8 m) ---------- */
+ const TB={tool:'monter',r:40,f:0.5,bio:1,img:null,base:null,iv:0,hover:null,mouse:null,last:null,t0:0,raf:0};
+ function tbBase(){if(TB.base)return;const N=TER.N;TB.base=new Float32Array(N*N);for(let j=0;j<N;j++)for(let i=0;i<N;i++)TB.base[j*N+i]=terH0(i*TER.S-TER.H,j*TER.S-TER.H);}
+ function tbH(w){const N=TER.N,i=clamp(Math.round((w.x-TER.c.x+TER.H)/TER.S),0,N-1),j=clamp(Math.round((w.z-TER.c.z+TER.H)/TER.S),0,N-1);return TB.base[j*N+i]+TER.dh[j*N+i];}
+ function tbImg(){tbBase();const N=TER.N;if(!TB.img){TB.img=document.createElement('canvas');TB.img.width=TB.img.height=N;TB.ctx=TB.img.getContext('2d');TB.id=TB.ctx.createImageData(N,N);tbPaint(0,0,N-1,N-1);}return TB.img;}
+ function tbPaint(i0,j0,i1,j1){const N=TER.N,D=TB.id.data,c=TER.tc,H=(i,j)=>TB.base[j*N+i]+TER.dh[j*N+i];
+  for(let j=Math.max(0,j0);j<=Math.min(N-1,j1);j++)for(let i=Math.max(0,i0);i<=Math.min(N-1,i1);i++){const h=H(i,j),u=i*TER.S-TER.H,v=j*TER.S-TER.H;
+   if(h<0)c.setHex(h<-6?0x2a5a86:0x3a7fb0);else c.setHex(TER_BIO[terBiome(u,v,h)].c[0]);
+   const sh=h<0?1:clamp(1+((i>0?H(i-1,j):h)-(i<N-1?H(i+1,j):h)+(j>0?H(i,j-1):h)-(j<N-1?H(i,j+1):h))*0.05,0.55,1.45),k=(j*N+i)*4;
+   D[k]=Math.min(255,c.r*sh*255);D[k+1]=Math.min(255,c.g*sh*255);D[k+2]=Math.min(255,c.b*sh*255);D[k+3]=255;}
+  TB.ctx.putImageData(TB.id,0,0);}
+ function tbBrush(w){if(!w)return;tbImg();const N=TER.N,S=TER.S,ci=(w.x-TER.c.x+TER.H)/S,cj=(w.z-TER.c.z+TER.H)/S,rr=Math.max(0.6,TB.r/S),i0=Math.floor(ci-rr),i1=Math.ceil(ci+rr),j0=Math.floor(cj-rr),j1=Math.ceil(cj+rr);
+  for(let j=Math.max(1,j0);j<=Math.min(N-2,j1);j++)for(let i=Math.max(1,i0);i<=Math.min(N-2,i1);i++){const d=Math.hypot(i-ci,j-cj)/rr;if(d>=1)continue;const f=(1-d*d)*(1-d*d)*TB.f,k=j*N+i,h=TB.base[k]+TER.dh[k];
+   if(TB.tool==='monter')TER.dh[k]+=f*1.2;else if(TB.tool==='creuser')TER.dh[k]-=f*1.2;else if(TB.tool==='aplanir')TER.dh[k]+=(TB.t0-h)*f*0.35;
+   else if(TB.tool==='adoucir'){const a=(TB.base[k-1]+TER.dh[k-1]+TB.base[k+1]+TER.dh[k+1]+TB.base[k-N]+TER.dh[k-N]+TB.base[k+N]+TER.dh[k+N])/4;TER.dh[k]+=(a-h)*f*0.5;}
+   else if(TB.tool==='biome'){if(d<0.85)TER.bi[k]=TB.bio;}else if(TB.tool==='effacer'){TER.dh[k]*=1-f;if(d<0.7)TER.bi[k]=255;}
+   TER.dh[k]=clamp(TER.dh[k],-60,140);}
+  tbPaint(i0-1,j0-1,i1+1,j1+1);TB.last={x:w.x,z:w.z};TB.dirty=true;const i=$('#f-info');if(i)i.textContent='Pas encore enregistré.';drawMap();}
+ function tbShow(){const tools=[['monter','⬆ Monter'],['creuser','⬇ Creuser'],['aplanir','▬ Aplanir'],['adoucir','～ Adoucir'],['biome','🎨 Biome'],['effacer','🧽 Effacer']];
+  $('#at-f').innerHTML='<h2>⛰ Terrain</h2><div class="mu" style="line-height:1.5">Peins sur la carte des Grandes Terres. Sous le niveau 0, c’est de l’eau (lacs, mer).</div><label>Outil</label><div id="tb-t">'+tools.map(([k,n])=>'<button class="at-b" data-t="'+k+'" style="margin:4px 4px 0 0;padding:6px 9px">'+n+'</button>').join('')+'</div>'+
+   '<label>Biome à peindre</label><select id="tb-bio">'+TER_BIO.map((b,i)=>'<option value="'+i+'"'+(i===TB.bio?' selected':'')+'>'+b.n+'</option>').join('')+'</select>'+
+   '<label>Taille : <b id="tb-rv">'+TB.r+'</b> m</label><input id="tb-r" type="range" min="8" max="200" step="4" value="'+TB.r+'"><label>Force : <b id="tb-fv">'+TB.f+'</b></label><input id="tb-f" type="range" min="0.1" max="1" step="0.05" value="'+TB.f+'">'+
+   '<div><button class="at-b gold" id="tb-save">💾 Enregistrer</button><button class="at-b" id="tb-test" style="background:#3a7ad8;color:#fff">▶ Tester ici</button><button class="at-b" id="tb-clr" style="background:rgba(255,90,90,.2);color:#ffb0b0">↺ Tout effacer</button></div><div class="mu" id="f-info" style="margin-top:10px;line-height:1.5"></div>';
+  const sel=()=>$('#tb-t').querySelectorAll('button').forEach(b=>{const on=b.dataset.t===TB.tool;b.style.background=on?'var(--gold)':'rgba(255,255,255,.08)';b.style.color=on?'#241a05':'var(--ink)';});sel();
+  $('#tb-t').querySelectorAll('button').forEach(b=>b.onclick=()=>{TB.tool=b.dataset.t;sel();});$('#tb-bio').onchange=e=>{TB.bio=+e.target.value;TB.tool='biome';sel();};
+  $('#tb-r').oninput=e=>{TB.r=+e.target.value;$('#tb-rv').textContent=TB.r;drawMap();};$('#tb-f').oninput=e=>{TB.f=+e.target.value;$('#tb-fv').textContent=TB.f;};
+  $('#tb-save').onclick=()=>tbSave();$('#tb-test').onclick=async()=>{await tbSave();const p=TB.last||{x:TER.c.x,z:TER.c.z+4};window.open(location.pathname+'?test&pos='+Math.round(p.x)+','+Math.round(p.z),'_blank');};
+  $('#tb-clr').onclick=()=>{if(!confirm('Effacer toutes les retouches du terrain ?'))return;TER.dh.fill(0);TER.bi.fill(255);tbPaint(0,0,TER.N-1,TER.N-1);drawMap();$('#f-info').textContent='Tout effacé (pas encore enregistré).';};}
+ async function tbSave(){const N=TER.N,h=[],b=[];for(let k=0;k<N*N;k++){const i=k%N,j=(k/N)|0;if(Math.abs(TER.dh[k])>0.04)h.push([i,j,Math.round(TER.dh[k]*10)/10]);if(TER.bi[k]!==255)b.push([i,j,TER.bi[k]]);}
+  const json=JSON.stringify({n:N,s:TER.S,h,b}),info=$('#f-info');let loc=true;try{localStorage.setItem('aldermoor-atelier-terrain',json);}catch(e){loc=false;}
+  let ok=false;try{if(window.showDirectoryPicker)ok=await writeTo('src/contenu/terrain.json',json+'\n');else download('terrain.json',json);}catch(e){}
+  TB.dirty=false;if(info)info.innerHTML=ok?'✔ Enregistré dans <b>src/contenu/terrain.json</b> ('+h.length+' retouches).':loc?'✔ Gardé sur cet ordinateur.':'⚠ Trop de retouches pour la mémoire du navigateur : enregistre dans le projet.';}
  /* ---------- l'ASSISTANT : on parle, il ajoute / modifie / retire ce qu'il faut, avec historique et annulation ---------- */
  const ASST={log:[],hist:[],busy:false};const ASST_T=['creatures','sorts','monde','persos','objets','structures','quetes'];
  function asstSchema(){const L=lieux().map(l=>l[0]).join(', ');return 'TYPES ET CHAMPS : creatures {id, nom (pluriel), modele (parmi '+window.__CATALOGUE.creatures.join(', ')+'), element, faiblesse (parmi '+ELS.join(', ')+'), pv, nombre, taille, comportement (hostile|calme), tireur (0-1), lieu (id de lieu), rayon, vol, attaque:{morsure, tir, cadence, portee, vitesse, effet (aucun|brulure|poison|gel|repousse)}} ; '+

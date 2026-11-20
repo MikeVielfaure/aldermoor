@@ -255,7 +255,7 @@ body.induel #tracker,body.inwave #tracker,body.boss #tracker{visibility:hidden}
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/SkeletonUtils.js"></script>
-<script>window.__CATALOGUE={"creatures":["abeille","alien","arbre","cactus","cerf","champignon","chauvesouris","cochon","crabe","crane","cyclope","demon","diablotin","dragon","fantome","panda","pingouin","poule","poulpe","yeti"],"persos":["clerc","guerrier","moine","rodeuse","sorcier","voleur"],"objets":["Cauldron","Potion_1","Potion_2","Potion_4","SmallBottles_1","Bottle_1","Bookcase_2","BookGroup_Medium_1","BookGroup_Medium_2","BookGroup_Small_1","Book_Stack_1","Book_Stack_2","BookStand","Book_5","Scroll_1","Scroll_2","Candle_1","CandleStick","CandleStick_Triple","Chandelier","Lantern_Wall","Chest_Wood","Barrel","Barrel_Apples","Crate_Wooden","Table_Large","Chair_1","Stool","Shelf_Small_Bottles","Shelf_Simple","Cabinet","Dummy","WeaponStand","Anvil","Mug","Chalice"]};window.__CONTENU={"creatures":[],"monde":[],"objets":[],"persos":[],"quetes":[],"sorts":[],"structures":[]};</script>
+<script>window.__CATALOGUE={"creatures":["abeille","alien","arbre","cactus","cerf","champignon","chauvesouris","cochon","crabe","crane","cyclope","demon","diablotin","dragon","fantome","panda","pingouin","poule","poulpe","yeti"],"persos":["clerc","guerrier","moine","rodeuse","sorcier","voleur"],"objets":["Cauldron","Potion_1","Potion_2","Potion_4","SmallBottles_1","Bottle_1","Bookcase_2","BookGroup_Medium_1","BookGroup_Medium_2","BookGroup_Small_1","Book_Stack_1","Book_Stack_2","BookStand","Book_5","Scroll_1","Scroll_2","Candle_1","CandleStick","CandleStick_Triple","Chandelier","Lantern_Wall","Chest_Wood","Barrel","Barrel_Apples","Crate_Wooden","Table_Large","Chair_1","Stool","Shelf_Small_Bottles","Shelf_Simple","Cabinet","Dummy","WeaponStand","Anvil","Mug","Chalice"]};window.__CONTENU={"creatures":[],"monde":[],"objets":[],"persos":[],"quetes":[],"sorts":[],"structures":[],"terrain":{"n":251,"s":8,"h":[],"b":[]}};</script>
 <script>
 (function(){
 'use strict';
@@ -509,7 +509,7 @@ function pushOut(o,rad,allowIce,py){
   if(c.r!==undefined){if(c.off)continue;if(c.lake&&allowIce===2)continue;const dx=o.x-c.x,dz=o.z-c.z;if(Math.abs(dx)>c.r+rad||Math.abs(dz)>c.r+rad)continue;if(c.lake&&allowIce&&onIce(o))continue;const d=Math.hypot(dx,dz),m=c.r+rad;if(d<m){if(d<1e-4)o.x+=m;else{o.x=c.x+dx/d*m;o.z=c.z+dz/d*m;}}}
   else{const dx=o.x-c.x,dz=o.z-c.z,px=c.hw+rad-Math.abs(dx),pz=c.hd+rad-Math.abs(dz);if(px>0&&pz>0){if(px<pz)o.x+=(dx>=0?1:-1)*px;else o.z+=(dz>=0?1:-1)*pz;}}
  }
- if(o.z>-300&&o.z<300){if(o.x>1500){const dx=o.x-2000,dz=o.z,d=Math.hypot(dx,dz);if(d>168){o.x=2000+dx*168/d;o.z=dz*168/d;}}else{const d=Math.hypot(o.x,o.z);if(d>92){o.x*=92/d;o.z*=92/d;}}}roomClamp(o,rad);
+ if(o.x>4000)terClamp(o);else if(o.z>-300&&o.z<300){if(o.x>1500){const dx=o.x-2000,dz=o.z,d=Math.hypot(dx,dz);if(d>168){o.x=2000+dx*168/d;o.z=dz*168/d;}}else{const d=Math.hypot(o.x,o.z);if(d>92){o.x*=92/d;o.z*=92/d;}}}roomClamp(o,rad);
 }
 function isFree(p,rad){const q={x:p.x,z:p.z};pushOut(q,rad);return Math.hypot(q.x-p.x,q.z-p.z)<0.01;}
 function hitsSolid(x,z){for(const c of COLS){if(c.lake||c.off||c.bot!==undefined)continue;if(c.r!==undefined){if(Math.hypot(x-c.x,z-c.z)<c.r)return true;}else if(Math.abs(x-c.x)<c.hw&&Math.abs(z-c.z)<c.hd)return true;}return false;}
@@ -3120,7 +3120,7 @@ function dismount(silent){if(!FLY.on)return;FLY.on=false;FLY.down=false;if(FLY.m
 function flyPush(o,prev){const py=player.y;for(const c of COLS){if(c.lake||c.off)continue;const top=c.h!==undefined?c.h:(c.fh||(c.tree?7.6*c.tree.s:6.5));if(py>top-0.3)continue;if(c.bot!==undefined&&py+1.6<c.bot)continue;if(c.gate)continue;
   if(c.r!==undefined){const dx=o.x-c.x,dz=o.z-c.z,m=c.r+0.45;if(Math.abs(dx)>m||Math.abs(dz)>m)continue;const d=Math.hypot(dx,dz);if(d<m){if(d<1e-4)o.x+=m;else{o.x=c.x+dx/d*m;o.z=c.z+dz/d*m;}}}
   else{const dx=o.x-c.x,dz=o.z-c.z,px=c.hw+0.45-Math.abs(dx),pz=c.hd+0.45-Math.abs(dz);if(px>0&&pz>0){if(px<pz)o.x+=(dx>=0?1:-1)*px;else o.z+=(dz>=0?1:-1)*pz;}}}
- if(o.x>1500){const dx=o.x-2000,d=Math.hypot(dx,o.z);if(d>166){o.x=2000+dx*166/d;o.z*=166/d;}}else{const d=Math.hypot(o.x,o.z);if(d>90){o.x*=90/d;o.z*=90/d;}} /* vallée ou Landes (20b) */if(gh(o.x,o.z)+0.25>py){o.x=prev.x;o.z=prev.z;}}
+ if(o.x>4000){const L=TER.H-12;o.x=clamp(o.x,TER.c.x-L,TER.c.x+L);o.z=clamp(o.z,TER.c.z-L,TER.c.z+L);}else if(o.x>1500){const dx=o.x-2000,d=Math.hypot(dx,o.z);if(d>166){o.x=2000+dx*166/d;o.z*=166/d;}}else{const d=Math.hypot(o.x,o.z);if(d>90){o.x*=90/d;o.z*=90/d;}} /* vallée ou Landes (20b) */if(gh(o.x,o.z)+0.25>py){o.x=prev.x;o.z=prev.z;}}
 function flyVert(dt){const up=jumpHeld||keys.Space,down=FLY.down||keys.KeyX||keys.ControlLeft;let tv=up?7.5:down?-8.5:Math.sin(performance.now()/450)*0.3;
  /* en avançant, la caméra dirige le vol : vers le bas on pique, vers le haut on monte (zone neutre autour de la vue normale) */
  {let iy=joy.y;if(keys.KeyW||keys.KeyZ||keys.ArrowUp)iy+=1;if(keys.KeyS||keys.ArrowDown)iy-=1;const fk=clamp(iy,0,1);if(fk>0.2&&!up&&!down){const p=camPitch,s=p>0.5?-(p-0.5)*18:p<0.22?(0.22-p)*20:0;tv+=clamp(s,-14,12)*fk;}}{/* plafond : bas dans la Faille (les monstres doivent pouvoir t'atteindre), haut dans les Landes (îles célestes) */const ceil=WAVE?gh(player.x,player.z)+6:player.x>1500?62:46;if(player.y>ceil&&tv>0)tv=0;if(WAVE&&player.y>ceil+0.5)tv=-4;}player.vy+=(tv-player.vy)*Math.min(1,dt*4);}
@@ -3849,7 +3849,7 @@ function landH(x,z){const u=x-LANDES.c.x,v=z-LANDES.c.z,r=Math.hypot(u,v);
  if(r>140)h+=(r-140)*1.15+Math.max(0,noise(u*0.1,v*0.1))*Math.min(1,(r-140)/10)*6; // crêtes en bordure
  return h;}
 {const _gh=gh;gh=function(x,z){return x>1500?landH(x,z):_gh(x,z);};}
-const inLandes=()=>player.x>1500;
+const inLandes=()=>player.x>1500&&player.x<4000; /* au-delà : les Grandes Terres (20z) */
 /* ---------- construction (appelée avant buildDecor : le décor automatique habille aussi les lieux d'ici) ---------- */
 function buildLandes(){if(LANDES.built)return;LANDES.built=true;const C=LANDES.c,N=HQ?150:110,S2=380;
  const geo=new THREE.PlaneGeometry(S2,S2,N,N);geo.rotateX(-Math.PI/2);const P=geo.attributes.position,cols=new Float32Array(P.count*3),c=new THREE.Color();
@@ -3928,7 +3928,7 @@ function landesPop(){const C=LANDES.c;LANDES_POP.forEach((g,i)=>{const alive=ENT
 function landesTick(dt){if(!started)return;skyMesh.position.copy(camera.position);stars.position.copy(camera.position);
  LANDES.t+=dt;LANDES.swirl.forEach(s=>{s.m.rotation.z+=dt*0.8;s.m.material.opacity=0.7+Math.sin(LANDES.t*2)*0.15;if(Math.random()<dt*8)PA.emit(s.x+rnd(-1,1),s.y+rnd(-1.4,1.4),s.z+rnd(-1,1),0,rnd(0.2,0.8),0,0xc8a0ff,0.25,0.03,rnd(.6,1.2),0,0);});
  // en balai : franchir les crêtes fait passer d'une région à l'autre
- if(FLY.on&&S.zone==='monde'){const L=inLandes(),dx=L?player.x-LANDES.c.x:player.x,dz=L?player.z-LANDES.c.z:player.z,d=Math.hypot(dx,dz),out=(dx*player.vx+dz*player.vz)>0;
+ if(FLY.on&&S.zone==='monde'&&player.x<4000){const L=inLandes(),dx=L?player.x-LANDES.c.x:player.x,dz=L?player.z-LANDES.c.z:player.z,d=Math.hypot(dx,dz),out=(dx*player.vx+dz*player.vz)>0;
   if(d>(L?149:88.5)&&out){LANDES.flyOut+=dt;if(LANDES.flyOut>0.7){LANDES.flyOut=0;if(L)landesBack(true);else landesGo(true);}}else LANDES.flyOut=0;}
  if(inLandes()){LANDES.popT-=dt;if(LANDES.popT<=0){LANDES.popT=2.5;landesPop();}}}
 {const _w=world4Tick;world4Tick=function(dt){landesTick(dt);return _w.apply(this,arguments);};}
@@ -4272,7 +4272,7 @@ function vieHurt(n){if(vieBusy())return;if(BUFF.invis)n*=0.5;VIE.hp-=n;VIE.calm=
  if(!S.seenVie){S.seenVie=1;say('❤ Les créatures te blessent ! Ta <b>vie</b> revient si tu t’éloignes ou te reposes. Une <b>potion de soin</b> la rend d’un coup.','gm');}
  if(VIE.hp<=0)vieFaint();vieHud();}
 function vieFaint(){VIE.faint=true;VIE.hp=0;sfx('poof');
- fade(()=>{const Hm=homeSpawn(),L=player.x>1500&&LOCBY.landes_camp?LOCBY.landes_camp:Hm?{name:'ta maison',spot:Hm}:LOCBY.cour;if(S.zone==='monde'){player.x=L.spot.x;player.z=L.spot.z;player.y=gh(player.x,player.z);}player.vx=player.vz=player.vy=0;
+ fade(()=>{const Hm=homeSpawn(),L=player.x>4000&&LOCBY.terres_halte?LOCBY.terres_halte:player.x>1500&&LOCBY.landes_camp?LOCBY.landes_camp:Hm?{name:'ta maison',spot:Hm}:LOCBY.cour;if(S.zone==='monde'){player.x=L.spot.x;player.z=L.spot.z;player.y=gh(player.x,player.z);}player.vx=player.vz=player.vy=0;
   VIE.max=vieMax();VIE.hp=VIE.max;VIE.faint=false;mana=Math.max(mana,manaMax()*0.5);vieHud();
   say('💫 Tout devient noir… Tu te réveilles '+(S.zone==='monde'?'à <b>'+esc(L.name)+'</b>':'un peu plus tard')+', soigné(e) par quelqu’un de bienveillant.','gm');chron('Évanoui(e) face aux créatures.');});}
 // potion de soin
@@ -4391,7 +4391,7 @@ function buildIles(){const C=LANDES.c;const grass=mat(0x3f7a2c,{flatShading:true
  ILES_OK=true;}
 const cristOk=id=>!(S.celC&&S.celC[id]===S.day);
 {const _b=buildLandes;buildLandes=function(){const r=_b.apply(this,arguments);try{buildIles();}catch(e){console.error(e);}return r;};}
-function ilesTick(dt){if(!started||!ILES_OK||S.zone!=='monde'||player.x<1500)return;const t=performance.now()/1000;
+function ilesTick(dt){if(!started||!ILES_OK||S.zone!=='monde'||player.x<1500||player.x>4000)return;const t=performance.now()/1000;
  if(ILES.orb)ILES.orb.rotation.y+=dt;
  CRIST.forEach(c=>{const v=cristOk(c.id);if(c.g.visible!==v)c.g.visible=v;});
  for(const V of VENTS){const dx=player.x-V.x,dz=player.z-V.z,d=Math.hypot(dx,dz);
@@ -4544,7 +4544,7 @@ function shootTick(dt){NIGHT.nextShoot-=dt;if(NIGHT.nextShoot<=0&&nightK>0.6&&S.
 // ---------- étoiles qui tombent (à ramasser) ----------
 const STARG=new THREE.OctahedronGeometry(0.42,0);
 function starSpot(){for(let k=0;k<30;k++){const a=Math.random()*TAU,r=rnd(28,80),x=player.x+Math.cos(a)*r,z=player.z+Math.sin(a)*r;
-  const ok=x>1500?Math.hypot(x-2000,z)<150:Math.hypot(x,z)<84;if(ok&&!inLake({x,z})&&!inWater({x,z})&&isFree({x,z},1))return {x,z};}return null;}
+  const ok=x>4000?terIn(x,z)&&gh(x,z)>0.6:x>1500?Math.hypot(x-2000,z)<150:Math.hypot(x,z)<84;if(ok&&!inLake({x,z})&&!inWater({x,z})&&isFree({x,z},1))return {x,z};}return null;}
 function starFall(){const p=starSpot();if(!p)return;const y=gh(p.x,p.z);const S0={x:p.x,z:p.z,y,fall:2.2,o:null,beam:null,got:false,head:glow(0xfff1a0,5,1)};S0.head.userData.noCull=true;S0.head.position.set(p.x+40,y+90,p.z-20);scene.add(S0.head);NIGHT.stars.push(S0);
  const d=Math.atan2(p.x-player.x,p.z-player.z)-camYaw,dd=Math.atan2(Math.sin(d),Math.cos(d)),dir=Math.abs(dd)<0.6?'droit devant toi':Math.abs(dd)>2.4?'derrière toi':dd>0?'sur ta gauche':'sur ta droite';
  say('🌠 Une <b>étoile</b> tombe du ciel, '+dir+' ! Va la chercher avant l’aube.','gm');sfx('gong');}
@@ -4685,9 +4685,9 @@ function dominTick(dt){for(const e of ENT){if(e.kind!=='creature'||!(e.data.char
    Un rayon de lumière coloré signale l'endroit. Bandeau (#wave) pendant les défenses. */
 const SURP={cur:null,next:120};
 function evtBeam(x,z,col){const y=gh(x,z),m=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,80,10,1,true),basic(col,{transparent:true,opacity:0.2,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide,fog:false}));m.position.set(x,y+40,z);scene.add(m);return m;}
-function evtSpot(minD,maxD){const inL=player.x>1500;const L=LOCS.filter(l=>(l.x>1500)===inL&&Math.hypot(l.x-player.x,l.z-player.z)>minD&&Math.hypot(l.x-player.x,l.z-player.z)<maxD&&l.id!=='lac'&&l.id!=='landes_lac');
+function evtSpot(minD,maxD){const L=LOCS.filter(l=>regionOf(l.x)===regionOf(player.x)&&Math.hypot(l.x-player.x,l.z-player.z)>minD&&Math.hypot(l.x-player.x,l.z-player.z)<maxD&&l.id!=='lac'&&l.id!=='landes_lac');
  if(L.length){const l=pick(L);const p=freePoint(l,7);return {x:p.x,z:p.z,name:l.name};}
- for(let k=0;k<30;k++){const a=Math.random()*TAU,r=rnd(minD,maxD),x=player.x+Math.cos(a)*r,z=player.z+Math.sin(a)*r;if((inL?Math.hypot(x-2000,z)<150:Math.hypot(x,z)<84)&&!inWater({x,z})&&isFree({x,z},1.5))return {x,z,name:'non loin d’ici'};}return null;}
+ for(let k=0;k<30;k++){const a=Math.random()*TAU,r=rnd(minD,maxD),x=player.x+Math.cos(a)*r,z=player.z+Math.sin(a)*r;if((x>4000?terIn(x,z)&&gh(x,z)>0.6:x>1500?Math.hypot(x-2000,z)<150:Math.hypot(x,z)<84)&&!inWater({x,z})&&isFree({x,z},1.5))return {x,z,name:'non loin d’ici'};}return null;}
 const evtFoes=()=>SURP.cur?SURP.cur.foes.filter(e=>ENT.includes(e)):[];
 function evtFoe(x,z,name,look,weak,hp){const e=spawnCreatureAt(x,z,name,weak,look,hp);e.ttl=Infinity;e.data.evt=1;return e;}
 function evtEnd(){const E=SURP.cur;if(!E)return;if(E.beam)scene.remove(E.beam);if(E.o)scene.remove(E.o);if(E.st){const j=STATIONS.indexOf(E.st);if(j>=0)STATIONS.splice(j,1);}if(E.col){const j=COLS.indexOf(E.col);if(j>=0)COLS.splice(j,1);}if(E.hud)hud8(false);SURP.cur=null;}
@@ -4726,7 +4726,7 @@ const canBuy=c=>Object.entries(c).every(([k,n])=>(S.inv[k]||0)>=n);
 function shopMenu(){openPick('🏮 Le Marchand de la nuit','« Des choses rares, pour qui paie en essences et en cristaux… Je pars avant l’aube. » (Tu as '+(S.inv.essence||0)+' essences, '+(S.inv.cristal||0)+' cristaux.)',
  SHOP.filter(([id])=>id!=='tresor'||!S.trCarte||S.trCarte<S.day).map(([id,n,c])=>({t:n,s:costTxt(c),off:!canBuy(c),fn:()=>{for(const k in c)S.inv[k]-=c[k];sfx('pick');
   if(id.startsWith('p_'))S.inv[id]=(S.inv[id]||0)+1;else if(id==='parchemin'){$('#pick').classList.add('hidden');learnSpell(genSpell());}
-  else if(id==='tresor'){S.trCarte=S.day;const L=pick(LOCS.filter(l=>(l.x>1500)===(player.x>1500)&&l.id!=='lac'&&l.id!=='landes_lac'));spawnChest(L.id,null,true);say('🗺 La carte montre un coffre ancien près de <b>'+esc(L.name)+'</b>.','gm');}
+  else if(id==='tresor'){S.trCarte=S.day;const L=pick(LOCS.filter(l=>regionOf(l.x)===regionOf(player.x)&&l.id!=='lac'&&l.id!=='landes_lac'));spawnChest(L.id,null,true);say('🗺 La carte montre un coffre ancien près de <b>'+esc(L.name)+'</b>.','gm');}
   say('🏮 Marché conclu.','sys');save();if(!$('#pick').classList.contains('hidden'))shopMenu();}})));}
 function evMarchand(){if(S.marchand===nightId())return false;const p=evtSpot(14,38);if(!p)return false;S.marchand=nightId();const y=gh(p.x,p.z),g=new THREE.Group();g.position.set(p.x,y,p.z);
  const tent=new THREE.Mesh(new THREE.ConeGeometry(1.8,2.6,8),mat(0x5a2a6a,{flatShading:true}));tent.position.y=1.3;tent.castShadow=true;g.add(tent);const tb=new THREE.Mesh(new THREE.BoxGeometry(1.6,0.8,0.8),mat(0x6a4a2a));tb.position.set(0,0.4,1.8);g.add(tb);
@@ -5096,7 +5096,7 @@ function castConstruo(sp){if(S.zone!=='monde'){say('On ne construit pas à l’i
  openPick('🧱 Construo','Bois : '+(S.inv.bois||0)+' · Pierre : '+(S.inv.pierre||0)+'. La construction se pose là où tu vises, sur une grille, face à la caméra.',items);}
 function bldPlace(t){const T=BLD_T[t],Q=BLDQ;$('#pick').classList.add('hidden');if(!Q||!bldCanPay(T))return;if(BLD.filter(P=>!P.ruin).length>=160){say('Tu as déjà beaucoup construit (160 pièces) : démolis-en d’abord.','sys');return;}
  let x=Q.x,z=Q.z,y=Q.y;if(!Q.air||!T.air){x=Math.round(x/1.5)*1.5;z=Math.round(z/1.5)*1.5;y=T.air&&Q.air?Q.y:gh(x,z);}
- const inL=x>1500;if(inL?Math.hypot(x-2000,z)>160:Math.hypot(x,z)>88){say('Trop près du bord du monde.','sys');return;}
+ const inL=x>1500;if(x>4000?!terIn(x,z):inL?Math.hypot(x-2000,z)>160:Math.hypot(x,z)>88){say('Trop près du bord du monde.','sys');return;}
  if(!T.air&&inLake({x,z})&&!onIce({x,z})){say('Impossible de bâtir sur l’eau (gèle-la d’abord !).','sys');return;}
  if(Math.hypot(x-player.x,z-player.z)<Math.max(T.w,T.d)/2+0.5&&!(T.air&&Q.air)){const [dx,dz]=fwd();x+=dx*2;z+=dz*2;y=gh(x,z);}
  /* pas à travers une maison, un rocher, un arbre ou le château (les constructions du joueur peuvent se toucher) */
@@ -5277,7 +5277,7 @@ const XITEMS={inc:{n:'Rendre incassable (zone de 5 m)',w:5,h:0.15,d:5,cost:{esse
 function incAt(Q){const L=BRK.filter(b=>!b.inc&&Math.hypot(b.x-Q.x,b.z-Q.z)<2.6),P=BLD.filter(p=>!p.ruin&&!p.inc&&Math.hypot(p.x-Q.x,p.z-Q.z)<3);const lots=Math.ceil((L.length+P.length*3)/6);
  if(!lots){say('✨ Rien à enchanter ici (vise tes briques ou tes constructions).','sys');return;}if((S.inv.essence||0)<lots||(S.inv.cristal||0)<lots){say('✨ Il faut '+lots+' essence(s) et '+lots+' cristal(aux).','sys');return;}
  S.inv.essence-=lots;S.inv.cristal-=lots;L.forEach(b=>{b.inc=true;burst(b.x,b.y+0.5,b.z,0xffd24a,6,2);});P.forEach(p=>{p.inc=true;p.burn=0;p.hp=BLD_T[p.t].hp;bldUnmake(p);bldMake(p);});brkSync();BRKSAVE=1;if(P.length)bldSave();floatAt(Q.x,Q.z,'✨ '+(L.length+P.length)+' incassable(s)','#ffd24a');sfx('learn');}
-const bItem=k=>{const [t,n]=k.split(':');return t==='b'?BRK_T[n]:t==='x'?XITEMS[n]:BLD_T[n];};
+const bItem=k=>{const [t,n]=k.split(':');return t==='b'?BRK_T[n]:t==='x'?XITEMS[n]:t==='m'?MITEMS[n]:BLD_T[n]; /* m : minage (20zb) */};
 function bmodeSet(on){BMODE.on=on;BMODE.page=0;BMODE.sel=null;if(BMODE.ghost)BMODE.ghost.visible=false;document.querySelectorAll('.slot').forEach(b=>b.dataset.k='');renderSlots();if(on)say('🧱 Mode construction : touche un objet pour voir où il ira, touche-le encore pour le poser. ⇄ pour quitter.','sys');}
 {const _c=castConstruo;castConstruo=function(sp){if(S.zone!=='monde')return _c.apply(this,arguments);bmodeSet(!BMODE.on);};}
 {const _r=renderSlots;renderSlots=function(){if(!BMODE||!BMODE.on)return _r.apply(this,arguments);
@@ -5289,7 +5289,7 @@ function bmodeSet(on){BMODE.on=on;BMODE.page=0;BMODE.sel=null;if(BMODE.ghost)BMO
 document.addEventListener('pointerdown',e=>{if(!BMODE.on||!started||anyModal())return;const b=e.target.closest&&e.target.closest('.slot,#b-set');if(!b)return;e.preventDefault();e.stopPropagation();
  if(b.id==='b-set'){bmodeSet(false);return;}const i=+b.dataset.s;if(i===5){BMODE.page=(BMODE.page+1)%Math.ceil(BITEMS.length/5);BMODE.sel=null;renderSlots();sfx('click');return;}
  const it=BITEMS[BMODE.page*5+i];if(!it)return;if(BMODE.sel!==it[0]){BMODE.sel=it[0];sfx('click');renderSlots();floatAt(player.x,player.z,bItem(it[0]).n,'#9fffb0');return;}
- const [t,n]=it[0].split(':');BLDQ=bldTarget();if(t==='x')incAt(BLDQ);else if(t==='b')brkPlace(n);else bldPlace(n);renderSlots();},true);
+ const [t,n]=it[0].split(':');BLDQ=bldTarget();if(t==='x')incAt(BLDQ);else if(t==='m')mineAt(n,BLDQ);else if(t==='b')brkPlace(n);else bldPlace(n);renderSlots();},true);
 // aperçu lumineux
 function bghost(){if(BMODE.ghost)return BMODE.ghost;const g=new THREE.Group(),m=new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({color:0x9fffb0,transparent:true,opacity:0.3,blending:THREE.AdditiveBlending,depthWrite:false}));m.position.y=0.5;g.add(m);
  const w=new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({color:0xd8ffe0,wireframe:true,transparent:true,opacity:0.7}));w.position.y=0.5;g.add(w);const gl=glow(0x9fffb0,2.5,0.6);gl.position.y=0.5;g.add(gl);g.visible=false;scene.add(g);BMODE.ghost=g;return g;}
@@ -5399,7 +5399,7 @@ function cSpellsGive(){CSPELLS.forEach(c=>{if(c.obtention==='depart'&&!S.spells.
 const CONT_MKEY='aldermoor-atelier-monde';
 function contWorldList(){const base=((window.__CONTENU||{}).monde||[]).slice();let loc=[];try{loc=JSON.parse(localStorage.getItem(CONT_MKEY)||'[]');}catch(e){}const by={};base.concat(loc).forEach(c=>{if(c&&c.id)by[c.id]=c;});return Object.values(by);}
 const CWORLD=contWorldList();const CPORT=[];
-const inWorld=(x,z)=>x>1500?Math.hypot(x-2000,z)<160:Math.hypot(x,z)<88;
+const inWorld=(x,z)=>x>4000?terIn(x,z):x>1500?Math.hypot(x-2000,z)<160:Math.hypot(x,z)<88;
 // lieux : ajoutés à la liste dès le chargement (les autres contenus peuvent s'y référer)
 CWORLD.filter(c=>c.type==='lieu'&&inWorld(c.x,c.z)&&!LOCBY[c.id]).forEach(c=>{const L={id:c.id,name:c.nom,x:c.x,z:c.z,r:c.rayon||10,spot:{x:c.x+2,z:c.z+2},region:c.x>1500?'landes':undefined,hidden:c.x>1500,atelier:true};LOCS.push(L);LOCBY[c.id]=L;LOC_STYLE[c.id]=c.style&&c.style!=='aucun'?c.style:null;});
 function buildMonde(){dkMats();
@@ -5413,12 +5413,12 @@ function portalArch(x,z,tx,tz,col){const y=gh(x,z),g=new THREE.Group();g.positio
  const v=new THREE.Mesh(new THREE.PlaneGeometry(2.3,3),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:0.45,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));v.position.y=1.6;g.add(v);
  const gl=glow(col,3.5,0.7);gl.position.y=1.8;g.add(gl);scene.add(g);addCol({x:x+Math.cos(g.rotation.y)*1.4,z:z-Math.sin(g.rotation.y)*1.4,r:0.35});addCol({x:x-Math.cos(g.rotation.y)*1.4,z:z+Math.sin(g.rotation.y)*1.4,r:0.35});return {x,z,g,v};}
 {const _b=buildLandes;buildLandes=function(){const r=_b.apply(this,arguments);try{buildMonde();}catch(e){console.error(e);}return r;};}
-function portTo(x,z){fade(()=>{const toL=x>1500,fromL=player.x>1500;player.x=x+rnd(-1,1);player.z=z+rnd(-1,1);player.y=gh(player.x,player.z)+0.2;player.vx=player.vz=player.vy=0;if(toL!==fromL&&typeof LANDES!=='undefined')LANDES.seen=true;sfx('learn');});}
+function portTo(x,z){fade(()=>{const toL=regionOf(x),fromL=regionOf(player.x);player.x=x+rnd(-1,1);player.z=z+rnd(-1,1);player.y=gh(player.x,player.z)+0.2;player.vx=player.vz=player.vy=0;if(toL!==fromL&&typeof LANDES!=='undefined')LANDES.seen=true;sfx('learn');});}
 function portTick(dt){if(!started||S.zone!=='monde')return;const t=performance.now()/1000;
  for(const P of CPORT){P.cd-=dt;for(const [A,B] of [[P.a,P.b],[P.b,P.a]]){A.v.material.opacity=0.35+0.15*Math.sin(t*3);if(Math.random()<dt*8)PA.emit(A.x+rnd(-1,1),gh(A.x,A.z)+rnd(0.3,3),A.z+rnd(-0.3,0.3),0,0.3,0,0xffffff,0.25,0.05,0.6,0,1);
   if(P.cd<=0&&Math.hypot(player.x-A.x,player.z-A.z)<1.3&&!FLY.on){P.cd=3;const a=Math.atan2(player.x-B.x,player.z-B.z);portTo(B.x+Math.sin(B.g.rotation.y)*2.5,B.z+Math.cos(B.g.rotation.y)*2.5);say('🌀 '+esc(P.c.nom||'Portail')+'.','sys');}}}}
 {const _w=world4Tick;world4Tick=function(dt){const r=_w.apply(this,arguments);try{portTick(dt);}catch(e){}return r;};}
-{const _sg=startGame;startGame=function(){const r=_sg.apply(this,arguments);const q=/[?&]pos=(-?[\d.]+),(-?[\d.]+)/.exec(location.search);if(q){const x=+q[1],z=+q[2];setTimeout(()=>{if(x>1500&&player.x<1500){landesGo(false);setTimeout(()=>bot0(x,z),1600);}else bot0(x,z);},1800);}const m=/[?&]lieu=([^&]+)/.exec(location.search);if(m){const L=LOCBY[decodeURIComponent(m[1])];if(L)setTimeout(()=>{if(L.x>1500&&player.x<1500){landesGo(false);setTimeout(()=>bot0(L.spot.x,L.spot.z),1600);}else bot0(L.spot.x,L.spot.z);say('🛠 Test de l’Atelier : <b>'+esc(L.name)+'</b>.','gm');},1800);}return r;};}
+{const _sg=startGame;startGame=function(){const r=_sg.apply(this,arguments);const q=/[?&]pos=(-?[\d.]+),(-?[\d.]+)/.exec(location.search);if(q){const x=+q[1],z=+q[2];setTimeout(()=>{if(x>1500&&x<4000&&player.x<1500){landesGo(false);setTimeout(()=>bot0(x,z),1600);}else bot0(x,z);},1800);}const m=/[?&]lieu=([^&]+)/.exec(location.search);if(m){const L=LOCBY[decodeURIComponent(m[1])];if(L)setTimeout(()=>{if(L.x>1500&&player.x<1500){landesGo(false);setTimeout(()=>bot0(L.spot.x,L.spot.z),1600);}else bot0(L.spot.x,L.spot.z);say('🛠 Test de l’Atelier : <b>'+esc(L.name)+'</b>.','gm');},1800);}return r;};}
 /* ================= OBJETS ET PERSONNAGES CRÉÉS DANS L'ATELIER =================
    PERSONNAGE : {id, nom, role (personnalité, lue par le Maître du Jeu IA), modele (apprenti, sorcier, clerc…), couleur,
    lieu (sa maison), promenade [lieux], repliques [phrases]}. Ajouté à NPCS avant que buildCharacters les fabrique :
@@ -5515,6 +5515,238 @@ function cqMatch(s,D){if(!D||D.duel||D.pet||D.charmed)return false;if(!s.crea)re
   if(b&&(!s.loc||bd<60))return {x:b.x,z:b.z};}return _t.apply(this,arguments);};}
 /* ?test&quete=<id> */
 {const _sg=startGame;startGame=function(){const r=_sg.apply(this,arguments);const m=/[?&]quete=([^&]+)/.exec(location.search);if(m){const c=CQUETES.find(x=>x.id===decodeURIComponent(m[1]));if(c)setTimeout(()=>{S.quests=S.quests.filter(q=>q.cq!==c.id);if(S.cqDone)delete S.cqDone[c.id];cqGive(c);updateHUD();},2200);}return r;};}
+/* ================= LES GRANDES TERRES : une immense région continue (≈ 2 km × 2 km), chargée par morceaux =================
+   Centre x=6000, z=0, même zone « monde » (météo, balai, sorts, créatures marchent tels quels). gh() passe par terH() quand x > 4000.
+   Relief : terH0 (procédural : collines, montagnes au nord, dunes au sud-est, marais à l'ouest, lac, côtes) + retouches de
+   l'Atelier (grille de 8 m TER.dh / biomes TER.bi : src/contenu/terrain.json ou localStorage 'aldermoor-atelier-terrain')
+   + creusages du minage (TER.digH, 20zb). Biomes TER_BIO : 0 prairie, 1 forêt, 2 désert, 3 neige, 4 marais, 5 roche, 6 plage.
+   Morceaux de 96 m (TER.CH) construits autour du joueur, un par image ; arbres, rochers, herbe : InstancedMesh partagés,
+   remplis avec ce qui est devant la caméra (terFill) ; collisions des arbres et rochers proches seulement (COLS c.ter).
+   Mer au niveau 0 (plan qui suit le joueur) : tout creux sous 0 devient de l'eau ; l'eau profonde repousse (terClamp).
+   Accès : portails dans la vallée, dans les Landes, et à la Halte de l'Aube (centre). */
+function regionOf(x){return x>4000?'terres':x>1500?'landes':'vallee';}
+function terIn(x,z){return Math.abs(x-6000)<975&&Math.abs(z)<975;} /* sans TER : appelée au chargement par 20v */
+const TER={c:{x:6000,z:0},H:1000,CH:96,SEG:40,R:200,N:251,S:8,chunks:new Map(),built:false,popT:0,fx:1e9,fz:1e9,fyaw:9,fpit:9,ft:0,dirty:true,gx:1e9,gz:1e9,cx:1e9,cz:1e9,img:null,on:false,block:[],
+ tc:new THREE.Color(),tc2:new THREE.Color(),fru:new THREE.Frustum(),pm:new THREE.Matrix4(),sph:new THREE.Sphere(),m4:new THREE.Matrix4(),q:new THREE.Quaternion(),p3:new THREE.Vector3(),s3:new THREE.Vector3()};
+TER.dh=new Float32Array(TER.N*TER.N);TER.bi=new Uint8Array(TER.N*TER.N).fill(255);
+function terLoadEdits(d){TER.dh.fill(0);TER.bi.fill(255);if(!d)return;const ok=(i,j)=>i>=0&&j>=0&&i<TER.N&&j<TER.N;
+ (d.h||[]).forEach(([i,j,v])=>{if(ok(i,j))TER.dh[j*TER.N+i]=v;});(d.b||[]).forEach(([i,j,v])=>{if(ok(i,j))TER.bi[j*TER.N+i]=v;});}
+{let d=null;try{d=JSON.parse(localStorage.getItem('aldermoor-atelier-terrain')||'null');}catch(e){}terLoadEdits(d||(window.__CONTENU||{}).terrain||null);}
+/* ---------- bruit (valeurs lissées, sans répétition visible sur 2 km) ---------- */
+function terHash(i,j){let h=(Math.imul(i,374761393)+Math.imul(j,668265263))|0;h=Math.imul(h^(h>>>13),1274126177);return ((h^(h>>>16))>>>0)/4294967296;}
+function terNoise(x,z){const i=Math.floor(x),j=Math.floor(z),fx=x-i,fz=z-j,u=fx*fx*(3-2*fx),v=fz*fz*(3-2*fz),a=terHash(i,j),b=terHash(i+1,j),c=terHash(i,j+1),d=terHash(i+1,j+1);return (a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v)*2-1;}
+function terFbm(x,z,o){let s=0,a=1,n=0;for(let k=0;k<o;k++){s+=terNoise(x+k*17.31,z-k*9.13)*a;n+=a;a*=0.5;x*=2.03;z*=2.03;}return s/n;}
+function terRng(s){return ()=>{s=(s+0x6D2B79F5)|0;let t=Math.imul(s^(s>>>15),1|s);t=(t+Math.imul(t^(t>>>7),61|t))^t;return ((t^(t>>>14))>>>0)/4294967296;};}
+/* ---------- lieux (coordonnées locales) : aplat = hauteur ajoutée au relief du centre (null : pas d'aplat) ---------- */
+const TER_LIEUX=[
+ {id:'terres_halte',n:'Halte de l’Aube',u:0,v:0,r:13,flat:0.3,st:'ferme'},
+ {id:'terres_sylve',n:'Sylve des Mille-Troncs',u:-170,v:280,r:42,flat:null,st:'foret'},
+ {id:'terres_lac',n:'Lac aux Nénuphars',u:150,v:170,r:44,flat:null,st:null},
+ {id:'terres_mines',n:'Mines de Brisefer',u:290,v:-300,r:16,flat:1,st:'montagne'},
+ {id:'terres_pics',n:'Pics de Givre-Haut',u:-60,v:-600,r:34,flat:null,st:null},
+ {id:'terres_dunes',n:'Dunes de Sel-Rouge',u:430,v:390,r:34,flat:null,st:null},
+ {id:'terres_marais',n:'Marais des Brumes-Vertes',u:-440,v:120,r:36,flat:null,st:'marais'},
+ {id:'terres_ruines',n:'Ruines d’Haldaran',u:-470,v:520,r:18,flat:1.2,st:'ruines'},
+ {id:'terres_cote',n:'Côte des Coquillages',u:700,v:-40,r:24,flat:null,st:null}];
+function terRegions(u,v){const f=(cu,cv,ru,rv)=>Math.max(0,1-Math.hypot((u-cu)/ru,(v-cv)/rv));
+ return {mN:f(-60,-640,430,300),mNE:f(300,-360,260,220),dS:f(440,400,300,260),dM:f(-450,120,250,240),lac:f(150,170,52,46),syl:f(-170,280,300,260)};}
+function terH0(u,v,noflat){const R=terRegions(u,v),r=Math.hypot(u,v);
+ let h=5+terFbm(u/260,v/260,4)*12+terFbm(u/70,v/70,2)*1.6;
+ const mm=R.mN*R.mN*100+R.mNE*R.mNE*60;if(mm>0.05){const ridge=1-Math.abs(terFbm(u/170+40,v/170-12,4));h+=mm*(0.35+ridge*0.8);}
+ if(R.dS>0){const w=terFbm(u/90,v/90,2)*3;h=lerp(h,7+Math.sin(u*0.045+v*0.02+w)*4.2+Math.sin(u*0.11-v*0.07+w*1.7)*1.6,smooth(0,0.45,R.dS));}
+ if(R.dM>0)h=lerp(h,0.5+terFbm(u/35,v/35,2)*1.1,smooth(0,0.5,R.dM));
+ if(R.lac>0)h=lerp(h,-3.5,smooth(0,0.55,R.lac));
+ let e=Math.max(Math.abs(u),Math.abs(v))/TER.H*0.55+r/TER.H*0.5;if(e>0.6)e+=terFbm(u/230-7,v/230+3,3)*0.13;if(e>0.76)h=lerp(h,-16,smooth(0.76,0.95,e));
+ if(!noflat)for(const L of TER_LIEUX){if(L.flat==null)continue;const du=u-L.u,dv=v-L.v;if(du>L.r+16||du<-L.r-16||dv>L.r+16||dv<-L.r-16)continue;const d=Math.hypot(du,dv);if(d<L.r+16)h=lerp(h,L.base+L.flat,smooth(L.r+16,L.r,d));}
+ return h;}
+TER_LIEUX.forEach(L=>{L.base=Math.max(L.flat!=null?3:-99,terH0(L.u,L.v,true));});
+function terEd(A,u,v){const gx=(u+TER.H)/TER.S,gz=(v+TER.H)/TER.S,i=Math.floor(gx),j=Math.floor(gz);if(i<0||j<0||i>=TER.N-1||j>=TER.N-1)return 0;const fx=gx-i,fz=gz-j,N=TER.N,k=j*N+i;return (A[k]*(1-fx)+A[k+1]*fx)*(1-fz)+(A[k+N]*(1-fx)+A[k+N+1]*fx)*fz;}
+function terH(x,z){const u=x-TER.c.x,v=z-TER.c.z;return terH0(u,v)+terEd(TER.dh,u,v)+(TER.digH?TER.digH(x,z):0);}
+{const _gh=gh;gh=function(x,z){return x>4000?terH(x,z):_gh(x,z);};}
+const inTerres=()=>player.x>4000;
+/* ---------- biomes ---------- */
+const TER_BIO=[{n:'prairie',c:[0x6c9a46,0x86ad54]},{n:'forêt',c:[0x3f6a2e,0x527c38]},{n:'désert',c:[0xd6bb80,0xe4cc96]},{n:'neige',c:[0xe6edf5,0xf6f9fc]},{n:'marais',c:[0x55653a,0x6c7648]},{n:'roche',c:[0x857f70,0x9a9484]},{n:'plage',c:[0xd8c690,0xe8d8a8]}];
+function terBi(u,v){const i=Math.round((u+TER.H)/TER.S),j=Math.round((v+TER.H)/TER.S);if(i<0||j<0||i>=TER.N||j>=TER.N)return 255;return TER.bi[j*TER.N+i];}
+function terBiome(u,v,h){const o=terBi(u,v);if(o!==255)return o;const R=terRegions(u,v);
+ if(h<1.4&&h>-8&&R.dM<0.3&&R.lac<0.05&&Math.max(Math.abs(u),Math.abs(v))*0.55+Math.hypot(u,v)*0.5>TER.H*0.62)return 6; /* plages : seulement sur la côte */if(h>52)return 3;if(R.dS>0.22)return 2;if(R.dM>0.25)return 4;if(h>30)return 5;
+ if(R.syl>0.15||terFbm(u/280+90,v/280-40,3)>0.22)return 1;return 0;}
+function terBiomeAt(x,z){return terBiome(x-TER.c.x,z-TER.c.z,terH(x,z));}
+function terSlope(x,z){const e=1.2;return Math.hypot(terH(x+e,z)-terH(x-e,z),terH(x,z+e)-terH(x,z-e))/(2*e);}
+/* ---------- bord du monde et eau profonde ---------- */
+function terClamp(o){const L=TER.H-12;o.x=clamp(o.x,TER.c.x-L,TER.c.x+L);o.z=clamp(o.z,TER.c.z-L,TER.c.z+L);
+ for(let k=0;k<8;k++){const h=terH(o.x,o.z);if(h>-1.2)break;const e=1.5,gx=terH(o.x+e,o.z)-terH(o.x-e,o.z),gz=terH(o.x,o.z+e)-terH(o.x,o.z-e),l=Math.hypot(gx,gz)||1;o.x+=gx/l*0.6;o.z+=gz/l*0.6;}
+ for(let k=0;k<150&&terH(o.x,o.z)<=-1.2;k++){const dx=TER.c.x-o.x,dz=TER.c.z-o.z,d=Math.hypot(dx,dz)||1;o.x+=dx/d*3;o.z+=dz/d*3;}}
+/* ---------- un morceau de terrain (96 m) : maillage, arbres, rochers ---------- */
+const TER_DENS=[{t:0.04,r:0.02},{t:0.42,r:0.02},{t:0,r:0.05},{t:0.05,r:0.05},{t:0.12,r:0.02},{t:0.03,r:0.12},{t:0.01,r:0.03}];
+function terBlocked(x,z){for(const b of TER.block)if(Math.hypot(x-b.x,z-b.z)<b.r)return true;return false;}
+/* couleur du sol : biome, roche dans les pentes, sable sous l'eau, terre et roche dans les trous creusés */
+function terColor(x,z,hh,ny,c,c2){const u=x-TER.c.x,v=z-TER.c.z,b=terBiome(u,v,hh),B=TER_BIO[b];c.setHex(B.c[0]).lerp(c2.setHex(B.c[1]),clamp(terNoise(u*0.15,v*0.15)*0.5+0.5,0,1));
+ if(b!==2&&b!==6&&ny<0.86)c.lerp(c2.setHex(b===3?0x9a9aa0:0x7a7566),clamp((0.86-ny)*3,0,0.85));if(hh<-0.2)c.lerp(c2.setHex(0xb0a070),clamp(-hh/2,0,0.75));
+ if(TER.digH){const d=TER.digH(x,z);if(d<-0.15)c.lerp(c2.setHex(d<-2.5?0x6f6a62:0x6a4e34),clamp(-d*0.8,0,0.9));else if(d>0.15)c.lerp(c2.setHex(0x7a6a52),clamp(d,0,0.7));}}
+function terChunk(ci,cj){const N=TER.SEG,CH=TER.CH,st=CH/N,x0=TER.c.x-TER.H+ci*CH,z0=TER.c.z-TER.H+cj*CH,W=N+3,hs=new Float32Array(W*W);
+ for(let j=0;j<W;j++)for(let i=0;i<W;i++)hs[j*W+i]=terH(x0+(i-1)*st,z0+(j-1)*st);
+ const V=(N+1)*(N+1),pos=new Float32Array(V*3),nor=new Float32Array(V*3),col=new Float32Array(V*3),c=TER.tc,c2=TER.tc2;
+ for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){const k=j*(N+1)+i,x=x0+i*st,z=z0+j*st,hh=hs[(j+1)*W+i+1];pos[k*3]=x;pos[k*3+1]=hh;pos[k*3+2]=z;
+  let nx=hs[(j+1)*W+i]-hs[(j+1)*W+i+2],nz=hs[j*W+i+1]-hs[(j+2)*W+i+1],ny=2*st;const l=Math.hypot(nx,ny,nz);nx/=l;ny/=l;nz/=l;nor[k*3]=nx;nor[k*3+1]=ny;nor[k*3+2]=nz;
+  terColor(x,z,hh,ny,c,c2);col[k*3]=c.r;col[k*3+1]=c.g;col[k*3+2]=c.b;}
+ const idx=new Uint16Array(N*N*6);let q=0;for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*(N+1)+i,b=a+1,d=a+N+1,e=d+1;idx[q++]=a;idx[q++]=d;idx[q++]=b;idx[q++]=b;idx[q++]=d;idx[q++]=e;}
+ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));geo.setAttribute('normal',new THREE.BufferAttribute(nor,3));geo.setAttribute('color',new THREE.BufferAttribute(col,3));geo.setIndex(new THREE.BufferAttribute(idx,1));geo.computeBoundingSphere();
+ const mesh=new THREE.Mesh(geo,TER.mat);mesh.receiveShadow=true;mesh.userData.noCull=true;scene.add(mesh);
+ /* végétation : même hasard pour un même morceau (le monde ne change pas d'une visite à l'autre) */
+ const R=terRng((ci*73856093)^(cj*19349663)^1234567),T=[],K=[],tries=Math.round(CH*CH*0.02*(HQ?1:0.65));
+ for(let n=0;n<tries;n++){const x=x0+R()*CH,z=z0+R()*CH,ro=R(),r2=R(),r3=R(),r4=R();const y=terH(x,z);if(y<0.5)continue;if(TER.digH&&Math.abs(TER.digH(x,z))>0.05)continue;const u=x-TER.c.x,v=z-TER.c.z,b=terBiome(u,v,y),D=TER_DENS[b];
+  if(ro<D.t){if(terSlope(x,z)>1.25||terBlocked(x,z))continue;const vv=(b===3||b===5||y>26)?3+(r2<0.5?1:0):b===1?(r2<0.45?3+(r3<0.5?1:0):Math.floor(r3*3)):b===4?(r2<0.6?1:0):Math.floor(r2*3);
+   const s=0.8+r4*0.6;T.push({x,y,z,s,v:vv,ry:r3*TAU,hh:TREEV[vv]&&TREEV[vv].t==='c'?0.29+r2*0.06:(b===4?0.15+r2*0.05:0.2+r2*0.09),ss:b===4?0.25:0.3+r3*0.2,ll:b===1?0.5+r4*0.1:0.58+r4*0.14});}
+  else if(ro<D.t+D.r){if(terBlocked(x,z))continue;const s=0.35+r2*r2*(b===5||b===3?2.2:1.4);K.push({x,y:y-s*0.25,z,s,ry:r3*TAU,l:0.4+r4*0.25});}}
+ return {ci,cj,mesh,T,K,x0,z0};}
+function terDrop(C){scene.remove(C.mesh);C.mesh.geometry.dispose();}
+/* ---------- chargement autour du joueur ---------- */
+function terStream(force){const px=player.x,pz=player.z,CH=TER.CH,X0=TER.c.x-TER.H,Z0=TER.c.z-TER.H,NC=Math.ceil(2*TER.H/CH),ci0=Math.floor((px-X0)/CH),cj0=Math.floor((pz-Z0)/CH),n=Math.ceil(TER.R/CH)+1,need=[];
+ const dist=(ci,cj)=>Math.max(0,Math.hypot(X0+(ci+0.5)*CH-px,Z0+(cj+0.5)*CH-pz)-CH*0.71);
+ for(const [k,C] of TER.chunks)if(dist(C.ci,C.cj)>TER.R+50){terDrop(C);TER.chunks.delete(k);TER.dirty=true;}
+ for(let dj=-n;dj<=n;dj++)for(let di=-n;di<=n;di++){const ci=ci0+di,cj=cj0+dj;if(ci<0||cj<0||ci>=NC||cj>=NC)continue;const d=dist(ci,cj);if(d<TER.R&&!TER.chunks.has(ci+','+cj))need.push([d,ci,cj]);}
+ need.sort((a,b)=>a[0]-b[0]);let built=0;for(const [,ci,cj] of need){TER.chunks.set(ci+','+cj,terChunk(ci,cj));TER.dirty=true;if(++built>=(force?999:1))break;}}
+function terClear(){for(const C of TER.chunks.values())terDrop(C);TER.chunks.clear();terCols(true);TER.dirty=true;
+ TER.tim.forEach(M=>{M.trunk.count=M.leaf.count=0;});TER.rocks.count=0;if(TER.grass)TER.grass.count=0;TER.gx=TER.gz=1e9;TER.cx=TER.cz=1e9;}
+/* ---------- arbres et rochers devant la caméra ---------- */
+function terFill(){camera.updateMatrixWorld();camera.matrixWorldInverse.copy(camera.matrixWorld).invert();TER.pm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);TER.fru.setFromProjectionMatrix(TER.pm);
+ const n=TER.tim.map(()=>0),FAR=(scene.fog?scene.fog.far:170)+25,F2=FAR*FAR,px=player.x,pz=player.z,{m4,q,p3,s3,sph}=TER,c=TER.tc;let nr=0;
+ for(const C of TER.chunks.values()){for(const t of C.T){const dx=t.x-px,dz=t.z-pz;if(dx*dx+dz*dz>F2)continue;const M=TER.tim[t.v];if(!M||n[t.v]>=M.cap)continue;sph.center.set(t.x,t.y+3*t.s,t.z);sph.radius=5.5*t.s;if(!TER.fru.intersectsSphere(sph))continue;
+   q.setFromAxisAngle(UPV,t.ry);m4.compose(p3.set(t.x,t.y-0.08,t.z),q,s3.set(t.s,t.s,t.s));const i=n[t.v]++;M.trunk.setMatrixAt(i,m4);M.trunk.setColorAt(i,WHITEC);M.leaf.setMatrixAt(i,m4);M.leaf.setColorAt(i,c.setHSL(t.hh,t.ss,t.ll));}
+  for(const k of C.K){const dx=k.x-px,dz=k.z-pz;if(dx*dx+dz*dz>F2||nr>=TER.rocks.cap)continue;sph.center.set(k.x,k.y,k.z);sph.radius=2*k.s;if(!TER.fru.intersectsSphere(sph))continue;
+   q.setFromAxisAngle(UPV,k.ry);m4.compose(p3.set(k.x,k.y,k.z),q,s3.set(k.s,k.s*0.75,k.s));TER.rocks.setMatrixAt(nr,m4);TER.rocks.setColorAt(nr,c.setHSL(0.1,0.06,k.l));nr++;}}
+ TER.tim.forEach((M,v)=>{M.trunk.count=M.leaf.count=n[v];M.trunk.instanceMatrix.needsUpdate=M.leaf.instanceMatrix.needsUpdate=true;if(M.leaf.instanceColor)M.leaf.instanceColor.needsUpdate=true;if(M.trunk.instanceColor)M.trunk.instanceColor.needsUpdate=true;});
+ TER.rocks.count=nr;TER.rocks.instanceMatrix.needsUpdate=true;if(TER.rocks.instanceColor)TER.rocks.instanceColor.needsUpdate=true;}
+/* collisions des arbres et rochers proches (le reste n'existe pas pour la physique) */
+function terCols(clear){for(let i=COLS.length-1;i>=0;i--)if(COLS[i].ter)COLS.splice(i,1);if(clear)return;const px=player.x,pz=player.z;
+ for(const C of TER.chunks.values()){for(const t of C.T)if(Math.abs(t.x-px)<45&&Math.abs(t.z-pz)<45)COLS.push({x:t.x,z:t.z,r:0.42*t.s,h:t.y+6.5*t.s,ter:1});
+  for(const k of C.K)if(k.s>0.7&&Math.abs(k.x-px)<45&&Math.abs(k.z-pz)<45)COLS.push({x:k.x,z:k.z,r:k.s*0.85,h:k.y+k.s*1.3,ter:1});}}
+/* herbe autour du joueur */
+function terGrass(){const G=TER.grass;if(!G)return;const {m4,q,p3,s3}=TER,c=TER.tc;let k=0;
+ for(let i=0;i<G.cap*3&&k<G.cap;i++){const a=Math.random()*TAU,r=Math.sqrt(Math.random())*50,x=player.x+Math.cos(a)*r,z=player.z+Math.sin(a)*r,y=terH(x,z);if(y<0.4)continue;const b=terBiomeAt(x,z);if(b!==0&&b!==1&&b!==4)continue;if(terSlope(x,z)>1.2)continue;
+  const sc=0.5+Math.random()*0.6;q.setFromAxisAngle(UPV,Math.random()*TAU);m4.compose(p3.set(x,y,z),q,s3.set(sc,sc*(0.7+Math.random()*0.8),sc));G.setMatrixAt(k,m4);G.setColorAt(k,c.setHSL(b===4?0.17:0.2+Math.random()*0.08,0.3,0.48+Math.random()*0.16));k++;}
+ G.count=k;G.instanceMatrix.needsUpdate=true;if(G.instanceColor)G.instanceColor.needsUpdate=true;}
+/* ---------- construction (avant buildDecor : le décor automatique habille aussi les lieux d'ici) ---------- */
+TER_LIEUX.forEach(L=>{const x=TER.c.x+L.u,z=TER.c.z+L.v;const o={id:L.id,name:L.n,x,z,r:L.r,spot:{x:x+2,z:z+2},hidden:true,region:'terres'};LOCS.push(o);LOCBY[L.id]=o;LOC_STYLE[L.id]=L.st||null;});
+function terSpots(){/* les points d'arrivée restent sur la terre ferme */TER_LIEUX.forEach(L=>{const o=LOCBY[L.id];for(let k=0;k<40&&terH(o.spot.x,o.spot.z)<0.6;k++){const dx=TER.c.x-o.spot.x,dz=TER.c.z-o.spot.z,d=Math.hypot(dx,dz)||1;o.spot.x+=dx/d*4;o.spot.z+=dz/d*4;}});}
+function terPortalSpot(cx,cz,r0,avoid){for(let k=0;k<60;k++){const a=k*2.39996,r=r0+(k%5)*3,x=cx+Math.cos(a)*r,z=cz+Math.sin(a)*r;
+ if(Math.hypot(x,z)>84&&x<1500)continue;if(avoid.some(p=>p&&Math.hypot(p.x-x,p.z-z)<12))continue;if(!isFree({x,z},2.4)||slopeAt(x,z)>1.1)continue;if(x<1500&&pathDist(x,z)<2.5)continue;
+ if(LOCS.some(L=>!L.region&&Math.hypot(L.x-x,L.z-z)<L.r+3))continue;return {x,z,ry:Math.atan2(cx-x,cz-z)};}return null;}
+function buildTerres(){if(TER.built)return;TER.built=true;terSpots();
+ TER.mat=triMat(0xffffff,TX.grass,TX.rock,0.3,1.06,{vertexColors:true,roughness:1});
+ TER.tim=TREEV.map(V=>{const cap=HQ?1400:800,tm=new THREE.InstancedMesh(V.trunk.geometry,V.trunk.material,cap),lf=new THREE.InstancedMesh(V.leaf.geometry,V.leaf.material,cap);
+  tm.setColorAt(0,WHITEC);lf.setColorAt(0,WHITEC);[tm,lf].forEach(m=>{m.castShadow=true;m.receiveShadow=true;m.frustumCulled=false;m.count=0;m.userData.noCull=true;m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);scene.add(m);});lf.customDepthMaterial=V.leaf.customDepthMaterial;return {trunk:tm,leaf:lf,cap};});
+ TER.rocks=new THREE.InstancedMesh(rockGeo(1),ROCKM,HQ?900:500);TER.rocks.setColorAt(0,WHITEC);TER.rocks.cap=TER.rocks.count;TER.rocks.count=0;TER.rocks.castShadow=true;TER.rocks.receiveShadow=true;TER.rocks.frustumCulled=false;TER.rocks.userData.noCull=true;scene.add(TER.rocks);
+ if(typeof grassMesh!=='undefined'&&grassMesh){const G=new THREE.InstancedMesh(grassMesh.geometry,grassMesh.material,HQ?3000:1300);G.setColorAt(0,WHITEC);G.cap=G.count;G.count=0;G.frustumCulled=false;G.receiveShadow=true;G.userData.noCull=true;scene.add(G);TER.grass=G;}
+ TER.sea=new THREE.Mesh(new THREE.PlaneGeometry(1100,1100).rotateX(-Math.PI/2),waterMat({op:0.72,nk:0.06}));TER.sea.visible=false;TER.sea.userData.noCull=true;TER.sea.userData.dyn=true;scene.add(TER.sea);
+ /* la Halte : deux arches (vallée, Landes), tentes, feu */
+ const C=TER.c;dkMats();TER.arch=[{x:C.x-7,z:C.z-10,ry:0,to:'vallee'},{x:C.x+7,z:C.z-10,ry:0,to:'landes'}];
+ TER.arch.forEach(a=>{portal(a.x,a.z,a.ry);TER.block.push({x:a.x,z:a.z,r:6});station({x:a.x,z:a.z+1.6,reach:2.8,hint:()=>inTerres()?(a.to==='vallee'?'Traverser le portail : retour à Aldermoor':'Traverser le portail : vers les Landes d’Ombrelune'):null,act:()=>terBack(a.to)});});
+ [[-6,6,0.5],[5,7,2.4],[9,-1,-0.6]].forEach(([x,z,ry])=>dTent(C.x+x,C.z+z,ry));dFirebowl(C.x,C.z+2);
+ TER_LIEUX.forEach(L=>TER.block.push({x:C.x+L.u,z:C.z+L.v,r:L.r*0.55+4}));
+ (typeof COBJETS!=='undefined'?COBJETS:[]).forEach(o=>{if(o.x>4000)TER.block.push({x:o.x,z:o.z,r:4});});(typeof CSTRUCT!=='undefined'?CSTRUCT:[]).forEach(o=>{if(o.x>4000)TER.block.push({x:o.x,z:o.z,r:Math.max(o.longueur||4,o.largeur||4)});});
+ /* portails de départ : dans la vallée et au campement des Landes */
+ TER.vp=terPortalSpot(0,0,80,[LANDES.vp]);TER.lp=terPortalSpot(LOCBY.landes_camp.x,LOCBY.landes_camp.z,16,[]);
+ [['vp','Traverser le portail vers les Grandes Terres'],['lp','Traverser le portail vers les Grandes Terres']].forEach(([k,h])=>{const p=TER[k];if(!p)return;portal(p.x,p.z,p.ry);
+  station({x:p.x+Math.sin(p.ry)*1.6,z:p.z+Math.cos(p.ry)*1.6,reach:2.8,hint:()=>inTerres()?null:h,act:()=>terGo()});});}
+{const _bd=buildDecor;buildDecor=function(){try{buildTerres();}catch(e){console.error(e);}return _bd.apply(this,arguments);};}
+/* ---------- voyages ---------- */
+function terGo(x,z){fade(()=>{const a=TER.arch[0];player.x=x!==undefined?x:a.x+(Math.random()<0.5?-1:1)*1.2;player.z=z!==undefined?z:a.z+3.5;player.y=gh(player.x,player.z)+0.2;player.vx=player.vz=player.vy=0;player.ry=0;camYaw=0;
+  terStream(true);terCols();sfx('door');
+  if(!S.terresVu){S.terresVu=1;chron('Découverte des Grandes Terres.');gainXP(40);setTimeout(()=>say('🗺 Les <b>Grandes Terres</b> : une contrée immense, des forêts, des dunes, des pics enneigés, des marais, la mer tout autour… La carte 🗺 te guide. (+40 XP)','gm'),600);}
+  else say('🗺 Les Grandes Terres.','sys');save();});}
+function terBack(to){const p=to==='landes'?TER.lp:TER.vp;if(!p)return;fade(()=>{player.x=p.x+Math.sin(p.ry)*3;player.z=p.z+Math.cos(p.ry)*3;player.y=gh(player.x,player.z)+0.2;player.vx=player.vz=player.vy=0;player.ry=p.ry;camYaw=p.ry;terClear();
+  sfx('door');say(to==='landes'?'🌄 Les Landes d’Ombrelune.':'🏰 Retour dans la vallée d’Aldermoor.','sys');if(to==='landes'&&typeof LANDES!=='undefined')LANDES.seen=true;save();});}
+/* ---------- peuplement selon le biome ---------- */
+const TER_POP=[
+ [['Cerfs des plaines','feu','nature',2,1],['Sangliers grogneurs','glace','nature',3],['Poules des bruyères','eau','lumiere',1,1]],
+ [['Farfadets tapageurs','vent','nature',2],['Arbres errants','feu','nature',5],['Pandas des brumes','feu','ombre',2,1]],
+ [['Cactus grincheux','eau','nature',3],['Diablotins des sables','eau','feu',3],['Étincelles sauvages','ombre','arcane',2]],
+ [['Lutins de givre','feu','glace',3],['Pingouins des neiges','feu','glace',1,1],['Yétis des cimes','feu','glace',6]],
+ [['Esprits d’ombre','lumiere','ombre',3],['Farfadets des tourbières','vent','nature',2],['Poulpes des marais','lumiere','eau',3]],
+ [['Gardiens de pierre','glace','arcane',5],['Lutins de givre','feu','glace',3]],
+ [['Poules des bruyères','eau','lumiere',1,1],['Poulpes volants','lumiere','eau',3]]];
+function terPop(){let near=0;for(const e of ENT.slice()){if(e.kind!=='creature'||!e.data.terPop)continue;const d=Math.hypot(e.x-player.x,e.z-player.z);if(d>175){removeEnt(e);continue;}if(d<110)near++;}
+ const want=HQ?9:7;for(let g=0;g<3&&near<want;g++){let x,z,ok=false;for(let t=0;t<10&&!ok;t++){const a=Math.random()*TAU,r=40+Math.random()*45;x=player.x+Math.cos(a)*r;z=player.z+Math.sin(a)*r;ok=terIn(x,z)&&terH(x,z)>0.6&&isFree({x,z},1.2);}
+  if(!ok)continue;const L=TER_POP[terBiomeAt(x,z)]||TER_POP[0],P=pick(L),k=P[4]?2+Math.floor(Math.random()*2):1+Math.floor(Math.random()*2);
+  for(let i=0;i<k;i++){const xx=x+rnd(-4,4),zz=z+rnd(-4,4);if(!isFree({x:xx,z:zz},1))continue;const e=spawnCreatureAt(xx,zz,P[0],P[1],P[2],P[3],{calme:!!P[4]});e.data.terPop=1;near++;}}}
+CREA_NOMS.unshift([/yéti|yeti/i,'yeti'],[/tourbière/i,'champignon']);
+/* ---------- à chaque image ---------- */
+function terTick(dt){if(!started||!TER.built)return;const on=S.zone==='monde'&&inTerres();
+ if(!on){if(TER.on){TER.on=false;terClear();TER.sea.visible=false;}return;}
+ if(!TER.on){TER.on=true;terStream(true);TER.dirty=true;}
+ terStream(false);TER.sea.visible=true;TER.sea.position.set(Math.round(player.x/50)*50,0,Math.round(player.z/50)*50);
+ TER.ft-=dt;const mv=Math.hypot(player.x-TER.fx,player.z-TER.fz),dy=Math.abs(Math.atan2(Math.sin(camYaw-TER.fyaw),Math.cos(camYaw-TER.fyaw)));
+ if(TER.dirty||mv>9||dy>0.22||Math.abs((typeof camPitch!=='undefined'?camPitch:0)-TER.fpit)>0.15||TER.ft<=0){TER.dirty=false;TER.fx=player.x;TER.fz=player.z;TER.fyaw=camYaw;TER.fpit=typeof camPitch!=='undefined'?camPitch:0;TER.ft=1.2;terFill();}
+ if(Math.hypot(player.x-TER.cx,player.z-TER.cz)>8){TER.cx=player.x;TER.cz=player.z;terCols();}
+ if(Math.hypot(player.x-TER.gx,player.z-TER.gz)>14){TER.gx=player.x;TER.gz=player.z;terGrass();}
+ TER.popT-=dt;if(TER.popT<=0){TER.popT=2.5;terPop();}}
+{const _w=world4Tick;world4Tick=function(dt){terTick(dt);return _w.apply(this,arguments);};}
+/* ---------- carte de la région ---------- */
+function terMapImg(){if(TER.img)return TER.img;const n=200,cv=document.createElement('canvas');cv.width=cv.height=n;const g=cv.getContext('2d'),im=g.createImageData(n,n),c=TER.tc;
+ for(let j=0;j<n;j++)for(let i=0;i<n;i++){const u=(i+0.5)/n*2*TER.H-TER.H,v=(j+0.5)/n*2*TER.H-TER.H,h=terH0(u,v)+terEd(TER.dh,u,v);
+  if(h<0)c.setHex(h<-6?0x2a5a86:0x3a7fb0);else{c.setHex(TER_BIO[terBiome(u,v,h)].c[0]);c.multiplyScalar(0.8+clamp(h/80,0,0.3));}const k=(j*n+i)*4;im.data[k]=c.r*255;im.data[k+1]=c.g*255;im.data[k+2]=c.b*255;im.data[k+3]=255;}
+ g.putImageData(im,0,0);TER.img=cv;return cv;}
+{const _d=drawMap;drawMap=function(){if(!inTerres()||S.zone!=='monde')return _d.apply(this,arguments);const cv=$('#map-c'),W=Math.min(window.innerWidth-24,560);cv.width=W*2;cv.height=W*2;cv.style.width=cv.style.height=W+'px';const g=cv.getContext('2d');g.setTransform(2,0,0,2,0,0);
+ g.imageSmoothingEnabled=true;g.drawImage(terMapImg(),0,0,W,W);const k=W/(2*TER.H),P=(x,z)=>[(x-TER.c.x+TER.H)*k,(z-TER.c.z+TER.H)*k];
+ g.font='600 11px Inter,sans-serif';g.textAlign='center';TER_LIEUX.forEach(L=>{const o=LOCBY[L.id],[a,b]=P(o.x,o.z);g.fillStyle='#f3cf7a';g.beginPath();g.arc(a,b,3.5,0,TAU);g.fill();g.fillStyle='#fff';g.strokeStyle='rgba(0,0,0,.6)';g.lineWidth=3;g.strokeText(L.n,a,b-7);g.fillText(L.n,a,b-7);});
+ const [px,pz]=P(player.x,player.z);g.save();g.translate(px,pz);g.rotate(-player.ry+Math.PI);g.fillStyle='#ff7ae0';g.beginPath();g.moveTo(0,-8);g.lineTo(5,6);g.lineTo(-5,6);g.closePath();g.fill();g.restore();
+ $('#map-s').innerHTML='Tu es dans les <b>Grandes Terres</b>. Retour : les portails de la Halte de l’Aube, au centre.';cv.onclick=null;};}
+/* le MJ connaît la région */
+{const _bp=buildPrompt;buildPrompt=function(){return _bp.apply(this,arguments).replace(RULES,RULES+'\nRégion des Grandes Terres (lieux terres_*) : contrée immense entourée par la mer, atteinte par des portails (vallée, Landes). Halte de l’Aube au centre, Sylve des Mille-Troncs, Lac aux Nénuphars, Mines de Brisefer, Pics de Givre-Haut enneigés, Dunes de Sel-Rouge, Marais des Brumes-Vertes, Ruines d’Haldaran, Côte des Coquillages. Tu peux y envoyer le joueur en quête.');};}
+/* ================= MINAGE : creuser et remblayer le relief des Grandes Terres =================
+   Dans la roulette de Construo : ⛏ Creuser (récolte pierre, parfois minerai de fer, cristal, pépite d'or ; plus riche
+   dans les montagnes, en profondeur et autour des Mines de Brisefer) et ⛰ Remblayer (1 pierre). Chaque coup est un
+   creux arrondi {x,z,r,d} gardé dans S.digs (d > 0 : creusé, d < 0 : remblayé), rangé par cases de 16 m (DIG.grid) ;
+   TER.digH(x,z) l'ajoute au relief (20z). Après un coup, seuls les sommets touchés des morceaux sont recalculés (terPatch).
+   Les arbres et rochers du trou disparaissent (et ne repoussent pas). Brique de fer : 1 minerai, la plus solide. */
+const DIG={grid:new Map(),cd:0,R:2.4,STEP:0.9};
+INGR.minerai=INGR.minerai||{n:'Minerai de fer',c:0x8a6e5e,where:[],look:'herb'};SELL.minerai=7;
+BRK_T.fer={n:'Brique de fer',w:0.9,h:0.9,d:0.9,hp:110,mass:3,cost:{minerai:1},col:0x6a6e74};
+const MITEMS={creuser:{n:'Creuser (pierre, minerai, cristal…)',w:2*DIG.R,h:0.2,d:2*DIG.R,cost:{}},remblai:{n:'Remblayer (1 pierre)',w:2*DIG.R,h:0.2,d:2*DIG.R,cost:{pierre:1}}};
+BITEMS.splice(5,0,['b:fer','🔩','Fer']);BITEMS.splice(10,0,['m:creuser','⛏','Creuser'],['m:remblai','⛰','Remblayer']); /* en tête de la 3e page */
+function digIndex(){DIG.grid.clear();for(const d of (S.digs||[]))digAdd(d);}
+function digAdd(d){const a=Math.floor((d.x-d.r)/16),b=Math.floor((d.x+d.r)/16),c=Math.floor((d.z-d.r)/16),e=Math.floor((d.z+d.r)/16);
+ for(let i=a;i<=b;i++)for(let j=c;j<=e;j++){const k=i+','+j;let L=DIG.grid.get(k);if(!L)DIG.grid.set(k,L=[]);if(!L.includes(d))L.push(d);}}
+TER.digH=(x,z)=>{const L=DIG.grid.get(Math.floor(x/16)+','+Math.floor(z/16));if(!L)return 0;let s=0;for(const d of L){const dx=x-d.x,dz=z-d.z,q=(dx*dx+dz*dz)/(d.r*d.r);if(q<1){const w=1-q;s-=d.d*w*w;}}return s;};
+/* les sommets des morceaux autour d'un point sont recalculés (hauteur, normale, couleur) */
+function terPatch(x,z,r){const st=TER.CH/TER.SEG,N=TER.SEG,c=TER.tc,c2=TER.tc2;
+ for(const C of TER.chunks.values()){if(x+r<C.x0-st||x-r>C.x0+TER.CH+st||z+r<C.z0-st||z-r>C.z0+TER.CH+st)continue;const g=C.mesh.geometry,P=g.attributes.position,Nn=g.attributes.normal,Co=g.attributes.color;
+  const i0=Math.max(0,Math.floor((x-r-C.x0)/st)-1),i1=Math.min(N,Math.ceil((x+r-C.x0)/st)+1),j0=Math.max(0,Math.floor((z-r-C.z0)/st)-1),j1=Math.min(N,Math.ceil((z+r-C.z0)/st)+1);
+  for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const k=j*(N+1)+i,vx=C.x0+i*st,vz=C.z0+j*st,h=terH(vx,vz);P.setY(k,h);
+   let nx=terH(vx-st,vz)-terH(vx+st,vz),nz=terH(vx,vz-st)-terH(vx,vz+st),ny=2*st;const l=Math.hypot(nx,ny,nz);nx/=l;ny/=l;nz/=l;Nn.setXYZ(k,nx,ny,nz);terColor(vx,vz,h,ny,c,c2);Co.setXYZ(k,c.r,c.g,c.b);}
+  P.needsUpdate=Nn.needsUpdate=Co.needsUpdate=true;g.computeBoundingSphere();
+  C.T=C.T.filter(t=>Math.hypot(t.x-x,t.z-z)>r+0.6);C.K=C.K.filter(t=>Math.hypot(t.x-x,t.z-z)>r+0.4);}
+ TER.dirty=true;terCols();if(typeof brkWake==='function')brkWake(x,z,-99,r+1);}
+/* un coup de pioche magique (ou une pelletée de remblai) */
+function mineAt(kind,Q){if(DIG.cd>0)return;if(!inTerres()||S.zone!=='monde'){say('⛏ Le sol d’ici est trop dur et trop ancien : on creuse dans les Grandes Terres.','sys');return;}
+ const x=Q.x,z=Q.z;if(Math.hypot(x-player.x,z-player.z)>14){say('⛏ Trop loin : approche-toi.','sys');return;}if(!terIn(x,z)){say('⛏ Pas ici.','sys');return;}
+ if(terBlocked(x,z)&&TER_LIEUX.some(L=>L.id==='terres_halte'&&Math.hypot(x-TER.c.x-L.u,z-TER.c.z-L.v)<L.r+4)){say('⛏ Pas au milieu de la Halte.','sys');return;}
+ const fill=kind==='remblai';if(fill&&(S.inv.pierre||0)<1){say('⛰ Il faut 1 pierre pour remblayer.','sys');return;}
+ const h0=terH(x,z),dug=-TER.digH(x,z);if(!fill&&dug>18){say('⛏ La roche est trop dure plus bas.','sys');return;}if(fill&&dug<-6){say('⛰ Ça ne monte pas plus haut.','sys');return;}
+ S.digs=S.digs||[];let d=S.digs.find(o=>Math.hypot(o.x-x,o.z-z)<0.7);
+ if(!d){if(S.digs.length>=900){say('⛏ Le sol est déjà bien creusé… (limite atteinte)','sys');return;}d={x:Math.round(x*10)/10,z:Math.round(z*10)/10,r:DIG.R,d:0};S.digs.push(d);digAdd(d);}
+ d.d=Math.round((d.d+(fill?-DIG.STEP:DIG.STEP))*10)/10;if(fill)S.inv.pierre--;DIG.cd=0.3;terPatch(d.x,d.z,d.r);
+ const b=terBiomeAt(x,z),col=b===2||b===6?0xd8c08a:b===3?0xf0f4fa:0x7a5a3a;for(let i=0;i<14;i++)PN.emit(x+rnd(-0.8,0.8),h0+0.3,z+rnd(-0.8,0.8),rnd(-2,2),rnd(1.5,4),rnd(-2,2),col,0.18,0.9,0.7,1,2,0.6);
+ sfx(fill?'land':'hitC',x,z);if(fill){floatAt(x,z,'⛰','#c8b89a');save();renderSlots();return;}
+ /* butin : plus riche en profondeur, en montagne et près des Mines de Brisefer */
+ const M=LOCBY.terres_mines,nearM=M?Math.hypot(x-M.x,z-M.z)<140:false,deep=-TER.digH(x,z),out=[];
+ if(b!==2&&b!==6||Math.random()<0.5){addItem('pierre',1);out.push('+1 pierre');}else out.push('sable');
+ if(Math.random()<(nearM?0.42:(b===5||b===3)?0.24:0.06)+deep*0.025){addItem('minerai',1);out.push('+1 minerai');}
+ if(Math.random()<(nearM&&deep>2?0.22:deep>4?0.07:0.015)){addItem('cristal',1);out.push('+1 cristal');}
+ if(Math.random()<0.035+(nearM?0.03:0)){const g=4+Math.floor(Math.random()*9);gainOr(g);out.push('+'+g+' 🪙');}
+ floatAt(x,z,out.join(' · '),'#ffe0a0');if(!S.mineVu){S.mineVu=1;say('⛏ Chaque coup rapporte de la pierre. Creuse en profondeur ou près des <b>Mines de Brisefer</b> pour trouver du minerai de fer et des cristaux. Le minerai fait des <b>briques de fer</b>, les plus solides.','gm');}
+ save();renderSlots();}
+/* dans la roulette : aperçu en disque, et la page du minage d'abord quand on est dans les Grandes Terres */
+{const _t=bmodeTick;bmodeTick=function(){const r=_t.apply(this,arguments);if(BMODE.on&&BMODE.sel&&BMODE.sel[0]==='m'&&BMODE.ghost){const Q=bldTarget(),g=BMODE.ghost;g.position.set(Q.x,gh(Q.x,Q.z)-0.05,Q.z);
+  g.children[0].material.color.setHex(BMODE.sel==='m:creuser'?0xffb070:0x9fffb0);}else if(BMODE.ghost)BMODE.ghost.children[0].material.color.setHex(0x9fffb0);return r;};}
+{const _s=bmodeSet;bmodeSet=function(on){const r=_s.apply(this,arguments);if(on&&inTerres()){BMODE.page=Math.floor(BITEMS.findIndex(it=>it[0]==='m:creuser')/5);renderSlots();say('⛏ Page du minage : ⛏ creuser, ⛰ remblayer (➡ pour les constructions).','sys');}return r;};}
+{const _w=world4Tick;world4Tick=function(dt){DIG.cd=Math.max(0,DIG.cd-dt);return _w.apply(this,arguments);};}
+{const _sg=startGame;startGame=function(){const r=_sg.apply(this,arguments);try{digIndex();}catch(e){console.error(e);}return r;};}
+/* filons des Mines de Brisefer : éclats de cristal et rochers (décor fixe, posé avec le reste) */
+{const _b=buildTerres;buildTerres=function(){const r=_b.apply(this,arguments);const M=LOCBY.terres_mines;if(!M)return r;
+  for(let k=0;k<7;k++){const a=k/7*TAU+0.4,x=M.x+Math.cos(a)*(M.r+3),z=M.z+Math.sin(a)*(M.r+3),y=terH(x,z);dkAt(x,z,a);dRock(0x6f6a62,1.3,0,0.3,0,0.9);
+   for(let i=0;i<3;i++)dCyl('plain',0x9fe0ff,0.02,0.16,0.9+i*0.25,(i-1)*0.35,0.9+i*0.1,0.3,5,0,(i-1)*0.4,0.25);const gl=glow(0x9fe0ff,2.2,0.5);gl.position.set(x,y+1.4,z);scene.add(gl);TER.block.push({x,z,r:2.5});}return r;};}
 let PLBACK=false; // joystick tiré en arrière : le joueur recule, face à l’avant (pas de demi-tour)
 let CAMD=8,CAMPS=0.38; // caméra : distance et inclinaison lissées
 /* hauteur du sommet d'un obstacle (absolue), mise en cache */
@@ -5745,7 +5977,7 @@ function testState(name){const s=newState(name||'Testeur');
  const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
  const box=document.createElement('div');box.id='atelier';document.body.appendChild(box);$('#start').classList.add('hidden');
  box.innerHTML=`<div id="at-l"><h2>🛠 L’Atelier</h2><div class="at-tabs" id="at-tabs"></div><div id="at-list"></div><div style="padding:10px" id="at-news"></div><div class="mu" id="at-dir" style="padding:0 12px;line-height:1.5"></div></div>
- <div id="at-c"><canvas id="at-cv"></canvas><canvas id="at-map" style="display:none;cursor:crosshair"></canvas><div id="at-msg"></div><div id="at-anim"></div></div>
+ <div id="at-c"><canvas id="at-cv"></canvas><canvas id="at-map" style="display:none;cursor:crosshair"></canvas><div id="at-msg"></div><div id="at-anim"></div><div id="at-reg" class="at-tabs" style="position:absolute;right:4px;top:8px;display:none"><b data-r="vallee">Vallée & Landes</b><b data-r="terres">Grandes Terres</b></div></div>
  <div id="at-ia"><input id="at-ia-in" placeholder="✨ Décris ce que tu veux créer, l’IA remplit la fiche (ex. : « un loup des glaces très agressif qui crache du givre dans les Landes »)"><button class="at-b gold" id="at-ia-go" style="margin:0">Créer avec l’IA</button></div><div id="at-f"></div>`;
  /* ---------- dossier du projet (retenu dans IndexedDB) ---------- */
  let ROOT=null;const idb=(mode,fn)=>new Promise(res=>{const r=indexedDB.open('aldermoor-atelier',1);r.onupgradeneeded=()=>r.result.createObjectStore('h');r.onsuccess=()=>{const t=r.result.transaction('h',mode),s=t.objectStore('h');const q=fn(s);q.onsuccess=()=>res(q.result);q.onerror=()=>res(null);};r.onerror=()=>res(null);});
@@ -5760,15 +5992,16 @@ function testState(name){const s=newState(name||'Testeur');
  const CAM=new THREE.PerspectiveCamera(40,1,0.1,100);SC.add(new THREE.HemisphereLight(0xdde8ff,0x40304a,1.1));const dl=new THREE.DirectionalLight(0xffffff,1.2);dl.position.set(3,5,4);SC.add(dl);
  SC.add(new THREE.Mesh(new THREE.CircleGeometry(2.4,48).rotateX(-Math.PI/2),new THREE.MeshStandardMaterial({color:0x2a2440,roughness:1})));
  const V={o:null,mx:null,A:{},yaw:0.6,dist:4.2,drag:null,size:1};let TAB='creatures',cur=null,PICK=false;const OBJIMP={};
- function size(){const r=$('#at-c').getBoundingClientRect();R.setSize(r.width,r.height,false);CAM.aspect=r.width/Math.max(1,r.height);CAM.updateProjectionMatrix();const m=$('#at-map');m.width=r.width;m.height=r.height;if(TAB==='monde'||TAB==='assistant'||TAB==='quetes')drawMap();}
+ function size(){const r=$('#at-c').getBoundingClientRect();R.setSize(r.width,r.height,false);CAM.aspect=r.width/Math.max(1,r.height);CAM.updateProjectionMatrix();const m=$('#at-map');m.width=r.width;m.height=r.height;if(mapTab())drawMap();}
+ function mapTab(){return TAB==='monde'||TAB==='assistant'||TAB==='quetes'||TAB==='terrain';}
  function size2(){} addEventListener('resize',size);
  cv.addEventListener('pointerdown',e=>{V.drag=e.clientX;});addEventListener('pointerup',()=>V.drag=null);addEventListener('pointermove',e=>{if(V.drag!==null){V.yaw+=(e.clientX-V.drag)*0.01;V.drag=e.clientX;}});
  cv.addEventListener('wheel',e=>{e.preventDefault();V.dist=clamp(V.dist*Math.exp(e.deltaY*0.001),1.5,12);},{passive:false});
  const clear3d=()=>{if(V.o)SC.remove(V.o);V.o=null;V.mx=null;V.H=null;$('#at-anim').innerHTML='';};
  let last=performance.now();(function loop(){requestAnimationFrame(loop);const now=performance.now(),dt=Math.min(0.05,(now-last)/1000);last=now;if(V.mx)V.mx.update(dt);if(V.H)animHuman(V.H,dt,0,now/1000,false);if(V.spin&&V.o)V.o.rotation.y+=dt;
-  const t=V.size;CAM.position.set(Math.sin(V.yaw)*V.dist*t,(0.9+0.5*V.dist/4.2)*t,Math.cos(V.yaw)*V.dist*t);CAM.lookAt(0,0.7*t,0);if(TAB!=='monde'&&TAB!=='assistant'&&TAB!=='quetes'&&!PICK)R.render(SC,CAM);})();
+  const t=V.size;CAM.position.set(Math.sin(V.yaw)*V.dist*t,(0.9+0.5*V.dist/4.2)*t,Math.cos(V.yaw)*V.dist*t);CAM.lookAt(0,0.7*t,0);if(!mapTab()&&!PICK)R.render(SC,CAM);})();
  /* ---------- les types de fiches ---------- */
- const els=()=>ELS.map(e=>[e,ELEM[e].n]),lieux=()=>LOCS.filter(L=>LOCBY[L.id]).map(L=>[L.id,(L.x>1500?'Landes · ':'Vallée · ')+L.name]);
+ const els=()=>ELS.map(e=>[e,ELEM[e].n]),lieux=()=>LOCS.filter(L=>LOCBY[L.id]).map(L=>[L.id,(L.x>4000?'Terres · ':L.x>1500?'Landes · ':'Vallée · ')+L.name]);
  const opt=(arr,v)=>arr.map(([k,n])=>'<option value="'+esc(k)+'"'+(String(k)===String(v)?' selected':'')+'>'+esc(n)+'</option>').join('');
  const uid=p=>p+'-'+Date.now().toString(36);
  const TYPES={
@@ -5786,6 +6019,7 @@ function testState(name){const s=newState(name||'Testeur');
    item:c=>'🏰 '+esc(c.nom)+'<br><span class="mu">'+esc(STRUCT_MODELES[c.modele]||c.modele)+' · '+esc(c.materiau)+' · ('+Math.round(c.x)+','+Math.round(c.z)+')</span>',test:c=>'?test&pos='+Math.round(c.x+6)+','+Math.round(c.z+6)},
   quetes:{t:'Quêtes',key:CONT_QKEY,file:'quetes.json',news:[['＋ Nouvelle quête',()=>({id:uid('quete'),titre:'Nouvelle quête',description:'',donneur:'lila',actif:true,apres:'',etapes:[{type:'aller',lieu:'lac',texte:''},{type:'parler',pnj:'lila',texte:''}],recompense:{xp:60,or:20,essence:0,cristal:0,sort:''}})]],
    item:c=>'📜 '+esc(c.titre)+'<br><span class="mu">'+esc((NPCBY[c.donneur]||(lists.persos||[]).find(p=>p.id===c.donneur)||{name:c.donneur}).name||c.donneur)+' · '+(c.etapes||[]).length+' étape'+((c.etapes||[]).length>1?'s':'')+'</span>',test:c=>'?test&quete='+encodeURIComponent(c.id)},
+  terrain:{t:'⛰ Terrain',terrain:true},
   assistant:{t:'✨ Assistant',assistant:true}};
 
  const lists={};for(const k in TYPES)if(TYPES[k].key){try{lists[k]=JSON.parse(localStorage.getItem(TYPES[k].key)||'null');}catch(e){}if(!lists[k])lists[k]=k==='creatures'?contCreatures():k==='sorts'?contSpellsList():k==='monde'?contWorldList():k==='persos'?CPERSOS.slice():k==='structures'?CSTRUCT.slice():k==='quetes'?CQUETES.slice():COBJETS.slice();}
@@ -5795,8 +6029,8 @@ function testState(name){const s=newState(name||'Testeur');
   $('#at-news').innerHTML=(TYPES[TAB].news||[]).map((n,i)=>'<button class="at-b gold" data-n="'+i+'">'+n[0]+'</button>').join('')+(TAB==='objets'?'<button class="at-b" id="at-imp" style="background:#3a7ad8;color:#fff">📥 Importer un objet</button><input type="file" id="at-file" accept=".glb" style="display:none">':'')+(TAB==='creatures'?'<button class="at-b" id="at-imp" style="background:#3a7ad8;color:#fff">📥 Importer un modèle</button><input type="file" id="at-file" accept=".glb" style="display:none">':'');
   $('#at-news').querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{const c=TYPES[TAB].news[+b.dataset.n][1]();lists[TAB].push(c);edit(c);});
   if($('#at-imp')){$('#at-imp').onclick=()=>$('#at-file').click();$('#at-file').onchange=e=>TAB==='objets'?importObj(e.target.files[0]):importModel(e.target.files[0]);}
-  PICK=false;const map=TAB==='monde'||TAB==='assistant'||TAB==='quetes';$('#at-ia').style.display=TAB==='assistant'?'none':'flex';if(TAB==='assistant'){setTimeout(asstShow,0);}cv.style.display=map?'none':'block';$('#at-map').style.display=map?'block':'none';$('#at-msg').textContent=TAB==='assistant'?'La carte montre ce qui a été créé. Molette : zoom ; glisser : déplacer.':map?'Clique sur la carte pour placer le lieu sélectionné (ou les deux bouts d’un portail).':'Glisse pour tourner, molette pour zoomer.';}
- function renderList(){if(TAB==='assistant'){asstList();drawMap();return;}const L=lists[TAB],T=TYPES[TAB];$('#at-list').innerHTML=L.map(c=>'<div class="at-it'+(cur&&cur.id===c.id?' on':'')+'" data-id="'+esc(c.id)+'">'+T.item(c)+'</div>').join('')||'<div class="mu" style="padding:12px">Rien pour l’instant.</div>';
+  PICK=false;const map=mapTab();$('#at-ia').style.display=TAB==='assistant'||TAB==='terrain'?'none':'flex';if(TAB==='assistant'){setTimeout(asstShow,0);}if(TAB==='terrain'){MAPV.reg='terres';MAPV.k=1;MAPV.px=MAPV.py=0;setTimeout(tbShow,0);}$('#at-reg').style.display=map&&TAB!=='terrain'?'flex':'none';cv.style.display=map?'none':'block';$('#at-map').style.display=map?'block':'none';$('#at-msg').textContent=TAB==='terrain'?'Clic gauche : peindre. Clic droit + glisser : déplacer. Molette : zoom.':TAB==='assistant'?'La carte montre ce qui a été créé. Molette : zoom ; glisser : déplacer.':map?'Clique sur la carte pour placer le lieu sélectionné (ou les deux bouts d’un portail).':'Glisse pour tourner, molette pour zoomer.';}
+ function renderList(){if(TAB==='assistant'){asstList();drawMap();return;}if(TAB==='terrain'){$('#at-list').innerHTML='<div class="mu" style="padding:10px 12px;line-height:1.5">Le relief et les biomes des <b>Grandes Terres</b> (2 km × 2 km). Chaque retouche est gardée dans src/contenu/terrain.json.</div>';$('#at-news').innerHTML='';drawMap();return;}const L=lists[TAB],T=TYPES[TAB];$('#at-list').innerHTML=L.map(c=>'<div class="at-it'+(cur&&cur.id===c.id?' on':'')+'" data-id="'+esc(c.id)+'">'+T.item(c)+'</div>').join('')||'<div class="mu" style="padding:12px">Rien pour l’instant.</div>';
   $('#at-list').querySelectorAll('.at-it').forEach(d=>d.onclick=()=>edit(L.find(c=>c.id===d.dataset.id)));if(TAB==='monde'||TAB==='quetes')drawMap();}
  /* ---------- formulaires ---------- */
  const F={
@@ -5856,7 +6090,7 @@ function testState(name){const s=newState(name||'Testeur');
    <div class="at-sec">🎁 Récompense</div><div class="at-row"><div><label>XP</label><input data-q="xp" type="number" min="0" max="500" value="${R.xp||0}"></div><div><label>Or</label><input data-q="or" type="number" min="0" value="${R.or||0}"></div><div><label>Essences</label><input data-q="essence" type="number" min="0" value="${R.essence||0}"></div><div><label>Cristaux</label><input data-q="cristal" type="number" min="0" value="${R.cristal||0}"></div></div>
    <label>Sort appris</label><select data-q="sort"><option value="">—</option>${opt((lists.sorts||[]).map(x=>[x.id,x.nom]),R.sort||'')}</select>`;};
  let PORT_AB='A';
- function edit(c){cur=c;renderList();const T=TYPES[TAB];
+ function edit(c){cur=c;{const X=c.x!==undefined?c.x:c.ax;if(X!==undefined){const r=X>4000?'terres':'vallee';if(r!==MAPV.reg){MAPV.reg=r;MAPV.k=1;MAPV.px=MAPV.py=0;}}}renderList();const T=TYPES[TAB];
   $('#at-f').innerHTML='<h2>Fiche</h2>'+F[TAB](c)+'<div><button class="at-b gold" id="f-save">💾 Enregistrer</button><button class="at-b" id="f-test" style="background:#3a7ad8;color:#fff">▶ Tester dans le jeu</button><button class="at-b" id="f-del" style="background:rgba(255,90,90,.2);color:#ffb0b0">🗑</button></div><div class="mu" id="f-info" style="margin-top:10px;line-height:1.5"></div>';
   $('#at-f').querySelectorAll('[data-k],[data-a],[data-m]').forEach(i=>i.oninput=i.onchange=()=>{const v=i.type==='checkbox'?i.checked:(i.dataset.n!==undefined||i.type==='number'||i.type==='range')?+i.value:i.value;
    if(i.dataset.k)c[i.dataset.k]=v;if(i.dataset.a)(c.attaque=c.attaque||{})[i.dataset.a]=i.type==='number'?+i.value:i.value;if(i.dataset.m)(c.anims=c.anims||{})[i.dataset.m]=i.value||undefined;
@@ -5869,7 +6103,7 @@ function testState(name){const s=newState(name||'Testeur');
   if($('#q-add'))$('#q-add').onclick=()=>{c.etapes.push({type:'aller',lieu:'cour',texte:''});edit(c);};
   $('#at-f').querySelectorAll('[data-q]').forEach(i=>i.oninput=i.onchange=()=>{(c.recompense=c.recompense||{})[i.dataset.q]=i.tagName==='SELECT'?i.value:+i.value;});
   $('#at-f').querySelectorAll('[data-b]').forEach(i=>i.oninput=()=>{(c.butin=c.butin||{})[i.dataset.b]=+i.value;});
-  if($('#f-pick'))$('#f-pick').onclick=()=>{PICK=true;cv.style.display='none';$('#at-map').style.display='block';$('#at-msg').textContent='Clique sur la carte pour poser « '+c.nom+' ».';drawMap();};
+  if($('#f-pick'))$('#f-pick').onclick=()=>{PICK=true;cv.style.display='none';$('#at-map').style.display='block';$('#at-reg').style.display='flex';$('#at-msg').textContent='Clique sur la carte pour poser « '+c.nom+' ».';drawMap();};
   $('#f-save').onclick=()=>save1(c);$('#f-test').onclick=async()=>{await save1(c,true);window.open(location.pathname+T.test(c),'_blank');};
   $('#f-del').onclick=()=>{lists[TAB]=lists[TAB].filter(x=>x!==c);cur=null;persist();$('#at-f').innerHTML='';renderList();clear3d();};preview(c);}
  function preview(c){V.spin=false;if(TAB==='quetes'){drawMap();$('#at-msg').textContent='Le chemin de la quête : donneur ★ puis les étapes dans l’ordre.';return;}
@@ -5895,18 +6129,25 @@ function testState(name){const s=newState(name||'Testeur');
    $('#at-msg').textContent='« '+(c.incantation||c.nom)+' » — '+ELEM[c.element].n+', '+({trait:'attaque',zone:'zone',util:'utilitaire'})[c.forme]+', effet : '+c.effet+'. Teste-le pour le voir en action.';}}
  /* ---------- carte du monde ---------- */
  const MAPR={v:{x:0,z:0,r:92,n:'Vallée d’Aldermoor'},l:{x:2000,z:0,r:168,n:'Landes d’Ombrelune'}};
- const MAPV={k:1,px:0,py:0,drag:null,moved:false};
+ const MAPV={k:1,px:0,py:0,drag:null,moved:false,reg:'vallee'};
  function mapT(){const T=mapT0(),m=$('#at-map'),cx=m.width/2,cy=m.height/2,k=MAPV.k;return {s:T.s*k,P:(x,z)=>{const [a,b]=T.P(x,z);return [(a-cx)*k+cx+MAPV.px,(b-cy)*k+cy+MAPV.py];},U:(px,py)=>T.U((px-cx-MAPV.px)/k+cx,(py-cy-MAPV.py)/k+cy)};}
  /* molette : zoom vers la souris ; glisser : déplacer la carte (un clic sans glisser place toujours les choses) */
  $('#at-map').addEventListener('wheel',e=>{e.preventDefault();const m=$('#at-map'),r=m.getBoundingClientRect(),mx=e.clientX-r.left-m.width/2,my=e.clientY-r.top-m.height/2,k0=MAPV.k,k=clamp(k0*(e.deltaY<0?1.2:1/1.2),1,12);
   MAPV.px=mx-(mx-MAPV.px)*k/k0;MAPV.py=my-(my-MAPV.py)*k/k0;MAPV.k=k;if(k===1){MAPV.px=0;MAPV.py=0;}drawMap();},{passive:false});
- $('#at-map').addEventListener('mousedown',e=>{MAPV.drag=[e.clientX,e.clientY,MAPV.px,MAPV.py];MAPV.moved=false;});
+ $('#at-map').addEventListener('contextmenu',e=>e.preventDefault());
+ $('#at-reg').querySelectorAll('b').forEach(b=>b.onclick=()=>{MAPV.reg=b.dataset.r;MAPV.k=1;MAPV.px=MAPV.py=0;drawMap();});
+ const mapW=e=>{const r=$('#at-map').getBoundingClientRect(),{U}=mapT();return U(e.clientX-r.left,e.clientY-r.top);};
+ $('#at-map').addEventListener('mousedown',e=>{if(TAB==='terrain'&&e.button===0){const w=mapW(e);TB.mouse=w;TB.t0=TB.base?tbH(w):0;tbBrush(w);clearInterval(TB.iv);TB.iv=setInterval(()=>tbBrush(TB.mouse),70);return;}MAPV.drag=[e.clientX,e.clientY,MAPV.px,MAPV.py];MAPV.moved=false;});
+ $('#at-map').addEventListener('mousemove',e=>{if(TAB!=='terrain')return;const w=mapW(e);TB.hover=w;if(TB.iv)TB.mouse=w;if(!TB.raf){TB.raf=requestAnimationFrame(()=>{TB.raf=0;drawMap();});}});
+ window.addEventListener('mouseup',()=>{if(TB.iv){clearInterval(TB.iv);TB.iv=0;}});
  window.addEventListener('mousemove',e=>{const d=MAPV.drag;if(!d)return;const dx=e.clientX-d[0],dy=e.clientY-d[1];if(Math.abs(dx)+Math.abs(dy)>5)MAPV.moved=true;if(MAPV.moved){MAPV.px=d[2]+dx;MAPV.py=d[3]+dy;$('#at-map').style.cursor='grabbing';drawMap();}});
  window.addEventListener('mouseup',()=>{MAPV.drag=null;$('#at-map').style.cursor='crosshair';});
- function mapT0(){const m=$('#at-map'),W=m.width,H=m.height,s=Math.min((W-60)/(2*92+2*168+40),(H-40)/(2*168));const ox=30+92*s,lx=30+(2*92+40+168)*s,cy=H/2;return {s,P:(x,z)=>x>1500?[lx+(x-2000)*s,cy+z*s]:[ox+x*s,cy+z*s],U:(px,py)=>{const dv=Math.hypot(px-ox,py-cy)/s,dl=Math.hypot(px-lx,py-cy)/s;return dl<dv?{x:2000+(px-lx)/s,z:(py-cy)/s}:{x:(px-ox)/s,z:(py-cy)/s};}};}
- function drawMap(){const m=$('#at-map'),g=m.getContext('2d'),{s,P}=mapT();g.fillStyle='#0d0a1e';g.fillRect(0,0,m.width,m.height);
+ function mapT0(){if(MAPV.reg==='terres'){const m=$('#at-map'),W=m.width,H=m.height,s=Math.min(W-40,H-40)/(2*TER.H),cx=W/2,cy=H/2;return {s,P:(x,z)=>[cx+(x-TER.c.x)*s,cy+(z-TER.c.z)*s],U:(px,py)=>({x:TER.c.x+(px-cx)/s,z:TER.c.z+(py-cy)/s})};}
+  const m=$('#at-map'),W=m.width,H=m.height,s=Math.min((W-60)/(2*92+2*168+40),(H-40)/(2*168));const ox=30+92*s,lx=30+(2*92+40+168)*s,cy=H/2;return {s,P:(x,z)=>x>1500?[lx+(x-2000)*s,cy+z*s]:[ox+x*s,cy+z*s],U:(px,py)=>{const dv=Math.hypot(px-ox,py-cy)/s,dl=Math.hypot(px-lx,py-cy)/s;return dl<dv?{x:2000+(px-lx)/s,z:(py-cy)/s}:{x:(px-ox)/s,z:(py-cy)/s};}};}
+ function drawMap(){const m=$('#at-map'),g=m.getContext('2d'),{s,P}=mapT();g.fillStyle='#0d0a1e';g.fillRect(0,0,m.width,m.height);if(MAPV.reg==='terres'){const [a,b]=P(TER.c.x-TER.H,TER.c.z-TER.H),[c,d]=P(TER.c.x+TER.H,TER.c.z+TER.H);g.imageSmoothingEnabled=MAPV.k<3;g.drawImage(tbImg(),a,b,c-a,d-b);}
+  $('#at-reg').querySelectorAll('b').forEach(b=>b.classList.toggle('on',b.dataset.r===MAPV.reg));
   for(const k in MAPR){const Z=MAPR[k],[x,y]=P(Z.x,Z.z);g.fillStyle=k==='v'?'#24452a':'#2f3a28';g.beginPath();g.arc(x,y,Z.r*s,0,TAU);g.fill();g.fillStyle='#b9b2d8';g.font='600 12px Inter';g.fillText(Z.n,x-50,y-Z.r*s-8);}
-  g.font='11px Inter';for(const L of LOCS){if(L.atelier)continue;const [x,y]=P(L.x,L.z);g.fillStyle='rgba(255,255,255,.55)';g.beginPath();g.arc(x,y,3,0,TAU);g.fill();g.fillText(L.name,x+5,y+3);}
+  g.font='11px Inter';for(const L of LOCS){if(L.atelier)continue;const [x,y]=P(L.x,L.z);if(MAPV.reg==='terres'){g.strokeStyle='rgba(0,0,0,.55)';g.lineWidth=3;g.strokeText(L.name,x+5,y+3);}g.fillStyle=MAPV.reg==='terres'?'#fff':'rgba(255,255,255,.55)';g.beginPath();g.arc(x,y,3,0,TAU);g.fill();g.fillText(L.name,x+5,y+3);}
   for(const c of (lists.structures||[])){const [x,y]=P(c.x,c.z);g.fillStyle=cur===c?'#ffb070':'#e08a40';g.fillRect(x-4,y-4,8,8);g.fillStyle='#ffd0a0';g.fillText('🏰 '+c.nom,x+6,y+4);}
   for(const c of (lists.creatures||[])){const L=LOCBY[c.lieu];if(!L)continue;const [x,y]=P(L.x,L.z);g.fillStyle=c.comportement==='calme'?'#9ad8ff':'#ff6a6a';g.beginPath();g.arc(x+6,y+6,3.5,0,TAU);g.fill();}
   for(const c of (lists.objets||[])){const [x,y]=P(c.x,c.z);g.fillStyle=cur===c?'#7aff9a':'#4ad06a';g.fillRect(x-3,y-3,6,6);if(cur===c)g.fillText('📦 '+c.nom,x+6,y-6);}
@@ -5914,10 +6155,11 @@ function testState(name){const s=newState(name||'Testeur');
    const pts=[];const g0=where(cur.donneur);if(g0)pts.push([g0,'★']);cur.etapes.forEach((e,i)=>{const p=e.type==='parler'?where(e.pnj||cur.donneur):LOCBY[e.lieu]?[LOCBY[e.lieu].x,LOCBY[e.lieu].z]:null;if(p)pts.push([p,String(i+1)]);});
    g.strokeStyle='#f3cf7a';g.lineWidth=2;g.setLineDash([5,4]);g.beginPath();pts.forEach(([p],i)=>{const [x,y]=P(p[0],p[1]);if(i)g.lineTo(x,y);else g.moveTo(x,y);});g.stroke();g.setLineDash([]);
    pts.forEach(([p,t])=>{const [x,y]=P(p[0],p[1]);g.fillStyle='#f3cf7a';g.beginPath();g.arc(x,y,9,0,TAU);g.fill();g.fillStyle='#1a1430';g.font='bold 11px Inter';g.fillText(t,x-(t.length>1?6:3.5),y+4);});g.font='11px Inter';}
+  if(TAB==='terrain'&&TB.hover){const [x,y]=P(TB.hover.x,TB.hover.z);g.strokeStyle='#fff';g.lineWidth=1.5;g.beginPath();g.arc(x,y,TB.r*s,0,TAU);g.stroke();}
   for(const c of lists.monde){const on=cur===c;if(c.type==='portail'){const a=P(c.ax,c.az),b=P(c.bx,c.bz);g.strokeStyle=c.couleur||'#b48cff';g.setLineDash([6,5]);g.lineWidth=on?2.5:1.5;g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.stroke();g.setLineDash([]);
     for(const [p,t] of [[a,'A'],[b,'B']]){g.fillStyle=c.couleur||'#b48cff';g.beginPath();g.arc(p[0],p[1],on?7:5,0,TAU);g.fill();g.fillStyle='#fff';g.fillText(t,p[0]-3,p[1]+4);}}
    else{const [x,y]=P(c.x,c.z);g.strokeStyle='#f3cf7a';g.lineWidth=on?2.5:1.2;g.beginPath();g.arc(x,y,Math.max(4,c.rayon*s),0,TAU);g.stroke();g.fillStyle='#f3cf7a';g.fillText('📍 '+c.nom,x+6,y-6);}}}
- $('#at-map').addEventListener('click',e=>{if(MAPV.moved){MAPV.moved=false;return;}if(cur&&PICK){const r=e.target.getBoundingClientRect(),{U}=mapT(),w=U(e.clientX-r.left,e.clientY-r.top);cur.x=Math.round(w.x);cur.z=Math.round(w.z);PICK=false;cv.style.display='block';$('#at-map').style.display='none';edit(cur);return;}if(!cur||TAB!=='monde')return;const r=e.target.getBoundingClientRect(),{U}=mapT(),w=U(e.clientX-r.left,e.clientY-r.top);w.x=Math.round(w.x);w.z=Math.round(w.z);
+ $('#at-map').addEventListener('click',e=>{if(MAPV.moved){MAPV.moved=false;return;}if(cur&&PICK){const r=e.target.getBoundingClientRect(),{U}=mapT(),w=U(e.clientX-r.left,e.clientY-r.top);cur.x=Math.round(w.x);cur.z=Math.round(w.z);PICK=false;cv.style.display='block';$('#at-map').style.display='none';$('#at-reg').style.display='none';edit(cur);return;}if(!cur||TAB!=='monde')return;const r=e.target.getBoundingClientRect(),{U}=mapT(),w=U(e.clientX-r.left,e.clientY-r.top);w.x=Math.round(w.x);w.z=Math.round(w.z);
   if(cur.type==='portail'){if(PORT_AB==='A'){cur.ax=w.x;cur.az=w.z;PORT_AB='B';}else{cur.bx=w.x;cur.bz=w.z;PORT_AB='A';}}else{cur.x=w.x;cur.z=w.z;}edit(cur);});
  /* ---------- enregistrer ---------- */
  function persist(){try{localStorage.setItem(TYPES[TAB].key,JSON.stringify(lists[TAB]));}catch(e){}}
@@ -5937,6 +6179,38 @@ function testState(name){const s=newState(name||'Testeur');
   try{const g=await new Promise((res,rej)=>new THREE.GLTFLoader().parse(buf.slice(0),'',res,rej));OBJIMP['imp:'+name]=g.scene;}catch(e){$('#at-msg').textContent='Ce fichier ne se lit pas (il faut un .glb).';return;}
   const cat=window.__CATALOGUE.objets;if(!cat.includes('imp:'+name))cat.push('imp:'+name);let ok=false;try{ok=await writeTo('src/assets/objets-import/'+name+'.glb',buf);if(ok)await writeTo('dist/assets/objets-import/'+name+'.glb',buf).catch(()=>{});}catch(e){}if(!ok&&!window.showDirectoryPicker)download(name+'.glb',buf);
   const c=TYPES.objets.news[0][1]();c.nom=name.replace(/-/g,' ');c.modele='imp:'+name;c.interaction='aucune';lists.objets.push(c);edit(c);$('#f-info').innerHTML=ok?'✔ Objet copié dans <b>src/assets/objets-import/'+name+'.glb</b>.':'Range <b>'+name+'.glb</b> dans src/assets/objets-import du projet.';}
+ /* ---------- TERRAIN des Grandes Terres : la carte est une image de la grille de retouches (1 pixel = 8 m) ---------- */
+ const TB={tool:'monter',r:40,f:0.5,bio:1,img:null,base:null,iv:0,hover:null,mouse:null,last:null,t0:0,raf:0};
+ function tbBase(){if(TB.base)return;const N=TER.N;TB.base=new Float32Array(N*N);for(let j=0;j<N;j++)for(let i=0;i<N;i++)TB.base[j*N+i]=terH0(i*TER.S-TER.H,j*TER.S-TER.H);}
+ function tbH(w){const N=TER.N,i=clamp(Math.round((w.x-TER.c.x+TER.H)/TER.S),0,N-1),j=clamp(Math.round((w.z-TER.c.z+TER.H)/TER.S),0,N-1);return TB.base[j*N+i]+TER.dh[j*N+i];}
+ function tbImg(){tbBase();const N=TER.N;if(!TB.img){TB.img=document.createElement('canvas');TB.img.width=TB.img.height=N;TB.ctx=TB.img.getContext('2d');TB.id=TB.ctx.createImageData(N,N);tbPaint(0,0,N-1,N-1);}return TB.img;}
+ function tbPaint(i0,j0,i1,j1){const N=TER.N,D=TB.id.data,c=TER.tc,H=(i,j)=>TB.base[j*N+i]+TER.dh[j*N+i];
+  for(let j=Math.max(0,j0);j<=Math.min(N-1,j1);j++)for(let i=Math.max(0,i0);i<=Math.min(N-1,i1);i++){const h=H(i,j),u=i*TER.S-TER.H,v=j*TER.S-TER.H;
+   if(h<0)c.setHex(h<-6?0x2a5a86:0x3a7fb0);else c.setHex(TER_BIO[terBiome(u,v,h)].c[0]);
+   const sh=h<0?1:clamp(1+((i>0?H(i-1,j):h)-(i<N-1?H(i+1,j):h)+(j>0?H(i,j-1):h)-(j<N-1?H(i,j+1):h))*0.05,0.55,1.45),k=(j*N+i)*4;
+   D[k]=Math.min(255,c.r*sh*255);D[k+1]=Math.min(255,c.g*sh*255);D[k+2]=Math.min(255,c.b*sh*255);D[k+3]=255;}
+  TB.ctx.putImageData(TB.id,0,0);}
+ function tbBrush(w){if(!w)return;tbImg();const N=TER.N,S=TER.S,ci=(w.x-TER.c.x+TER.H)/S,cj=(w.z-TER.c.z+TER.H)/S,rr=Math.max(0.6,TB.r/S),i0=Math.floor(ci-rr),i1=Math.ceil(ci+rr),j0=Math.floor(cj-rr),j1=Math.ceil(cj+rr);
+  for(let j=Math.max(1,j0);j<=Math.min(N-2,j1);j++)for(let i=Math.max(1,i0);i<=Math.min(N-2,i1);i++){const d=Math.hypot(i-ci,j-cj)/rr;if(d>=1)continue;const f=(1-d*d)*(1-d*d)*TB.f,k=j*N+i,h=TB.base[k]+TER.dh[k];
+   if(TB.tool==='monter')TER.dh[k]+=f*1.2;else if(TB.tool==='creuser')TER.dh[k]-=f*1.2;else if(TB.tool==='aplanir')TER.dh[k]+=(TB.t0-h)*f*0.35;
+   else if(TB.tool==='adoucir'){const a=(TB.base[k-1]+TER.dh[k-1]+TB.base[k+1]+TER.dh[k+1]+TB.base[k-N]+TER.dh[k-N]+TB.base[k+N]+TER.dh[k+N])/4;TER.dh[k]+=(a-h)*f*0.5;}
+   else if(TB.tool==='biome'){if(d<0.85)TER.bi[k]=TB.bio;}else if(TB.tool==='effacer'){TER.dh[k]*=1-f;if(d<0.7)TER.bi[k]=255;}
+   TER.dh[k]=clamp(TER.dh[k],-60,140);}
+  tbPaint(i0-1,j0-1,i1+1,j1+1);TB.last={x:w.x,z:w.z};TB.dirty=true;const i=$('#f-info');if(i)i.textContent='Pas encore enregistré.';drawMap();}
+ function tbShow(){const tools=[['monter','⬆ Monter'],['creuser','⬇ Creuser'],['aplanir','▬ Aplanir'],['adoucir','～ Adoucir'],['biome','🎨 Biome'],['effacer','🧽 Effacer']];
+  $('#at-f').innerHTML='<h2>⛰ Terrain</h2><div class="mu" style="line-height:1.5">Peins sur la carte des Grandes Terres. Sous le niveau 0, c’est de l’eau (lacs, mer).</div><label>Outil</label><div id="tb-t">'+tools.map(([k,n])=>'<button class="at-b" data-t="'+k+'" style="margin:4px 4px 0 0;padding:6px 9px">'+n+'</button>').join('')+'</div>'+
+   '<label>Biome à peindre</label><select id="tb-bio">'+TER_BIO.map((b,i)=>'<option value="'+i+'"'+(i===TB.bio?' selected':'')+'>'+b.n+'</option>').join('')+'</select>'+
+   '<label>Taille : <b id="tb-rv">'+TB.r+'</b> m</label><input id="tb-r" type="range" min="8" max="200" step="4" value="'+TB.r+'"><label>Force : <b id="tb-fv">'+TB.f+'</b></label><input id="tb-f" type="range" min="0.1" max="1" step="0.05" value="'+TB.f+'">'+
+   '<div><button class="at-b gold" id="tb-save">💾 Enregistrer</button><button class="at-b" id="tb-test" style="background:#3a7ad8;color:#fff">▶ Tester ici</button><button class="at-b" id="tb-clr" style="background:rgba(255,90,90,.2);color:#ffb0b0">↺ Tout effacer</button></div><div class="mu" id="f-info" style="margin-top:10px;line-height:1.5"></div>';
+  const sel=()=>$('#tb-t').querySelectorAll('button').forEach(b=>{const on=b.dataset.t===TB.tool;b.style.background=on?'var(--gold)':'rgba(255,255,255,.08)';b.style.color=on?'#241a05':'var(--ink)';});sel();
+  $('#tb-t').querySelectorAll('button').forEach(b=>b.onclick=()=>{TB.tool=b.dataset.t;sel();});$('#tb-bio').onchange=e=>{TB.bio=+e.target.value;TB.tool='biome';sel();};
+  $('#tb-r').oninput=e=>{TB.r=+e.target.value;$('#tb-rv').textContent=TB.r;drawMap();};$('#tb-f').oninput=e=>{TB.f=+e.target.value;$('#tb-fv').textContent=TB.f;};
+  $('#tb-save').onclick=()=>tbSave();$('#tb-test').onclick=async()=>{await tbSave();const p=TB.last||{x:TER.c.x,z:TER.c.z+4};window.open(location.pathname+'?test&pos='+Math.round(p.x)+','+Math.round(p.z),'_blank');};
+  $('#tb-clr').onclick=()=>{if(!confirm('Effacer toutes les retouches du terrain ?'))return;TER.dh.fill(0);TER.bi.fill(255);tbPaint(0,0,TER.N-1,TER.N-1);drawMap();$('#f-info').textContent='Tout effacé (pas encore enregistré).';};}
+ async function tbSave(){const N=TER.N,h=[],b=[];for(let k=0;k<N*N;k++){const i=k%N,j=(k/N)|0;if(Math.abs(TER.dh[k])>0.04)h.push([i,j,Math.round(TER.dh[k]*10)/10]);if(TER.bi[k]!==255)b.push([i,j,TER.bi[k]]);}
+  const json=JSON.stringify({n:N,s:TER.S,h,b}),info=$('#f-info');let loc=true;try{localStorage.setItem('aldermoor-atelier-terrain',json);}catch(e){loc=false;}
+  let ok=false;try{if(window.showDirectoryPicker)ok=await writeTo('src/contenu/terrain.json',json+'\n');else download('terrain.json',json);}catch(e){}
+  TB.dirty=false;if(info)info.innerHTML=ok?'✔ Enregistré dans <b>src/contenu/terrain.json</b> ('+h.length+' retouches).':loc?'✔ Gardé sur cet ordinateur.':'⚠ Trop de retouches pour la mémoire du navigateur : enregistre dans le projet.';}
  /* ---------- l'ASSISTANT : on parle, il ajoute / modifie / retire ce qu'il faut, avec historique et annulation ---------- */
  const ASST={log:[],hist:[],busy:false};const ASST_T=['creatures','sorts','monde','persos','objets','structures','quetes'];
  function asstSchema(){const L=lieux().map(l=>l[0]).join(', ');return 'TYPES ET CHAMPS : creatures {id, nom (pluriel), modele (parmi '+window.__CATALOGUE.creatures.join(', ')+'), element, faiblesse (parmi '+ELS.join(', ')+'), pv, nombre, taille, comportement (hostile|calme), tireur (0-1), lieu (id de lieu), rayon, vol, attaque:{morsure, tir, cadence, portee, vitesse, effet (aucun|brulure|poison|gel|repousse)}} ; '+

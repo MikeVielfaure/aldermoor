@@ -15,7 +15,7 @@ function vieHurt(n){if(vieBusy())return;if(BUFF.invis)n*=0.5;VIE.hp-=n;VIE.calm=
  if(!S.seenVie){S.seenVie=1;say('❤ Les créatures te blessent ! Ta <b>vie</b> revient si tu t’éloignes ou te reposes. Une <b>potion de soin</b> la rend d’un coup.','gm');}
  if(VIE.hp<=0)vieFaint();vieHud();}
 function vieFaint(){VIE.faint=true;VIE.hp=0;sfx('poof');
- fade(()=>{const Hm=homeSpawn(),L=player.x>1500&&LOCBY.landes_camp?LOCBY.landes_camp:Hm?{name:'ta maison',spot:Hm}:LOCBY.cour;if(S.zone==='monde'){player.x=L.spot.x;player.z=L.spot.z;player.y=gh(player.x,player.z);}player.vx=player.vz=player.vy=0;
+ fade(()=>{const Hm=homeSpawn(),L=player.x>4000&&LOCBY.terres_halte?LOCBY.terres_halte:player.x>1500&&LOCBY.landes_camp?LOCBY.landes_camp:Hm?{name:'ta maison',spot:Hm}:LOCBY.cour;if(S.zone==='monde'){player.x=L.spot.x;player.z=L.spot.z;player.y=gh(player.x,player.z);}player.vx=player.vz=player.vy=0;
   VIE.max=vieMax();VIE.hp=VIE.max;VIE.faint=false;mana=Math.max(mana,manaMax()*0.5);vieHud();
   say('💫 Tout devient noir… Tu te réveilles '+(S.zone==='monde'?'à <b>'+esc(L.name)+'</b>':'un peu plus tard')+', soigné(e) par quelqu’un de bienveillant.','gm');chron('Évanoui(e) face aux créatures.');});}
 // potion de soin

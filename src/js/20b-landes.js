@@ -19,7 +19,7 @@ function landH(x,z){const u=x-LANDES.c.x,v=z-LANDES.c.z,r=Math.hypot(u,v);
  if(r>140)h+=(r-140)*1.15+Math.max(0,noise(u*0.1,v*0.1))*Math.min(1,(r-140)/10)*6; // crêtes en bordure
  return h;}
 {const _gh=gh;gh=function(x,z){return x>1500?landH(x,z):_gh(x,z);};}
-const inLandes=()=>player.x>1500;
+const inLandes=()=>player.x>1500&&player.x<4000; /* au-delà : les Grandes Terres (20z) */
 /* ---------- construction (appelée avant buildDecor : le décor automatique habille aussi les lieux d'ici) ---------- */
 function buildLandes(){if(LANDES.built)return;LANDES.built=true;const C=LANDES.c,N=HQ?150:110,S2=380;
  const geo=new THREE.PlaneGeometry(S2,S2,N,N);geo.rotateX(-Math.PI/2);const P=geo.attributes.position,cols=new Float32Array(P.count*3),c=new THREE.Color();
@@ -98,7 +98,7 @@ function landesPop(){const C=LANDES.c;LANDES_POP.forEach((g,i)=>{const alive=ENT
 function landesTick(dt){if(!started)return;skyMesh.position.copy(camera.position);stars.position.copy(camera.position);
  LANDES.t+=dt;LANDES.swirl.forEach(s=>{s.m.rotation.z+=dt*0.8;s.m.material.opacity=0.7+Math.sin(LANDES.t*2)*0.15;if(Math.random()<dt*8)PA.emit(s.x+rnd(-1,1),s.y+rnd(-1.4,1.4),s.z+rnd(-1,1),0,rnd(0.2,0.8),0,0xc8a0ff,0.25,0.03,rnd(.6,1.2),0,0);});
  // en balai : franchir les crêtes fait passer d'une région à l'autre
- if(FLY.on&&S.zone==='monde'){const L=inLandes(),dx=L?player.x-LANDES.c.x:player.x,dz=L?player.z-LANDES.c.z:player.z,d=Math.hypot(dx,dz),out=(dx*player.vx+dz*player.vz)>0;
+ if(FLY.on&&S.zone==='monde'&&player.x<4000){const L=inLandes(),dx=L?player.x-LANDES.c.x:player.x,dz=L?player.z-LANDES.c.z:player.z,d=Math.hypot(dx,dz),out=(dx*player.vx+dz*player.vz)>0;
   if(d>(L?149:88.5)&&out){LANDES.flyOut+=dt;if(LANDES.flyOut>0.7){LANDES.flyOut=0;if(L)landesBack(true);else landesGo(true);}}else LANDES.flyOut=0;}
  if(inLandes()){LANDES.popT-=dt;if(LANDES.popT<=0){LANDES.popT=2.5;landesPop();}}}
 {const _w=world4Tick;world4Tick=function(dt){landesTick(dt);return _w.apply(this,arguments);};}

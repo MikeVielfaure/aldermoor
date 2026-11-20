@@ -52,7 +52,7 @@ function castConstruo(sp){if(S.zone!=='monde'){say('On ne construit pas à l’i
  openPick('🧱 Construo','Bois : '+(S.inv.bois||0)+' · Pierre : '+(S.inv.pierre||0)+'. La construction se pose là où tu vises, sur une grille, face à la caméra.',items);}
 function bldPlace(t){const T=BLD_T[t],Q=BLDQ;$('#pick').classList.add('hidden');if(!Q||!bldCanPay(T))return;if(BLD.filter(P=>!P.ruin).length>=160){say('Tu as déjà beaucoup construit (160 pièces) : démolis-en d’abord.','sys');return;}
  let x=Q.x,z=Q.z,y=Q.y;if(!Q.air||!T.air){x=Math.round(x/1.5)*1.5;z=Math.round(z/1.5)*1.5;y=T.air&&Q.air?Q.y:gh(x,z);}
- const inL=x>1500;if(inL?Math.hypot(x-2000,z)>160:Math.hypot(x,z)>88){say('Trop près du bord du monde.','sys');return;}
+ const inL=x>1500;if(x>4000?!terIn(x,z):inL?Math.hypot(x-2000,z)>160:Math.hypot(x,z)>88){say('Trop près du bord du monde.','sys');return;}
  if(!T.air&&inLake({x,z})&&!onIce({x,z})){say('Impossible de bâtir sur l’eau (gèle-la d’abord !).','sys');return;}
  if(Math.hypot(x-player.x,z-player.z)<Math.max(T.w,T.d)/2+0.5&&!(T.air&&Q.air)){const [dx,dz]=fwd();x+=dx*2;z+=dz*2;y=gh(x,z);}
  /* pas à travers une maison, un rocher, un arbre ou le château (les constructions du joueur peuvent se toucher) */

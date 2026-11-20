@@ -40,7 +40,7 @@ function buildIles(){const C=LANDES.c;const grass=mat(0x3f7a2c,{flatShading:true
  ILES_OK=true;}
 const cristOk=id=>!(S.celC&&S.celC[id]===S.day);
 {const _b=buildLandes;buildLandes=function(){const r=_b.apply(this,arguments);try{buildIles();}catch(e){console.error(e);}return r;};}
-function ilesTick(dt){if(!started||!ILES_OK||S.zone!=='monde'||player.x<1500)return;const t=performance.now()/1000;
+function ilesTick(dt){if(!started||!ILES_OK||S.zone!=='monde'||player.x<1500||player.x>4000)return;const t=performance.now()/1000;
  if(ILES.orb)ILES.orb.rotation.y+=dt;
  CRIST.forEach(c=>{const v=cristOk(c.id);if(c.g.visible!==v)c.g.visible=v;});
  for(const V of VENTS){const dx=player.x-V.x,dz=player.z-V.z,d=Math.hypot(dx,dz);

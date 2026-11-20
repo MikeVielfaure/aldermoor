@@ -145,7 +145,9 @@
   **Assistant** de l'Atelier (on lui parle, il ajoute / modifie / retire tout type de contenu, annulation).
   Plan validé par le joueur (2026-11-20), dans l'ordre : 3) onglet Quêtes avec IA (donneur, étapes parler / aller /
   ramasser / vaincre N, récompense) ; 4) grande carte continue « B » chargée par morceaux + onglet Terrain (pinceaux,
-  biomes) ; 5) minage (creuser le relief, récolter pierre / minerai / cristal). À faire aussi : zoom sur la carte de l'Atelier.
+  biomes) ; 5) minage (creuser le relief, récolter pierre / minerai / cristal).
+- v41 : onglet Quêtes (donneur, étapes parler / aller / ramasser / lancer / vaincre N, récompense, quête « après »),
+  aussi pilotable par l'Assistant ; zoom et déplacement de la carte de l'Atelier.
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Idées autour de la construction (vision du joueur : conquête, protection de village)

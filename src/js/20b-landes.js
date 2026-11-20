@@ -103,7 +103,7 @@ function landesTick(dt){if(!started)return;skyMesh.position.copy(camera.position
  if(inLandes()){LANDES.popT-=dt;if(LANDES.popT<=0){LANDES.popT=2.5;landesPop();}}}
 {const _w=world4Tick;world4Tick=function(dt){landesTick(dt);return _w.apply(this,arguments);};}
 /* ---------- carte de la région ---------- */
-{const _d=drawMap;drawMap=function(){if(!inLandes())return _d.apply(this,arguments);const cv=$('#map-c'),W=Math.min(window.innerWidth-24,560);cv.width=W*2;cv.height=W*2;cv.style.width=cv.style.height=W+'px';const g=cv.getContext('2d');g.setTransform(2,0,0,2,0,0);
+{const _d=drawMap;drawMap=function(){if(!inLandes())return _d.apply(this,arguments);const cv=$('#map-c'),W=mapSize();cv.width=W*2;cv.height=W*2;cv.style.width=cv.style.height=W+'px';const g=cv.getContext('2d');g.setTransform(2,0,0,2,0,0);
  const C=LANDES.c,k=W/2/175,P=(x,z)=>[W/2+(x-C.x)*k,W/2+(z-C.z)*k];
  g.fillStyle='#2a2438';g.fillRect(0,0,W,W);const gr=g.createRadialGradient(W/2,W/2,0,W/2,W/2,W/2);gr.addColorStop(0,'#5d8a44');gr.addColorStop(0.78,'#4d7a3a');gr.addColorStop(0.86,'#7a7566');gr.addColorStop(1,'#3a3644');g.fillStyle=gr;g.beginPath();g.arc(W/2,W/2,W/2-2,0,TAU);g.fill();
  const blob=(x,z,r,col)=>{const [a,b]=P(C.x+x,C.z+z);g.fillStyle=col;g.beginPath();g.arc(a,b,r*k,0,TAU);g.fill();};

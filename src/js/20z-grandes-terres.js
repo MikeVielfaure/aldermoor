@@ -112,8 +112,8 @@ function terGrass(){const G=TER.grass;if(!G)return;const {m4,q,p3,s3}=TER,c=TER.
 /* ---------- construction (avant buildDecor : le décor automatique habille aussi les lieux d'ici) ---------- */
 TER_LIEUX.forEach(L=>{const x=TER.c.x+L.u,z=TER.c.z+L.v;const o={id:L.id,name:L.n,x,z,r:L.r,spot:{x:x+2,z:z+2},hidden:true,region:'terres'};LOCS.push(o);LOCBY[L.id]=o;LOC_STYLE[L.id]=L.st||null;});
 function terSpots(){/* les points d'arrivée restent sur la terre ferme */TER_LIEUX.forEach(L=>{const o=LOCBY[L.id];for(let k=0;k<40&&terH(o.spot.x,o.spot.z)<0.6;k++){const dx=TER.c.x-o.spot.x,dz=TER.c.z-o.spot.z,d=Math.hypot(dx,dz)||1;o.spot.x+=dx/d*4;o.spot.z+=dz/d*4;}});}
-function terPortalSpot(cx,cz,r0,avoid){for(let k=0;k<60;k++){const a=k*2.39996,r=r0+(k%5)*3,x=cx+Math.cos(a)*r,z=cz+Math.sin(a)*r;
- if(Math.hypot(x,z)>84&&x<1500)continue;if(avoid.some(p=>p&&Math.hypot(p.x-x,p.z-z)<12))continue;if(!isFree({x,z},2.4)||slopeAt(x,z)>1.1)continue;if(x<1500&&pathDist(x,z)<2.5)continue;
+function terPortalSpot(cx,cz,r0,avoid,road){for(let k=0;k<160;k++){const a=k*2.39996,r=r0+(k%7)*3,x=cx+Math.cos(a)*r,z=cz+Math.sin(a)*r;
+ if(Math.hypot(x,z)>82&&x<1500)continue;if(road){const pd=pathDist(x,z);if(pd<3.5||pd>8||gh(x,z)<0.2)continue;}if(avoid.some(p=>p&&Math.hypot(p.x-x,p.z-z)<12))continue;if(!isFree({x,z},2.4)||slopeAt(x,z)>1.1)continue;if(x<1500&&pathDist(x,z)<2.5)continue;
  if(LOCS.some(L=>!L.region&&Math.hypot(L.x-x,L.z-z)<L.r+3))continue;return {x,z,ry:Math.atan2(cx-x,cz-z)};}return null;}
 function buildTerres(){if(TER.built)return;TER.built=true;terSpots();
  TER.mat=triMat(0xffffff,TX.grass,TX.rock,0.3,1.06,{vertexColors:true,roughness:1});
@@ -129,7 +129,8 @@ function buildTerres(){if(TER.built)return;TER.built=true;terSpots();
  TER_LIEUX.forEach(L=>TER.block.push({x:C.x+L.u,z:C.z+L.v,r:L.r*0.55+4}));
  (typeof COBJETS!=='undefined'?COBJETS:[]).forEach(o=>{if(o.x>4000)TER.block.push({x:o.x,z:o.z,r:4});});(typeof CSTRUCT!=='undefined'?CSTRUCT:[]).forEach(o=>{if(o.x>4000)TER.block.push({x:o.x,z:o.z,r:Math.max(o.longueur||4,o.largeur||4)});});
  /* portails de départ : dans la vallée et au campement des Landes */
- TER.vp=terPortalSpot(0,0,80,[LANDES.vp]);TER.lp=terPortalSpot(LOCBY.landes_camp.x,LOCBY.landes_camp.z,16,[]);
+ TER.vp=terPortalSpot(0,0,58,[LANDES.vp],true)||terPortalSpot(0,0,80,[LANDES.vp]);
+ {const V=TER.vp;if(V&&typeof TREES!=='undefined'){TREES=TREES.filter(t=>{if(Math.hypot(t.x-V.x,t.z-V.z)<6.5){COLS.forEach(c=>{if(c.tree===t)c.off=true;});return false;}return true;});treesDirty();}} /* place dégagée devant l'arche */TER.lp=terPortalSpot(LOCBY.landes_camp.x,LOCBY.landes_camp.z,16,[]);
  [['vp','Traverser le portail vers les Grandes Terres'],['lp','Traverser le portail vers les Grandes Terres']].forEach(([k,h])=>{const p=TER[k];if(!p)return;portal(p.x,p.z,p.ry);
   station({x:p.x+Math.sin(p.ry)*1.6,z:p.z+Math.cos(p.ry)*1.6,reach:2.8,hint:()=>inTerres()?null:h,act:()=>terGo()});});}
 {const _bd=buildDecor;buildDecor=function(){try{buildTerres();}catch(e){console.error(e);}return _bd.apply(this,arguments);};}
@@ -170,7 +171,7 @@ function terMapImg(){if(TER.img)return TER.img;const n=200,cv=document.createEle
  for(let j=0;j<n;j++)for(let i=0;i<n;i++){const u=(i+0.5)/n*2*TER.H-TER.H,v=(j+0.5)/n*2*TER.H-TER.H,h=terH0(u,v)+terEd(TER.dh,u,v);
   if(h<0)c.setHex(h<-6?0x2a5a86:0x3a7fb0);else{c.setHex(TER_BIO[terBiome(u,v,h)].c[0]);c.multiplyScalar(0.8+clamp(h/80,0,0.3));}const k=(j*n+i)*4;im.data[k]=c.r*255;im.data[k+1]=c.g*255;im.data[k+2]=c.b*255;im.data[k+3]=255;}
  g.putImageData(im,0,0);TER.img=cv;return cv;}
-{const _d=drawMap;drawMap=function(){if(!inTerres()||S.zone!=='monde')return _d.apply(this,arguments);const cv=$('#map-c'),W=Math.min(window.innerWidth-24,560);cv.width=W*2;cv.height=W*2;cv.style.width=cv.style.height=W+'px';const g=cv.getContext('2d');g.setTransform(2,0,0,2,0,0);
+{const _d=drawMap;drawMap=function(){if(!inTerres()||S.zone!=='monde')return _d.apply(this,arguments);const cv=$('#map-c'),W=mapSize();cv.width=W*2;cv.height=W*2;cv.style.width=cv.style.height=W+'px';const g=cv.getContext('2d');g.setTransform(2,0,0,2,0,0);
  g.imageSmoothingEnabled=true;g.drawImage(terMapImg(),0,0,W,W);const k=W/(2*TER.H),P=(x,z)=>[(x-TER.c.x+TER.H)*k,(z-TER.c.z+TER.H)*k];
  g.font='600 11px Inter,sans-serif';g.textAlign='center';TER_LIEUX.forEach(L=>{const o=LOCBY[L.id],[a,b]=P(o.x,o.z);g.fillStyle='#f3cf7a';g.beginPath();g.arc(a,b,3.5,0,TAU);g.fill();g.fillStyle='#fff';g.strokeStyle='rgba(0,0,0,.6)';g.lineWidth=3;g.strokeText(L.n,a,b-7);g.fillText(L.n,a,b-7);});
  const [px,pz]=P(player.x,player.z);g.save();g.translate(px,pz);g.rotate(-player.ry+Math.PI);g.fillStyle='#ff7ae0';g.beginPath();g.moveTo(0,-8);g.lineTo(5,6);g.lineTo(-5,6);g.closePath();g.fill();g.restore();

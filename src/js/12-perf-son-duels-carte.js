@@ -348,7 +348,9 @@ function buildMapBase(){const N=360,c=document.createElement('canvas');c.width=c
  g.fillStyle='rgba(70,62,58,0.9)';for(const c of COLS){if(c.tree||c.lake||c.off||c.z<-150||c.z>150)continue;if(c.r!==undefined){if(c.r<1.2)continue;g.beginPath();g.arc((c.x+MAPW/2)*s,(c.z+MAPW/2)*s,c.r*s,0,TAU);g.fill();}else g.fillRect((c.x-c.hw+MAPW/2)*s,(c.z-c.hd+MAPW/2)*s,c.hw*2*s,c.hd*2*s);}
  MAPBASE=c;}
 function openMap(){if(!MAPBASE)buildMapBase();$('#map').classList.remove('hidden');drawMap();}
-function drawMap(){const cv=$('#map-c'),W=Math.min(window.innerWidth-24,560);cv.width=W*2;cv.height=W*2;cv.style.width=cv.style.height=W+'px';const g=cv.getContext('2d');g.setTransform(2,0,0,2,0,0);
+/* taille de la carte : tient en largeur ET en hauteur (téléphone en paysage : titre et légende autour) */
+function mapSize(){return Math.max(160,Math.min(window.innerWidth-24,window.innerHeight-96,560));}
+function drawMap(){const cv=$('#map-c'),W=mapSize();cv.width=W*2;cv.height=W*2;cv.style.width=cv.style.height=W+'px';const g=cv.getContext('2d');g.setTransform(2,0,0,2,0,0);
  g.drawImage(MAPBASE,0,0,W,W);g.strokeStyle='rgba(243,207,122,.5)';g.lineWidth=1;g.strokeRect(0.5,0.5,W-1,W-1);
  const P=(x,z)=>mapXY(x,z,W);const inside=S.zone!=='monde';let px=player.x,pz=player.z;if(inside){const Z=ZONES[S.zone];if(Z&&Z.door){px=Z.door.x;pz=Z.door.z;}else if(GRATE){px=GRATE.x;pz=GRATE.z;}}
  g.font='600 11px Inter, sans-serif';g.textAlign='center';

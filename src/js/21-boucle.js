@@ -142,7 +142,8 @@ function updEnts(dt){const t=performance.now()/1000;
    if(!stuck&&Math.random()<dt*10)PA.emit(e.x,D.y,e.z,rnd(-.2,.2),rnd(0,.4),rnd(-.2,.2),ELEM[D.look].c,0.3,0.05,0.5,0,0);
    e.obj.rotation.y=Math.atan2(player.x-e.x,player.z-e.z);}
  });}
-function loop(now){requestAnimationFrame(loop);const dt=Math.min(0.05,(now-last)/1000);last=now;if(started)update(dt*tScale());else{PA.update(dt);PN.update(dt);PW.update(dt);}tick5(dt);updReflect(dt);WIND.uTime.value=now/1000;preRender();if(QL>=2&&composer)composer.render();else renderer.render(scene,camera);postRender();}
+const ATELIER=/[?&]atelier\b/.test(location.search); /* l'Atelier couvre tout l'écran : le monde du jeu n'est plus dessiné derrière */
+function loop(now){if(ATELIER)return;requestAnimationFrame(loop);const dt=Math.min(0.05,(now-last)/1000);last=now;if(started)update(dt*tScale());else{PA.update(dt);PN.update(dt);PW.update(dt);}tick5(dt);updReflect(dt);WIND.uTime.value=now/1000;preRender();if(QL>=2&&composer)composer.render();else renderer.render(scene,camera);postRender();}
 
 /* ---------- jour / nuit ---------- */
 function nightfall(){$('#night-sub').textContent='FIN DU JOUR '+S.day;const n=S.done.length;$('#night-txt').textContent='Tu as appris '+S.spells.length+' sort'+(S.spells.length>1?'s':'')+' et accompli '+n+' quête'+(n>1?'s':'')+' jusqu’ici. Pendant ton sommeil, la forêt repousse et le Maître du Jeu prépare la journée de demain…';$('#night').classList.remove('hidden');}

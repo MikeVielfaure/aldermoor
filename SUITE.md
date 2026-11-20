@@ -154,6 +154,9 @@
 - v43 : **minage** (Grandes Terres seulement : le relief de la vallée et des Landes n'est pas découpé en morceaux) :
   ⛏ / ⛰ dans la roulette de Construo, minerai de fer → briques de fer, trous gardés dans la sauvegarde.
   Plan validé (1 à 5) terminé. Idées : galeries souterraines, minerais rares par biome, forge (baguettes en fer).
+- À proposer au joueur : en balai, monter tout seul devant une pente au lieu de se poser (utile dans les
+  collines et montagnes des Grandes Terres) ; reprendre la partie là où on l'a quittée (aujourd'hui on repart
+  toujours de son point d'arrivée).
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Idées autour de la construction (vision du joueur : conquête, protection de village)

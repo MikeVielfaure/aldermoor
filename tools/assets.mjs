@@ -1,5 +1,5 @@
 // Prépare les ressources du jeu à partir des packs bruts (assets/brut, non versionnés) vers src/assets (versionné).
-// Usage : node tools/assets.mjs [persos|creatures|objets|sons|tout]
+// Usage : node tools/assets.mjs [persos|creatures|monstres|objets|sons|tout]
 // Objectif téléphone : fichiers .glb compacts, textures 256 px, sons .mp3 courts. Le jeu marche aussi sans eux.
 import {NodeIO} from '@gltf-transform/core';
 import {ALL_EXTENSIONS} from '@gltf-transform/extensions';
@@ -44,6 +44,24 @@ async function creatures(){const src=path.join(BRUT,'quaternius-cute-monsters'),
   await doc.transform(prune(),dedup(),textureCompress({encoder:sharp,targetFormat:'png',resize:[256,256]}));
   const out=path.join(dst,nom+'.glb');await io.write(out,doc);console.log('créature',nom,'←',f,ko(out));}}
 
+/* ---------- monstres (Quaternius, Ultimate Monsters, CC0, .glb de Poly Pizza) : couleurs par matériau, sans texture ----------
+   On ne garde que les animations dont le jeu se sert, renommées comme celles des Cute Monsters :
+   Idle, Walk, Bite_InPlace (coup), HitRecieve, Death, Flying (les volants n'ont que ça). Matériaux mats. */
+const MONS={orc:'Orc',ninja:'Ninja-xGYmeDpfTu',masque:'Tribal',spectre:'Ghost','spectre-crane':'Ghost Skull','demon-bleu':'Blue Demon','grand-demon':'Demon-LnfIziKv4o',
+ 'roi-champignon':'Mushroom King',champichon:'Mushnub','champichon-ancien':'Mushnub Evolved',grenouille:'Frog',blob:'Green Blob','blob-epineux':'Green Spiky Blob',cactoro:'Cactoro-IGn9lhdama',
+ 'grand-yeti':'Yeti-ceRHrn8HHE',armabee:'Armabee',alpaking:'Alpaking',hywirl:'Hywirl',glub:'Glub',birb:'Birb',dragonnet:'Dragon','dragonnet-ancien':'Dragon Evolved',
+ lapin:'Bunny',chat:'Cat',pigeon:'Pigeon',farceur:'Wizard'};
+const MONS_ANIM=[['Idle',['Idle']],['Walk',['Walk']],['Bite_InPlace',['Bite_Front','Punch','Headbutt']],['HitRecieve',['HitRecieve','HitReact']],['Death',['Death']],['Flying',['Flying_Idle']]];
+async function monstres(){const src=path.join(BRUT,'quaternius-ultimate-monsters','glb'),dst=path.join(SORTIE,'creatures');fs.mkdirSync(dst,{recursive:true});let tot=0;
+ for(const [nom,f] of Object.entries(MONS)){const doc=await io.read(path.join(src,f+'.glb')),R=doc.getRoot(),A={};
+  R.listAnimations().forEach(a=>{A[a.getName().replace(/^.*\|/,'')]=a;});const keep=new Set();
+  for(const [to,from] of MONS_ANIM){const k=from.find(n=>A[n]&&!keep.has(A[n]));if(k){A[k].setName(to);keep.add(A[k]);}}
+  R.listAnimations().forEach(a=>{if(!keep.has(a))sansAnim(a);});orphelins(doc);
+  for(const m of R.listMaterials()){m.setMetallicFactor(0);m.setRoughnessFactor(0.8);}
+  await doc.transform(prune(),dedup());const out=path.join(dst,nom+'.glb');await io.write(out,doc);tot+=fs.statSync(out).size;
+  console.log('monstre',nom,'←',f,ko(out),'|',R.listAnimations().map(a=>a.getName()).join(','));}
+ console.log('monstres : total',Math.round(tot/1024),'Ko');}
+
 /* ---------- objets (Quaternius, Fantasy Props MegaKit) : TOUS dans un seul fichier objets.glb ----------
    Les 4 grandes textures « trim » sont partagées par tous les objets : un seul fichier = téléchargées une fois.
    Cartes de relief et ORM retirées (inutiles sur téléphone), couleur réduite à 512 px en WebP. */
@@ -69,6 +87,7 @@ export {mp3};
 
 if(quoi==='persos'||quoi==='tout')await persos();
 if(quoi==='creatures'||quoi==='tout')await creatures();
+if(quoi==='monstres'||quoi==='creatures'||quoi==='tout')await monstres();
 if(quoi==='objets'||quoi==='tout')await objets();
 if(quoi==='sons'||quoi==='tout'){const m=await import('./sons.mjs');await m.sons(mp3,BRUT,SORTIE);}
 let total=0;const walk=d=>{for(const f of fs.readdirSync(d)){const p=path.join(d,f);if(fs.statSync(p).isDirectory())walk(p);else total+=fs.statSync(p).size;}};walk(SORTIE);

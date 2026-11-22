@@ -162,7 +162,7 @@
    $('#at-msg').textContent=c.nom+' — « '+c.modele+' »';return;}
   if(TAB==='creatures'){clear3d();V.size=c.taille||1;$('#at-msg').textContent='Chargement du modèle « '+c.modele+' »…';
    creaTpl(c.modele).then(T=>{if(cur!==c)return;const r=THREE.SkeletonUtils.clone(T.scene),tint=new THREE.Color(0xffffff).lerp(new THREE.Color(ELEM[c.element].c),0.25);
-    r.traverse(o=>{if(o.isMesh){o.material=o.material.clone();if(o.material.map)o.material.map.encoding=THREE.LinearEncoding;if(o.material.color)o.material.color.copy(tint);o.frustumCulled=false;}});
+    r.traverse(o=>{if(o.isMesh){o.material=o.material.clone();if(o.material.map)o.material.map.encoding=THREE.LinearEncoding;if(o.material.color)o.material.color.multiply(tint);o.frustumCulled=false;}});
     r.scale.setScalar(1.45/T.h*(c.taille||1));r.rotation.y=(c.rotY||0)*Math.PI/180;SC.add(r);V.o=r;V.mx=new THREE.AnimationMixer(r);V.A={};for(const n in T.clips)V.A[n]=V.mx.clipAction(T.clips[n]);
     const names=Object.keys(V.A),play=n=>{for(const a of Object.values(V.A))a.stop();if(V.A[n])V.A[n].reset().play();};play((c.anims&&c.anims.Idle)||names.find(n=>/idle/i.test(n))||names[0]);
     $('#at-anim').innerHTML=names.slice(0,14).map(n=>'<button data-a="'+esc(n)+'">'+esc(n)+'</button>').join('');$('#at-anim').querySelectorAll('button').forEach(b=>b.onclick=()=>play(b.dataset.a));

@@ -157,6 +157,9 @@
 - v44 : Atelier plus rapide (le monde du jeu n'est plus dessiné derrière : ≈ 1,9 s → 16 ms par image dans le Chrome
   de test sans carte graphique) ; onglet Terrain : **vue 3D** (relief réel, noms des lieux, on peint dessus,
   clic droit tourner, Maj + clic droit déplacer) ; « Tester ici » = cliquer l'endroit où apparaître.
+- v45 : 26 nouveaux monstres (Ultimate Monsters, CC0) : orcs, bandits, spectres, démons, roi champignon, grenouilles,
+  blobs, cactoros, grand yéti, frelons, alpagas, dragonnets, lapins, chats, pigeons… répartis par biome et région.
+  Suite voulue par le joueur : des créatures entre réaliste et mystique (licornes, hybrides).
 - À proposer au joueur : en balai, monter tout seul devant une pente au lieu de se poser (utile dans les
   collines et montagnes des Grandes Terres) ; reprendre la partie là où on l'a quittée (aujourd'hui on repart
   toujours de son point d'arrivée).

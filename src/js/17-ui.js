@@ -3,9 +3,11 @@ function say(t,type){const f=$('#feed');const d=document.createElement('div');d.
 let aiState='pending',SAMPLE=null,aiUsed=false;
 function aiBadge(){const b=$('#ai-badge');$('#b-mj').classList.toggle('on',aiState==='on');if(aiState==='on'){b.textContent='MJ : IA Claude ✦';b.style.cursor='pointer';b.classList.add('on');}else if(aiState==='off'){b.textContent='MJ : classique';b.classList.remove('on');}else b.textContent='MJ : connexion…';}
 setTimeout(mjInit,0); // MJ IA : artifact claude.ai, sinon clé du joueur (18b-mj-cle), sinon MJ classique
+/* hors d'un lieu : la région (et le paysage dans les Grandes Terres) */
+function wildName(){const r=regionOf(player.x);if(r==='landes')return 'Landes d’Ombrelune';if(r==='terres'){const b=TER_BIO[terBiomeAt(player.x,player.z)];return 'Grandes Terres'+(b?' · '+b.n:'');}return 'Sur les chemins';}
 function updateHUD(){
  $('#i-time').textContent=(S.zone!=='monde'?'🕯':WEATHERS[(S.weather||{w:'clair'}).w].ic)+' '+fmtTime(S.time)+' · niv. '+lvl();
- $('#i-loc').textContent=(S.zone!=='monde'?ZONES[S.zone].n:S.locId?LOCBY[S.locId].name:'Sur les chemins')+(player.swim?' · 🏊 '+(BUFF.phoque?'':'froid '+Math.floor(player.cold||0)+'/13'):'');
+ $('#i-loc').textContent=(S.zone!=='monde'?ZONES[S.zone].n:S.locId?LOCBY[S.locId].name:wildName())+(player.swim?' · 🏊 '+(BUFF.phoque?'':'froid '+Math.floor(player.cold||0)+'/13'):'');
  const L=lvl();$('#i-rank').textContent=rankOf(L).n+' · niv. '+L;
  const into=S.xp%100;$('#i-lvl').textContent=(Object.keys(BUFF).length?'🧪 '+Object.keys(BUFF).map(k=>POTIONS[k].n.split(' ').pop()+' '+Math.ceil(BUFF[k])+'s').join(', '):'');
  $('#xp-bar i').style.width=into+'%';
@@ -14,7 +16,7 @@ function updateHUD(){
 }
 /* bouton de sort : l'icône de l'élément (ou du sort spécial) et, dans le coin, la forme (➶ ◎ ✧) ; le nom est dans le Grimoire */
 const EL_IC={feu:'🔥',glace:'❄️',eau:'💧',vent:'🌪️',nature:'🌿',lumiere:'☀️',ombre:'🌑',arcane:'✨'};
-const SP_IC={demantibulus:'💥',etoiles:'🌠',gardien:'🌳',souffle:'🐉',oubli:'🌫️','g-rempart':'🪨','g-egide':'🔮','g-ronces':'🌲','g-maree':'🌊'};
+const SP_IC={demantibulus:'💥',etoiles:'🌠',gardien:'🌳',souffle:'🐉',oubli:'🌫️','g-rempart':'⛰️','g-egide':'🔮','g-ronces':'🌲','g-maree':'🌊'};
 const slotIcon=sp=>SP_IC[sp.special]||EL_IC[sp.el]||'✦';
 function renderSlots(){const n=rankOf(lvl()).slots;document.querySelectorAll('.slot').forEach(b=>{const i=+b.dataset.s;const sp=i<n?S.spells.find(s=>s.id===S.slots[i]):null;const key=i>n?'H':i>=n?'L':sp?sp.id:'E';if(b.dataset.k===key)return;b.dataset.k=key;
  b.classList.toggle('hidden',i>n);if(i>=n){b.className='cbtn slot empty'+(i>n?' hidden':'');b.innerHTML='<span class="ic">🔒</span>';b.style.borderColor='';b.style.boxShadow='';}
@@ -35,7 +37,7 @@ function updateTracker(){
  const q=trackedQuest();const el=$('#tracker');
  if(!q){el.classList.add('hidden');beacon.visible=false;return;}
  const t=nav(stepTarget(q));el.classList.remove('hidden');$('#tr-q').textContent=q.title;const s=curStep(q);
- let d='';if(t){const dist=Math.hypot(t.x-player.x,t.z-player.z);d=' · '+Math.round(dist)+' m';
+ let d='';if(t){const dist=Math.hypot(t.x-player.x,t.z-player.z);d=' · '+(t.via?'portail · ':'')+Math.round(dist)+' m';
   const tx=t.x-player.x,tz=t.z-player.z,fx=Math.sin(camYaw),fz=Math.cos(camYaw);const f=tx*fx+tz*fz,r=tx*(-fz)+tz*fx;$('#arrow').style.transform='rotate('+Math.atan2(r,f)+'rad)';
   beacon.visible=S.zone==='monde';beacon.position.set(t.x,gh(t.x,t.z),t.z);}else beacon.visible=false;
  $('#tr-s').textContent=(s?s.text:'')+d;
@@ -43,7 +45,7 @@ function updateTracker(){
 
 /* ---------- dialogue ---------- */
 let dlgCtx=null;const CHATS={};
-function openDlg(ctx){dlgCtx=ctx;$('#dlg').classList.remove('hidden');$('#dlg-log').innerHTML='';
+function openDlg(ctx){dlgCtx=ctx;$('#dlg').classList.remove('hidden');$('#hint').classList.add('hidden');$('#dlg-log').innerHTML='';
  if(ctx.mode==='talk'){const n=ctx.npc;$('#dlg-title').textContent=n.name;$('#dlg-sub').textContent=n.role+' · humeur : '+moodOf(n.id);
   const h=CHATS[n.id]||(CHATS[n.id]=[]);if(!h.length)h.push({w:'n',t:pick(LINES[n.id])});h.forEach(m=>line(m.w,m.t));
   chips(['Bonjour !','Tu as une mission pour moi ?','Des rumeurs ?','Apprends-moi quelque chose']);

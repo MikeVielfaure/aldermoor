@@ -1,7 +1,7 @@
 /* ================= LE DOMAINE : terrain, maison, jardin =================
-   Un terrain est à vendre près du Village de Brumepont (panneau). Une fois acheté (300 🪙), on y construit par étapes
-   depuis le panneau « Ton domaine » : maison (600 🪙, 3 styles), jardin de 4 parcelles (200 🪙), chaudron d'alchimie
-   (150 🪙), lanternes et fleurs (80 🪙). La maison : se reposer (vie et mana pleins ; la nuit, dormir jusqu'au matin),
+   Un terrain est à vendre près du Village de Brumepont (panneau). Une fois acheté (300 💰), on y construit par étapes
+   depuis le panneau « Ton domaine » : maison (600 💰, 3 styles), jardin de 4 parcelles (200 💰), chaudron d'alchimie
+   (150 💰), lanternes et fleurs (80 💰). La maison : se reposer (vie et mana pleins ; la nuit, dormir jusqu'au matin),
    point de réveil après un évanouissement dans la vallée, destination de la Pierre de rappel.
    Jardin : planter 1 ingrédient de cueillette → 6 h de jeu plus tard (≈ 4 min), récolter 3 ingrédients.
    S.home = {x,z,rot,house:null|style,garden:[{k,t}|null ×4],cauldron,deco}. Tout est reconstruit au chargement (kit 11b). */
@@ -40,22 +40,22 @@ function plotsTick(){for(const P of HOME.plots){const st=plotState(P);const key=
    if(st.s==='mur'){const f=new THREE.Mesh(new THREE.SphereGeometry(0.12,8,6),mat(c,{emissive:c,emissiveIntensity:0.4}));f.position.set(Math.cos(a)*0.45,0.55,Math.sin(a)*0.45);g.add(f);}}
   if(st.s==='mur'){const gl=glow(c,1.2,0.6);gl.position.y=0.6;g.add(gl);}scene.add(g);P.o=g;}}
 // ---------- le panneau du terrain / du domaine ----------
-function homeMenu(){if(!S.home){if((S.or||0)<HOMEP.terrain){say('🏡 Ce terrain coûte <b>'+HOMEP.terrain+' 🪙</b> (tu as '+(S.or||0)+').','sys');return;}
-  openPick('🏡 Terrain à vendre','Un beau terrain plat près de Brumepont. Prix : '+HOMEP.terrain+' 🪙 (tu as '+(S.or||0)+').',[{t:'Acheter le terrain',s:HOMEP.terrain+' 🪙',fn:()=>{S.or-=HOMEP.terrain;S.home={x:HOME.site.x,z:HOME.site.z,rot:HOME.site.rot,house:null,garden:[null,null,null,null],cauldron:false,deco:false};
+function homeMenu(){if(!S.home){if((S.or||0)<HOMEP.terrain){say('🏡 Ce terrain coûte <b>'+HOMEP.terrain+' 💰</b> (tu as '+(S.or||0)+').','sys');return;}
+  openPick('🏡 Terrain à vendre','Un beau terrain plat près de Brumepont. Prix : '+HOMEP.terrain+' 💰 (tu as '+(S.or||0)+').',[{t:'Acheter le terrain',s:HOMEP.terrain+' 💰',fn:()=>{S.or-=HOMEP.terrain;S.home={x:HOME.site.x,z:HOME.site.z,rot:HOME.site.rot,house:null,garden:[null,null,null,null],cauldron:false,deco:false};
    $('#pick').classList.add('hidden');if(HOME.sale){scene.remove(HOME.sale);HOME.sale=null;}homeBuild('terrain');banner('Domaine de '+S.name,'Le terrain est à toi !');sfx('win');chron('J’ai acheté un terrain près de Brumepont.');save();setTimeout(homeMenu,1200);}}]);return;}
  const H=S.home,it=[];
- if(H.house===null)HOME_STYLES.forEach(([n],i)=>it.push({t:'🏠 '+n,s:HOMEP.maison+' 🪙',off:(S.or||0)<HOMEP.maison,fn:()=>buyPart('maison',HOMEP.maison,()=>{H.house=i;})}));
- if(!H.gardenOn)it.push({t:'🌱 Jardin (4 parcelles)',s:HOMEP.jardin+' 🪙 · fais pousser tes ingrédients',off:(S.or||0)<HOMEP.jardin,fn:()=>buyPart('jardin',HOMEP.jardin,()=>{H.gardenOn=true;})});
- if(!H.cauldron)it.push({t:'⚗ Chaudron d’alchimie',s:HOMEP.chaudron+' 🪙 · tes potions à la maison',off:(S.or||0)<HOMEP.chaudron,fn:()=>buyPart('chaudron',HOMEP.chaudron,()=>{H.cauldron=true;})});
- if(!H.deco)it.push({t:'🏮 Lanternes et fleurs',s:HOMEP.deco+' 🪙',off:(S.or||0)<HOMEP.deco,fn:()=>buyPart('deco',HOMEP.deco,()=>{H.deco=true;})});
+ if(H.house===null)HOME_STYLES.forEach(([n],i)=>it.push({t:'🏠 '+n,s:HOMEP.maison+' 💰',off:(S.or||0)<HOMEP.maison,fn:()=>buyPart('maison',HOMEP.maison,()=>{H.house=i;})}));
+ if(!H.gardenOn)it.push({t:'🌱 Jardin (4 parcelles)',s:HOMEP.jardin+' 💰 · fais pousser tes ingrédients',off:(S.or||0)<HOMEP.jardin,fn:()=>buyPart('jardin',HOMEP.jardin,()=>{H.gardenOn=true;})});
+ if(!H.cauldron)it.push({t:'⚗ Chaudron d’alchimie',s:HOMEP.chaudron+' 💰 · tes potions à la maison',off:(S.or||0)<HOMEP.chaudron,fn:()=>buyPart('chaudron',HOMEP.chaudron,()=>{H.cauldron=true;})});
+ if(!H.deco)it.push({t:'🏮 Lanternes et fleurs',s:HOMEP.deco+' 💰',off:(S.or||0)<HOMEP.deco,fn:()=>buyPart('deco',HOMEP.deco,()=>{H.deco=true;})});
  if(!it.length)it.push({t:'✔ Ton domaine est complet !',s:'Maison, jardin, chaudron, lanternes.',off:true});
- openPick('🏡 Domaine de '+S.name,'🪙 '+(S.or||0)+' pièces d’or. Construis ce que tu veux, dans l’ordre que tu veux.',it);}
+ openPick('🏡 Domaine de '+S.name,'💰 '+(S.or||0)+' pièces d’or. Construis ce que tu veux, dans l’ordre que tu veux.',it);}
 function buyPart(part,price,set){if((S.or||0)<price)return;S.or-=price;set();$('#pick').classList.add('hidden');fade(()=>{homeBuild(part);if(part==='jardin')homePlots();});
  SHAKE=Math.max(SHAKE,0.3);sfx('win');banner({maison:'Ta maison est construite !',jardin:'Le jardin est prêt',chaudron:'Ton chaudron bouillonne',deco:'Le domaine s’illumine'}[part],'Domaine de '+S.name);chron('Domaine : '+part+'.');save();}
 function homeRest(){if(S.time>=20*60||S.time<5*60){sleepHere();return;}if(typeof VIE!=='undefined')VIE.hp=VIE.max;mana=manaMax();sfx('learn');say('🏠 Tu te reposes chez toi : vie et magie au maximum.','sys');}
 // ---------- mise en place (au lancement de la partie) ----------
 function homeSetup(){HOME.site=S.home?{x:S.home.x,z:S.home.z,rot:S.home.rot}:homeFindSite();if(!HOME.site)return;const H=HOME.site;
- station({x:H.x+0,z:H.z+0,get reach(){return 2.4;},hint:()=>S.home?'🏡 Ton domaine':'🏡 Terrain à vendre ('+HOMEP.terrain+' 🪙)',act:()=>homeMenu()});
+ station({x:H.x+0,z:H.z+0,get reach(){return 2.4;},hint:()=>S.home?'🏡 Ton domaine':'🏡 Terrain à vendre ('+HOMEP.terrain+' 💰)',act:()=>homeMenu()});
  const p=homeW(0,0.5);station({x:p.x,z:p.z,reach:1.8,hint:()=>S.home&&S.home.house!==null?(S.time>=20*60||S.time<5*60?'Dormir chez toi':'Se reposer chez toi'):null,act:()=>homeRest()});
  if(!S.home){const g=new THREE.Group(),y=gh(H.x,H.z);g.position.set(H.x,y,H.z);g.rotation.y=H.rot;const wd=mat(0x6a4a2a);const post=new THREE.Mesh(new THREE.BoxGeometry(0.15,1.8,0.15),wd);post.position.y=0.9;g.add(post);
   const bd=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.8,0.08),mat(0xe8dcc0));bd.position.y=1.6;g.add(bd);const gl=glow(0xffd24a,1.6,0.6);gl.position.y=2.2;g.add(gl);scene.add(g);HOME.sale=g;return;}

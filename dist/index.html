@@ -183,6 +183,9 @@ body.induel #tracker,body.inwave #tracker,body.boss #tracker{visibility:hidden}
 .ov .gold{width:100%;padding:13px;margin-bottom:9px}
 .ghost{width:100%;padding:12px;background:none;border:1px solid var(--line);color:var(--ink);border-radius:12px;font:600 14px Inter,sans-serif;margin-bottom:9px}
 .keys{font-size:11.5px;color:var(--mute);margin-top:10px;line-height:1.6}
+/* rangées qui défilent de côté (réponses du dialogue, onglets du grimoire) : pas de barre blanche ; à la souris, elles passent à la ligne */
+#chips,.tabs{scrollbar-width:none}#chips::-webkit-scrollbar,.tabs::-webkit-scrollbar{display:none}
+@media (hover:hover) and (pointer:fine){#chips,.tabs{flex-wrap:wrap;overflow-x:visible}}
 </style>
 </head>
 <body>
@@ -1018,7 +1021,7 @@ function doZone(sp){const el=sp.el,k=pow(el),x=player.x,z=player.z,R=(el==='lumi
   ENT.forEach(e=>{if(e.kind==='creature'&&Math.hypot(e.x-x,e.z-z)<R)e.data.confused=3;});if(recentNear('eau',x,z,R+3))rainbow(x,z);if(recentNear('ombre',x,z,R))eclipse(x,z);}
  else if(el==='ombre'){CLOUDS.push({x,y:1.2,z,life:6});for(let i=0;i<5;i++)CLOUDS.push({x:x+rnd(-R,R)*0.6,y:1,z:z+rnd(-R,R)*0.6,life:5});LAMPS.forEach(l=>{if(Math.hypot(l.x-x,l.z-z)<R*2.5)l.off=40;});
   ENT.forEach(e=>{if(e.kind==='creature'&&Math.hypot(e.x-x,e.z-z)<R+2)e.data.confused=6;});stealth=10*k;say('🌑 Tu te fonds dans l’ombre : les créatures perdent ta trace.','sys');if(recentNear('lumiere',x,z,R)||ORBS.some(o=>Math.hypot(o.x-x,o.z-z)<R))eclipse(x,z);}
- else if(el==='arcane'){let n=0;PROPS.forEach(p=>{if(p.dead<=0&&Math.hypot(p.x-x,p.z-z)<R+1){p.lev=4.5*k*(tal('arcane_u')?2:1);p.vy=4;n++;}});ENT.forEach(e=>{if(e.kind==='creature'&&Math.hypot(e.x-x,e.z-z)<R)e.data.frozen=Math.max(e.data.frozen,2);});if(n)hint('lev','🪄 Tout ce qui t’entoure se met à léviter !');}
+ else if(el==='arcane'){let n=0;PROPS.forEach(p=>{if(p.dead<=0&&Math.hypot(p.x-x,p.z-z)<R+1){p.lev=4.5*k*(tal('arcane_u')?2:1);p.vy=4;n++;}});ENT.forEach(e=>{if(e.kind==='creature'&&Math.hypot(e.x-x,e.z-z)<R)e.data.frozen=Math.max(e.data.frozen,2);});if(n)hint('lev','✨ Tout ce qui t’entoure se met à léviter !');}
  elemHit(el,x,z,R);if(el==='vent')fogClear=25;mark(el,x,z,R);
 }
 /* ---------- utilitaires ---------- */
@@ -1042,7 +1045,7 @@ function doUtil(sp){const el=sp.el,k=pow(el),[dx,dz]=fwd(),c=ELEM[el].c;
   for(let i=0;i<30;i++){PN.emit(player.x+rnd(-.4,.4),player.y+rnd(0,2),player.z+rnd(-.4,.4),rnd(-1,1),rnd(0,1),rnd(-1,1),0x150a24,0.6,1.2,0.8,0,1,0.85);PN.emit(tx+rnd(-.4,.4),player.y+rnd(0,2),tz+rnd(-.4,.4),rnd(-1,1),rnd(0,1),rnd(-1,1),0x2a1048,0.6,0.1,0.6,0,1,0.85);}
   player.x=tx;player.z=tz;stealth=Math.max(stealth,2);}
  else if(el==='arcane'){let best=null,bd=20*Math.min(1.5,k);ENT.forEach(e=>{if((e.kind==='scroll'&&!e.data.hidden)||e.kind==='item'){const d=Math.hypot(e.x-player.x,e.z-player.z);if(d<bd){bd=d;best=e;}}});
-  if(best&&!lockedProp()){best.data.pull=true;say('🪄 Tu attires '+(best.kind==='scroll'?'le parchemin':esc(best.data.item))+' à toi…','sys');}
+  if(best&&!lockedProp()){best.data.pull=true;say('✨ Tu attires '+(best.kind==='scroll'?'le parchemin':esc(best.data.item))+' à toi…','sys');}
   else{let bp=lockedProp(),bpd=bp?Math.max(1.6,Math.hypot(bp.x-player.x,bp.z-player.z)):15;if(!bp)PROPS.forEach(p=>{if(p.dead>0)return;const d=Math.hypot(p.x-player.x,p.z-player.z);if(d<bpd&&d>1.5){bpd=d;bp=p;}});if(bp){bp.lev=3*(tal('arcane_u')?2:1);bp.vy=4;bp.vx=(player.x-bp.x)/bpd*5;bp.vz=(player.z-bp.z)/bpd*5;}else say('Rien à attirer à portée.','sys');}}
  mark(el,player.x,player.z,2);
 }
@@ -1157,7 +1160,7 @@ function impact(el,x,y,z,hitC){const c=ELEM[el].c,k=pow(el);
   if(recentNear('lumiere',gx,gz,4)||ORBS.some(o=>Math.hypot(o.x-gx,o.z-gz)<6))eclipse(gx,gz);}
  else if(el==='arcane'){for(let i=0;i<26;i++){const a=Math.random()*TAU,v=rnd(1,4);PA.emit(x,y,z,Math.cos(a)*v,rnd(-1,2),Math.sin(a)*v,Math.random()<0.5?0xff7ae0:0xb48cff,rnd(.25,.4),0.03,rnd(.4,.8),0,2);}ring(gx,gz,0xff7ae0,1.5,0.6);
   let n=0;PROPS.forEach(p=>{if(p.dead<=0&&Math.hypot(p.x-gx,p.z-gz)<2.8*k){p.lev=4.5*k*(tal('arcane_u')?2:1);p.vy=3;n++;if(p.burn>0)meteorize(p);}});
-  if(n)hint('lev','🪄 L’objet lévite ! Une bourrasque pendant qu’il flotte l’enverra valser… et le feu en fera un météore.');}
+  if(n)hint('lev','✨ L’objet lévite ! Une bourrasque pendant qu’il flotte l’enverra valser… et le feu en fera un météore.');}
  elemHit(el,gx,gz,2.5*k);mark(el,gx,gz,2.5*k);
 }
 function extinguish(x,z,r){let n=0;near(TREES,x,z,r+1).forEach(t=>{if(t.st==='burning'){t.st='charred';t.burn=0;treeLook(t);treesDirty();n++;for(let i=0;i<12;i++)PN.emit(t.x+rnd(-1,1),rnd(1,4),t.z+rnd(-1,1),0,rnd(1,2),0,0xdde4ea,0.6,1.8,rnd(1,2),-0.3,0.5,0.5);}});
@@ -2338,9 +2341,16 @@ function grassFade(m){const ob=m.onBeforeCompile;m.onBeforeCompile=(sh,r)=>{ob(s
 let TALK=null;const TKV=new THREE.Vector3(),TKL=new THREE.Vector3();
 function camClear(cp,dist){const sx=-Math.sin(camYaw)*Math.cos(cp),sz=-Math.cos(camYaw)*Math.cos(cp),sy=Math.sin(cp),hy=player.y+1.7;
  for(let d=0.5;d<=dist;d+=0.3){const x=player.x+sx*d,z=player.z+sz*d;if(gh(x,z)+0.55>hy+sy*d)return Math.max(0.9,d-0.6);}return dist;}
+function talkBlocked(ax,az,bx,bz){const n=Math.max(2,Math.ceil(Math.hypot(bx-ax,bz-az)/0.4)),x0=Math.min(ax,bx),x1=Math.max(ax,bx),z0=Math.min(az,bz),z1=Math.max(az,bz);
+ for(const c of COLS){if(c.off||c.lake||c.bot!==undefined||(c.h!==undefined&&c.h<1.2))continue;const rx=(c.r!==undefined?c.r:c.hw)+0.3,rz=(c.r!==undefined?c.r:c.hd)+0.3;if(c.x<x0-rx||c.x>x1+rx||c.z<z0-rz||c.z>z1+rz)continue;
+  for(let i=1;i<n;i++){const t=i/n,x=ax+(bx-ax)*t,z=az+(bz-az)*t;if(c.r!==undefined?Math.hypot(x-c.x,z-c.z)<rx:Math.abs(x-c.x)<rx&&Math.abs(z-c.z)<rz)return true;}}return false;}
 function talkCam(dt){const n=TALK.n;const mx=(player.x+n.x)/2,mz=(player.z+n.z)/2,dx=n.x-player.x,dz=n.z-player.z,d=Math.hypot(dx,dz)||1;
  const ux=dx/d,uz=dz/d;let sx=-uz,sz=ux;const cx0=player.x-Math.sin(camYaw)*5,cz0=player.z-Math.cos(camYaw)*5;if((cx0-mx)*sx+(cz0-mz)*sz<0){sx=-sx;sz=-sz;}
- const D=Math.max(5.2,d*1.3+3);let x=mx+sx*D-ux*1.7,z=mz+sz*D-uz*1.7;const g0=S.zone==='monde'?gh(mx,mz):0,gy=Math.max(S.zone==='monde'?gh(x,z):0,g0);
+ const D=Math.max(5.2,d*1.3+3);
+ /* une place d'où l'on voit les deux sans lampadaire, arbre ou mur entre eux (cherchée une fois par dialogue) */
+ if(!TALK.cs||TALK.cs.n!==n){TALK.cs={n,sg:1,f:1};find:for(const sg of [1,-1])for(const f of [1,0.78,0.58,0.42]){const x=mx+sx*sg*D*f-ux*1.7,z=mz+sz*sg*D*f-uz*1.7;
+   if(!talkBlocked(x,z,player.x,player.z)&&!talkBlocked(x,z,n.x,n.z)){TALK.cs={n,sg,f};break find;}}}
+ sx*=TALK.cs.sg;sz*=TALK.cs.sg;let x=mx+sx*D*TALK.cs.f-ux*1.7,z=mz+sz*D*TALK.cs.f-uz*1.7;const g0=S.zone==='monde'?gh(mx,mz):0,gy=Math.max(S.zone==='monde'?gh(x,z):0,g0);
  TKV.set(x,gy+1.8,z);camera.position.lerp(TKV,Math.min(1,dt*5));TKL.set(mx-ux*0.2,g0+1.0,mz-uz*0.2);camera.lookAt(TKL);}
 function setTalk(n){if(TALK&&TALK.n!==n)TALK.n.obj.children.forEach(o=>{if(o.isSprite)o.visible=true;});if(n)n.obj.children.forEach(o=>{if(o.isSprite)o.visible=false;});TALK=n?{n}:null;const w=window.innerWidth,h=window.innerHeight;if(n)camera.setViewOffset(w,h,0,Math.round(h*0.13),w,h);else camera.clearViewOffset();camera.updateProjectionMatrix();}
 
@@ -2605,6 +2615,8 @@ function drawMap(){$('#map h3').textContent='Carte d’Aldermoor';const cv=$('#m
  ENT.forEach(e=>{if(e.z<-150||e.z>150)return;const [x,y]=P(e.x,e.z);if(e.kind==='event'){g.fillStyle='#ffd27a';g.font='800 14px Inter';g.fillText('!',x,y+5);g.font='600 11px Inter, sans-serif';}else if(e.kind==='creature'&&!e.data.duel){g.fillStyle='#ff6a6a';g.beginPath();g.arc(x,y,2.4,0,TAU);g.fill();}});
  npcs.forEach(n=>{if(n.sleep||n.z>150||n.z<-150||n.inDuel)return;const [x,y]=P(n.x,n.z);g.fillStyle='#ffc6ef';g.beginPath();g.arc(x,y,3.2,0,TAU);g.fill();g.fillStyle='rgba(255,255,255,.85)';g.font='600 9px Inter, sans-serif';g.fillText(n.d.name.replace(/^(Pr\.|Mère) /,'').split(' ')[0],x,y-5);g.font='600 11px Inter, sans-serif';});
  const q=trackedQuest();if(q){const t=stepTarget(q);if(t&&t.z>-150&&t.z<150){const [x,y]=P(t.x,t.z);star(g,x,y,7,'#f3cf7a');}}
+ /* portails vers les autres régions */[[LANDES.vp,'vers les Landes'],[TER.vp,'vers les Grandes Terres']].forEach(([p,n])=>{if(!p)return;const [x,y]=P(p.x,p.z);g.fillStyle='rgba(40,16,70,.85)';g.strokeStyle='#c79bff';g.lineWidth=2.5;g.beginPath();g.arc(x,y,6,0,TAU);g.fill();g.stroke();
+  g.font='700 9px Inter, sans-serif';g.lineWidth=3;g.strokeStyle='rgba(16,12,36,.8)';const hw=g.measureText('🌀 '+n).width/2+3,lx=clamp(x,hw,W-hw);g.strokeText('🌀 '+n,lx,y+17);g.fillStyle='#e2ccff';g.fillText('🌀 '+n,lx,y+17);g.font='600 11px Inter, sans-serif';});
  LOCS.forEach(L=>{if(L.hidden&&!(S.found||{})[L.id])return;const [x,y]=P(L.x,L.z);const on=S.wp===L.id;g.fillStyle=on?'rgba(255,122,224,.95)':'rgba(16,12,36,.72)';const tw=g.measureText(L.name).width+12;g.beginPath();if(g.roundRect)g.roundRect(x-tw/2,y-9,tw,17,8);else g.rect(x-tw/2,y-9,tw,17);g.fill();g.fillStyle=on?'#fff':'#f3e9d0';g.fillText((on?'📍 ':'')+L.name,x,y+4);});
  const [x,y]=P(px,pz);g.save();g.translate(x,y);g.rotate(-player.ry+Math.PI);g.fillStyle='#fff';g.strokeStyle='#23305e';g.lineWidth=2;g.beginPath();g.moveTo(0,-8);g.lineTo(6,6);g.lineTo(0,3);g.lineTo(-6,6);g.closePath();g.stroke();g.fill();g.restore();
  const cy=Math.cos(camYaw),sy=Math.sin(camYaw);g.strokeStyle='rgba(255,255,255,.35)';g.beginPath();g.moveTo(x,y);g.lineTo(x+sy*22,y+cy*22);g.stroke();
@@ -2663,7 +2675,7 @@ updateTracker=function(){if(DUEL){$('#tracker').classList.add('hidden');beacon.v
  if(S.zone==='monde'&&inLoc(S.wp,-2)){say('📍 Tu es arrivé : <b>'+esc(L.name)+'</b>','sys');S.wp=null;return _updateTracker();}
  const t=nav({x:L.spot.x,z:L.spot.z});const el=$('#tracker');el.classList.remove('hidden');$('#tr-q').textContent='📍 Repère';
  const dist=Math.hypot(t.x-player.x,t.z-player.z);const tx=t.x-player.x,tz=t.z-player.z,fx=Math.sin(camYaw),fz=Math.cos(camYaw);$('#arrow').style.transform='rotate('+Math.atan2(tx*(-fz)+tz*fx,tx*fx+tz*fz)+'rad)';
- beacon.visible=S.zone==='monde';beacon.position.set(t.x,gh(t.x,t.z),t.z);$('#tr-s').textContent=L.name+' · '+Math.round(dist)+' m';};
+ beacon.visible=S.zone==='monde';beacon.position.set(t.x,gh(t.x,t.z),t.z);$('#tr-s').textContent=L.name+' · '+(t.via?'portail · ':'')+Math.round(dist)+' m';};
 
 /* ---------- branchements : son, duels, caméra de dialogue ---------- */
 {const _cs=castSpell;castSpell=function(sp){const c0=CD[sp.id];const r=_cs.apply(this,arguments);if(CD[sp.id]!==c0)sfx('cast',sp.el,sp.form,player.x,player.z);return r;};}
@@ -3085,7 +3097,7 @@ function world4Tick(dt){if(!started||!MILL)return;const t=performance.now()/1000
 
 /* ================= ÉTAPE 8 : BALAI, OBJETS MAGIQUES, FAILLE, KARMA & OUBLI ================= */
 const OBJS={balai:{n:'Balai de l’académie',ic:'🧹',d:'Vole librement : Saut = monter, ⬇ = descendre. Touche le sol pour te poser.'},
- rappel:{n:'Pierre de rappel',ic:'🪨',d:'Te ramène instantanément à la Grande Cour.',cd:60},
+ rappel:{n:'Pierre de rappel',ic:'💠',d:'Te ramène instantanément à la Grande Cour.',cd:60},
  boussole:{n:'Boussole des arcanes',ic:'🧭',d:'Un rayon de lumière désigne le parchemin le plus proche.',cd:40},
  sablier:{n:'Sablier d’ambre',ic:'⏳',d:'Ralentit ennemis et projectiles pendant 8 s.',cd:90},
  lanterne:{n:'Lanterne-follet',ic:'🏮',d:'Une petite lueur te suit et éclaire la nuit (allumer / éteindre).'}};
@@ -3099,7 +3111,7 @@ function updObjBtns(){$('#b-obj').classList.toggle('hidden',!S.objs||!Object.key
 function useObj(k){const O=OBJS[k],now=performance.now()/1000;if(O.cd&&(OCD[k]||0)>now){say(O.ic+' '+O.n+' : encore '+Math.ceil(OCD[k]-now)+' s.','sys');return;}
  if(k==='balai'){toggleBroom();return;}
  if(k==='lanterne'){S.lantern=!S.lantern;sfx('click');say(S.lantern?'🏮 La lanterne-follet s’éveille et virevolte autour de toi.':'🏮 La lueur s’endort dans sa lanterne.','sys');return;}
- if(k==='rappel'){if(DUEL||WAVE||RACE.on){say('Impossible pendant un défi.','sys');return;}OCD[k]=now+O.cd;if(FLY.on)dismount(true);const go=()=>{const Hm=homeSpawn();player.x=Hm?Hm.x:3;player.z=Hm?Hm.z:8;player.y=gh(player.x,player.z);player.vx=player.vz=player.vy=0;camYaw=Math.PI;burst(player.x,player.y+1,player.z,0xb48cff,40,4);sfx('learn');};if(S.zone!=='monde'){fade(()=>{S.zone='monde';go();});}else fade(go);say('🪨 La pierre chauffe dans ta main… et te voilà '+(homeSpawn()?'chez toi.':'à la Grande Cour.'),'sys');return;}
+ if(k==='rappel'){if(DUEL||WAVE||RACE.on){say('Impossible pendant un défi.','sys');return;}OCD[k]=now+O.cd;if(FLY.on)dismount(true);const go=()=>{const Hm=homeSpawn();player.x=Hm?Hm.x:3;player.z=Hm?Hm.z:8;player.y=gh(player.x,player.z);player.vx=player.vz=player.vy=0;camYaw=Math.PI;burst(player.x,player.y+1,player.z,0xb48cff,40,4);sfx('learn');};if(S.zone!=='monde'){fade(()=>{S.zone='monde';go();});}else fade(go);say('⛰️ La pierre chauffe dans ta main… et te voilà '+(homeSpawn()?'chez toi.':'à la Grande Cour.'),'sys');return;}
  if(k==='boussole'){let best=null,bd=1e9;ENT.forEach(e=>{if(e.kind!=='scroll')return;const d=Math.hypot(e.x-player.x,e.z-player.z);if(d<bd){bd=d;best=e;}});OCD[k]=now+O.cd;
   if(!best){say('🧭 L’aiguille tourne dans le vide : aucun parchemin dans les parages.','sys');return;}best.data.beam=30;const a=Math.atan2(best.x-player.x,-(best.z-player.z));const dirs=['au nord','au nord-est','à l’est','au sud-est','au sud','au sud-ouest','à l’ouest','au nord-ouest'];const di=dirs[(Math.round(a/(Math.PI/4))+8)%8];
   say('🧭 L’aiguille se fige : un parchemin'+(best.data.hidden?' caché':'')+' à '+Math.round(bd)+' m, '+di+' (vers '+esc((LOCBY[best.data.loc]||{name:'?'}).name)+'). Cherche le rayon de lumière !','sys');sfx('lock');return;}
@@ -3112,7 +3124,7 @@ const FLY={on:false,t:0,down:false,bank:0,mesh:null};
 function makeBroomMesh(){const g=new THREE.Group();const wood=mat(0x6a4424,{roughness:0.8});const st=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.045,2.1,8),wood);st.rotation.x=Math.PI/2;st.position.z=0.15;g.add(st);
  const br=new THREE.Mesh(new THREE.ConeGeometry(0.24,0.85,14,1,true),mat(0xc8a050,{roughness:1,side:THREE.DoubleSide}));br.rotation.x=Math.PI/2;br.position.z=-1.2;g.add(br);
  [-0.82,-0.95].forEach(z=>{const b=new THREE.Mesh(new THREE.TorusGeometry(0.075,0.022,6,12),mat(0xd4af37,{metalness:0.6,roughness:0.4}));b.position.z=z;g.add(b);});g.traverse(o=>{if(o.isMesh)o.castShadow=true;});return g;}
-function toggleBroom(){if(FLY.on){const h=player.y-gh(player.x,player.z);dismount();if(h>2.5){player.feather=1;player.vy=Math.min(player.vy,1);if(!S.seenFeather){S.seenFeather=1;say('🪶 Tu sautes du balai ! Une magie de plume ralentit ta chute. Touche 🧹 pour y remonter en plein vol.','sys');}}return;}
+function toggleBroom(){if(FLY.on){const h=player.y-gh(player.x,player.z);dismount();if(h>2.5){player.feather=1;player.vy=Math.min(player.vy,1);if(!S.seenFeather){S.seenFeather=1;say('🍃 Tu sautes du balai ! Une magie de plume ralentit ta chute. Touche 🧹 pour y remonter en plein vol.','sys');}}return;}
  if(S.zone!=='monde'){say('Pas de balai à l’intérieur !','sys');return;}if(DUEL){say('Pas de balai pendant un duel !','sys');return;}/* partout ailleurs, même en plein saut, en chute ou dans l’eau */if(player.swim){player.swim=false;player.y=Math.max(player.y,0.3);}player.feather=0;
  FLY.on=true;FLY.t=0;player.vy=6;player.grounded=false;if(!FLY.mesh){FLY.mesh=makeBroomMesh();FLY.mesh.position.set(0,0.82,0);player.H.root.add(FLY.mesh);}FLY.mesh.visible=true;player.H.root.children.forEach(o=>{if(o.geometry&&o.geometry.type==='RingGeometry')o.visible=false;});sfx('whoosh',player.x,player.z);
  for(let i=0;i<30;i++){const a=Math.random()*TAU;PA.emit(player.x+Math.cos(a)*0.6,player.y+0.3,player.z+Math.sin(a)*0.6,Math.cos(a)*3,rnd(0.5,2),Math.sin(a)*3,0xf3cf7a,0.25,0.05,0.7,0,1.5);}
@@ -3344,9 +3356,11 @@ function say(t,type){const f=$('#feed');const d=document.createElement('div');d.
 let aiState='pending',SAMPLE=null,aiUsed=false;
 function aiBadge(){const b=$('#ai-badge');$('#b-mj').classList.toggle('on',aiState==='on');if(aiState==='on'){b.textContent='MJ : IA Claude ✦';b.style.cursor='pointer';b.classList.add('on');}else if(aiState==='off'){b.textContent='MJ : classique';b.classList.remove('on');}else b.textContent='MJ : connexion…';}
 setTimeout(mjInit,0); // MJ IA : artifact claude.ai, sinon clé du joueur (18b-mj-cle), sinon MJ classique
+/* hors d'un lieu : la région (et le paysage dans les Grandes Terres) */
+function wildName(){const r=regionOf(player.x);if(r==='landes')return 'Landes d’Ombrelune';if(r==='terres'){const b=TER_BIO[terBiomeAt(player.x,player.z)];return 'Grandes Terres'+(b?' · '+b.n:'');}return 'Sur les chemins';}
 function updateHUD(){
  $('#i-time').textContent=(S.zone!=='monde'?'🕯':WEATHERS[(S.weather||{w:'clair'}).w].ic)+' '+fmtTime(S.time)+' · niv. '+lvl();
- $('#i-loc').textContent=(S.zone!=='monde'?ZONES[S.zone].n:S.locId?LOCBY[S.locId].name:'Sur les chemins')+(player.swim?' · 🏊 '+(BUFF.phoque?'':'froid '+Math.floor(player.cold||0)+'/13'):'');
+ $('#i-loc').textContent=(S.zone!=='monde'?ZONES[S.zone].n:S.locId?LOCBY[S.locId].name:wildName())+(player.swim?' · 🏊 '+(BUFF.phoque?'':'froid '+Math.floor(player.cold||0)+'/13'):'');
  const L=lvl();$('#i-rank').textContent=rankOf(L).n+' · niv. '+L;
  const into=S.xp%100;$('#i-lvl').textContent=(Object.keys(BUFF).length?'🧪 '+Object.keys(BUFF).map(k=>POTIONS[k].n.split(' ').pop()+' '+Math.ceil(BUFF[k])+'s').join(', '):'');
  $('#xp-bar i').style.width=into+'%';
@@ -3355,7 +3369,7 @@ function updateHUD(){
 }
 /* bouton de sort : l'icône de l'élément (ou du sort spécial) et, dans le coin, la forme (➶ ◎ ✧) ; le nom est dans le Grimoire */
 const EL_IC={feu:'🔥',glace:'❄️',eau:'💧',vent:'🌪️',nature:'🌿',lumiere:'☀️',ombre:'🌑',arcane:'✨'};
-const SP_IC={demantibulus:'💥',etoiles:'🌠',gardien:'🌳',souffle:'🐉',oubli:'🌫️','g-rempart':'🪨','g-egide':'🔮','g-ronces':'🌲','g-maree':'🌊'};
+const SP_IC={demantibulus:'💥',etoiles:'🌠',gardien:'🌳',souffle:'🐉',oubli:'🌫️','g-rempart':'⛰️','g-egide':'🔮','g-ronces':'🌲','g-maree':'🌊'};
 const slotIcon=sp=>SP_IC[sp.special]||EL_IC[sp.el]||'✦';
 function renderSlots(){const n=rankOf(lvl()).slots;document.querySelectorAll('.slot').forEach(b=>{const i=+b.dataset.s;const sp=i<n?S.spells.find(s=>s.id===S.slots[i]):null;const key=i>n?'H':i>=n?'L':sp?sp.id:'E';if(b.dataset.k===key)return;b.dataset.k=key;
  b.classList.toggle('hidden',i>n);if(i>=n){b.className='cbtn slot empty'+(i>n?' hidden':'');b.innerHTML='<span class="ic">🔒</span>';b.style.borderColor='';b.style.boxShadow='';}
@@ -3376,7 +3390,7 @@ function updateTracker(){
  const q=trackedQuest();const el=$('#tracker');
  if(!q){el.classList.add('hidden');beacon.visible=false;return;}
  const t=nav(stepTarget(q));el.classList.remove('hidden');$('#tr-q').textContent=q.title;const s=curStep(q);
- let d='';if(t){const dist=Math.hypot(t.x-player.x,t.z-player.z);d=' · '+Math.round(dist)+' m';
+ let d='';if(t){const dist=Math.hypot(t.x-player.x,t.z-player.z);d=' · '+(t.via?'portail · ':'')+Math.round(dist)+' m';
   const tx=t.x-player.x,tz=t.z-player.z,fx=Math.sin(camYaw),fz=Math.cos(camYaw);const f=tx*fx+tz*fz,r=tx*(-fz)+tz*fx;$('#arrow').style.transform='rotate('+Math.atan2(r,f)+'rad)';
   beacon.visible=S.zone==='monde';beacon.position.set(t.x,gh(t.x,t.z),t.z);}else beacon.visible=false;
  $('#tr-s').textContent=(s?s.text:'')+d;
@@ -3384,7 +3398,7 @@ function updateTracker(){
 
 /* ---------- dialogue ---------- */
 let dlgCtx=null;const CHATS={};
-function openDlg(ctx){dlgCtx=ctx;$('#dlg').classList.remove('hidden');$('#dlg-log').innerHTML='';
+function openDlg(ctx){dlgCtx=ctx;$('#dlg').classList.remove('hidden');$('#hint').classList.add('hidden');$('#dlg-log').innerHTML='';
  if(ctx.mode==='talk'){const n=ctx.npc;$('#dlg-title').textContent=n.name;$('#dlg-sub').textContent=n.role+' · humeur : '+moodOf(n.id);
   const h=CHATS[n.id]||(CHATS[n.id]=[]);if(!h.length)h.push({w:'n',t:pick(LINES[n.id])});h.forEach(m=>line(m.w,m.t));
   chips(['Bonjour !','Tu as une mission pour moi ?','Des rumeurs ?','Apprends-moi quelque chose']);
@@ -3710,7 +3724,7 @@ function findFocus(){let best=null,bd=3.6;
  for(const s of STATIONS){const d=Math.hypot(s.x-player.x,s.z-player.z);if(d<(s.reach||2.6)&&d<bd+0.4){const hh=s.hint();if(hh){bd=d;best={t:'st',s,h:hh};}}}
  for(const p of PLANTS){if(p.type!=='flower'||p.t<1||p.burn>0)continue;const d=Math.hypot(p.x-player.x,p.z-player.z);if(d<1.4&&d<bd){bd=d;best={t:'plant',p};}}
  focus=best;const h=$('#hint'),b=$('#b-act');
- if(!best){h.classList.add('hidden');b.classList.remove('ready');return;}
+ if(!best||anyModal()){h.classList.add('hidden');b.classList.remove('ready');return;} /* rien à proposer pendant un dialogue ou un menu */
  h.classList.remove('hidden');b.classList.add('ready');
  if(best.t==='npc')h.textContent='Parler à '+best.n.d.name;
  else if(best.t==='st')h.textContent=best.h;
@@ -4172,7 +4186,7 @@ function wallLine(dist,n,gap){const T=gardePt(28);let [dx,dz]=fwd(),cx,cz;if(T){
 function castGarde(k){
  if(k==='rempart'){const L=wallLine(3,7,1.15);const pieces=L.pts.map((p,i)=>{const o=new THREE.Mesh(WGEO.rock,mat(i%2?0x8a8478:0x777064,{flatShading:true,roughness:0.95}));const s=rnd(0.85,1.15);o.scale.set(s,rnd(1.45,1.75),s);o.rotation.set(rnd(-.3,.3),Math.random()*TAU,rnd(-.3,.3));o.castShadow=true;o.position.set(p.x,gh(p.x,p.z)-2,p.z);scene.add(o);
    for(let j=0;j<8;j++)PN.emit(p.x+rnd(-.6,.6),gh(p.x,p.z)+0.2,p.z+rnd(-.6,.6),rnd(-1.5,1.5),rnd(1,3),rnd(-1.5,1.5),0x6a5a44,0.4,0.7,rnd(.6,1.1),5,0.6,0.85);return {x:p.x,z:p.z,r:0.7,h:2.1,o,y0:gh(p.x,p.z)};});
-  wallAdd('rempart',pieces,12);SHAKE=Math.max(SHAKE,0.45);sfx('impact','nature',L.cx,L.cz);say('🪨 Un <b>rempart de pierre</b> jaillit du sol !','sys');}
+  wallAdd('rempart',pieces,12);SHAKE=Math.max(SHAKE,0.45);sfx('impact','nature',L.cx,L.cz);say('⛰️ Un <b>rempart de pierre</b> jaillit du sol !','sys');}
  else if(k==='ronces'){const pieces=[],T=gardePt(28),far=T&&Math.hypot(T.x-player.x,T.z-player.z)>4.5,ox=far?T.x:player.x,oz=far?T.z:player.z;const n=far?14:13,R=far?2.7:3.3;/* loin : une cage fermée (piège une créature) ; autour de soi : une sortie dans le dos */for(let i=0;i<n;i++){const a=far?i/n*TAU:player.ry+Math.PI*(-0.83+1.66*i/(n-1)),x=ox+Math.sin(a)*R,z=oz+Math.cos(a)*R;
    const g=new THREE.Group();const t=new THREE.Mesh(WGEO.trunk,mat(0x4a3424));t.position.y=0.35;g.add(t);const c=new THREE.Mesh(WGEO.cone,mat(i%2?0x2f5a2a:0x3a6a30,{flatShading:true}));c.position.y=1.6;c.castShadow=true;g.add(c);
    for(let j=0;j<5;j++){const th=new THREE.Mesh(WGEO.thorn,mat(0xd8c89a));const b=Math.random()*TAU;th.position.set(Math.cos(b)*0.42,rnd(0.9,2),Math.sin(b)*0.42);th.rotation.set(0,0,0);th.lookAt(Math.cos(b)*2,th.position.y,Math.sin(b)*2);th.rotateX(Math.PI/2);g.add(th);}
@@ -4875,30 +4889,30 @@ function gearCrit(){return S&&S.equip?(gearW().crit||0):0;}
 function gearVie(){return S&&S.equip?(gearR().vie||0):0;}
 function gearInit(){if(!S.equip)S.equip={wand:'apprenti',robe:'apprenti'};if(!S.gear)S.gear=['w:apprenti','r:apprenti'];if(S.or===undefined)S.or=0;}
 const hasGear=(t,k)=>(S.gear||[]).includes(t+':'+k);
-function giveGear(t,k,why){gearInit();if(hasGear(t,k))return false;S.gear.push(t+':'+k);const G=t==='w'?WANDS[k]:ROBES[k];banner((t==='w'?'🪄 ':'🧥 ')+G.n,why||G.d);sfx('learn');chron('Nouvel équipement : '+G.n+'.');save();return true;}
+function giveGear(t,k,why){gearInit();if(hasGear(t,k))return false;S.gear.push(t+':'+k);const G=t==='w'?WANDS[k]:ROBES[k];banner((t==='w'?'✨ ':'🧥 ')+G.n,why||G.d);sfx('learn');chron('Nouvel équipement : '+G.n+'.');save();return true;}
 function equip(t,k){gearInit();if(!hasGear(t,k))return;if(t==='w')S.equip.wand=k;else S.equip.robe=k;mana=Math.min(mana,manaMax());sfx('click');GEARV.want=null;save();}
-function gainOr(n,why){gearInit();S.or+=n;if(why)floatAt(player.x,player.z,'+'+n+' 🪙','#ffd24a');}
+function gainOr(n,why){gearInit();S.or+=n;if(why)floatAt(player.x,player.z,'+'+n+' 💰','#ffd24a');}
 // ---------- gains de pièces d'or ----------
 {const _k=killCreature;killCreature=function(e){const D=e&&e.data,was=D&&ENT.includes(e)&&!D.calme&&!D.pet&&!D.duel;const elite=D&&D.elite;const r=_k.apply(this,arguments);
-  if(was&&!ENT.includes(e)){if(D.dragon){gainOr(200,1);if(giveGear('w','dragon','Taillée dans une écaille d’Ignivor'))setTimeout(()=>say('🪄 Dans les restes d’Ignivor, une écaille luit encore : tu en tailles la <b>Baguette du dragon</b> (Grimoire › Perso pour l’équiper).','gm'),3500);}
+  if(was&&!ENT.includes(e)){if(D.dragon){gainOr(200,1);if(giveGear('w','dragon','Taillée dans une écaille d’Ignivor'))setTimeout(()=>say('✨ Dans les restes d’Ignivor, une écaille luit encore : tu en tailles la <b>Baguette du dragon</b> (Grimoire › Perso pour l’équiper).','gm'),3500);}
    else if(elite){gainOr(30,1);if(Math.random()<0.10){const opts=[...Object.keys(WANDS).filter(k=>!WANDS[k].unique&&k!=='apprenti').map(k=>['w',k]),...Object.keys(ROBES).filter(k=>!ROBES[k].needDragon&&k!=='apprenti').map(k=>['r',k])].filter(([t,k])=>!hasGear(t,k));if(opts.length){const [t,k]=pick(opts);giveGear(t,k,'Trouvé sur une créature élite');}}}
    else gainOr(2+Math.floor(Math.random()*3));}return r;};}
-{const _f=finishQuest;finishQuest=function(q){const r=_f.apply(this,arguments);const n=Math.round(20+Math.min(20,((q.reward&&q.reward.xp)||0)/10));gainOr(n);say('🪙 +'+n+' pièces d’or.','sys');return r;};}
+{const _f=finishQuest;finishQuest=function(q){const r=_f.apply(this,arguments);const n=Math.round(20+Math.min(20,((q.reward&&q.reward.xp)||0)/10));gainOr(n);say('💰 +'+n+' pièces d’or.','sys');return r;};}
 {const _st=starTake;starTake=function(T){const was=!T.got;const r=_st.apply(this,arguments);if(was&&T.got)gainOr(5);return r;};}
 // événements réussis : on regarde la bannière de victoire (caravane, brèche)
 {const _b=banner;banner=function(t){if(/^(Caravane sauvée|La brèche se referme)/.test(t||''))gainOr(40,1);return _b.apply(this,arguments);};}
 // ---------- l'Échoppe de l'Artisan (Village de Brumepont) ----------
 const SHOPG={x:null,z:null,y:0};
 const SELL={essence:8,cristal:6};const sellPrice=k=>SELL[k]||3;
-function goldTxt(){return '🪙 '+(S.or||0)+' pièces d’or';}
+function goldTxt(){return '💰 '+(S.or||0)+' pièces d’or';}
 function shopRoot(){gearInit();openPick('🛠 L’Échoppe de l’Artisan','« Baguettes taillées main, robes cousues sur mesure ! Et je rachète tes récoltes. » — '+goldTxt(),[
- {t:'🪄 Baguettes',s:'Plus de puissance, des coups critiques…',fn:()=>shopList('w')},{t:'🧥 Robes',s:'Mana, vitesse, vie…',fn:()=>shopList('r')},{t:'🌿 Vendre mes récoltes',s:'Ingrédients, essences, cristaux',fn:()=>shopSell()}]);}
+ {t:'✨ Baguettes',s:'Plus de puissance, des coups critiques…',fn:()=>shopList('w')},{t:'🧥 Robes',s:'Mana, vitesse, vie…',fn:()=>shopList('r')},{t:'🌿 Vendre mes récoltes',s:'Ingrédients, essences, cristaux',fn:()=>shopSell()}]);}
 function shopList(t){const L=t==='w'?WANDS:ROBES;const items=Object.entries(L).filter(([k,G])=>k!=='apprenti'&&!G.unique).map(([k,G])=>{const own=hasGear(t,k),lock=G.needDragon&&!S.dragonMort;
-  return {t:(own?'✔ ':'')+G.n+(own?'':' — '+G.p+' 🪙'),s:lock?'Vendue une fois Ignivor vaincue.':G.d+(own?' (tu l’as déjà : équipe-la dans la fenêtre du personnage)':''),off:own||lock||(S.or||0)<G.p,
-   fn:()=>{if((S.or||0)<G.p)return;S.or-=G.p;S.gear.push(t+':'+k);equip(t,k);banner((t==='w'?'🪄 ':'🧥 ')+G.n,'Achetée et équipée');sfx('win');chron('Acheté : '+G.n+'.');save();shopList(t);}};});
- items.push({t:'← Retour',fn:()=>shopRoot()});openPick(t==='w'?'🪄 Baguettes':'🧥 Robes',goldTxt(),items);}
+  return {t:(own?'✔ ':'')+G.n+(own?'':' — '+G.p+' 💰'),s:lock?'Vendue une fois Ignivor vaincue.':G.d+(own?' (tu l’as déjà : équipe-la dans la fenêtre du personnage)':''),off:own||lock||(S.or||0)<G.p,
+   fn:()=>{if((S.or||0)<G.p)return;S.or-=G.p;S.gear.push(t+':'+k);equip(t,k);banner((t==='w'?'✨ ':'🧥 ')+G.n,'Achetée et équipée');sfx('win');chron('Acheté : '+G.n+'.');save();shopList(t);}};});
+ items.push({t:'← Retour',fn:()=>shopRoot()});openPick(t==='w'?'✨ Baguettes':'🧥 Robes',goldTxt(),items);}
 function shopSell(){const ks=Object.keys(S.inv||{}).filter(k=>INGR[k]&&(S.inv[k]||0)>0);
- const items=ks.map(k=>({t:INGR[k].n+' ×'+S.inv[k],s:'Vendre 1 : '+sellPrice(k)+' 🪙 · tout : '+sellPrice(k)*S.inv[k]+' 🪙',fn:()=>{const n=S.inv[k];S.or=(S.or||0)+sellPrice(k)*n;S.inv[k]=0;sfx('pick');say('🪙 Tu vends '+n+' '+esc(INGR[k].n)+' (+'+sellPrice(k)*n+').','sys');save();shopSell();}}));
+ const items=ks.map(k=>({t:INGR[k].n+' ×'+S.inv[k],s:'Vendre 1 : '+sellPrice(k)+' 💰 · tout : '+sellPrice(k)*S.inv[k]+' 💰',fn:()=>{const n=S.inv[k];S.or=(S.or||0)+sellPrice(k)*n;S.inv[k]=0;sfx('pick');say('💰 Tu vends '+n+' '+esc(INGR[k].n)+' (+'+sellPrice(k)*n+').','sys');save();shopSell();}}));
  if(!items.length)items.push({t:'Rien à vendre',s:'Cueille des ingrédients ou bats des créatures.',off:true});items.push({t:'← Retour',fn:()=>shopRoot()});openPick('🌿 Vendre mes récoltes',goldTxt()+' · un clic vend tout le lot',items);}
 function buildShop(){const L=LOCBY.village;let p=null;for(const [ox,oz] of [[-5,4],[5,5],[-6,-3],[6,-4],[0,7]]){const q={x:L.spot.x+ox,z:L.spot.z+oz};if(isFree(q,1.6)){p=q;break;}}if(!p)p=freePoint(L,6);
  const y=gh(p.x,p.z);SHOPG.x=p.x;SHOPG.z=p.z;SHOPG.y=y;const g=new THREE.Group();g.position.set(p.x,y,p.z);g.rotation.y=Math.atan2(L.spot.x-p.x,L.spot.z-p.z);scene.add(g);
@@ -4927,9 +4941,9 @@ function gearVisTick(dt){GEARV.t-=dt;if(GEARV.t>0||!started)return;GEARV.t=0.5;g
   d.innerHTML=h;b.insertBefore(d,b.children[1]||null);d.querySelectorAll('[data-eq]').forEach(x=>x.onclick=()=>{const [t,k]=x.dataset.eq.split(':');equip(t,k);renderBook();});};}
 {const _wc=worldCtx;worldCtx=function(){const r=_wc.apply(this,arguments);try{if(r&&typeof r==='object'){gearInit();r.equipement='Baguette : '+gearW().n+' ; robe : '+gearR().n+' ; '+(S.or||0)+' pièces d’or. Échoppe de l’Artisan à Brumepont (baguettes, robes, rachat des récoltes).';}}catch(e){}return r;};}
 /* ================= LE DOMAINE : terrain, maison, jardin =================
-   Un terrain est à vendre près du Village de Brumepont (panneau). Une fois acheté (300 🪙), on y construit par étapes
-   depuis le panneau « Ton domaine » : maison (600 🪙, 3 styles), jardin de 4 parcelles (200 🪙), chaudron d'alchimie
-   (150 🪙), lanternes et fleurs (80 🪙). La maison : se reposer (vie et mana pleins ; la nuit, dormir jusqu'au matin),
+   Un terrain est à vendre près du Village de Brumepont (panneau). Une fois acheté (300 💰), on y construit par étapes
+   depuis le panneau « Ton domaine » : maison (600 💰, 3 styles), jardin de 4 parcelles (200 💰), chaudron d'alchimie
+   (150 💰), lanternes et fleurs (80 💰). La maison : se reposer (vie et mana pleins ; la nuit, dormir jusqu'au matin),
    point de réveil après un évanouissement dans la vallée, destination de la Pierre de rappel.
    Jardin : planter 1 ingrédient de cueillette → 6 h de jeu plus tard (≈ 4 min), récolter 3 ingrédients.
    S.home = {x,z,rot,house:null|style,garden:[{k,t}|null ×4],cauldron,deco}. Tout est reconstruit au chargement (kit 11b). */
@@ -4968,22 +4982,22 @@ function plotsTick(){for(const P of HOME.plots){const st=plotState(P);const key=
    if(st.s==='mur'){const f=new THREE.Mesh(new THREE.SphereGeometry(0.12,8,6),mat(c,{emissive:c,emissiveIntensity:0.4}));f.position.set(Math.cos(a)*0.45,0.55,Math.sin(a)*0.45);g.add(f);}}
   if(st.s==='mur'){const gl=glow(c,1.2,0.6);gl.position.y=0.6;g.add(gl);}scene.add(g);P.o=g;}}
 // ---------- le panneau du terrain / du domaine ----------
-function homeMenu(){if(!S.home){if((S.or||0)<HOMEP.terrain){say('🏡 Ce terrain coûte <b>'+HOMEP.terrain+' 🪙</b> (tu as '+(S.or||0)+').','sys');return;}
-  openPick('🏡 Terrain à vendre','Un beau terrain plat près de Brumepont. Prix : '+HOMEP.terrain+' 🪙 (tu as '+(S.or||0)+').',[{t:'Acheter le terrain',s:HOMEP.terrain+' 🪙',fn:()=>{S.or-=HOMEP.terrain;S.home={x:HOME.site.x,z:HOME.site.z,rot:HOME.site.rot,house:null,garden:[null,null,null,null],cauldron:false,deco:false};
+function homeMenu(){if(!S.home){if((S.or||0)<HOMEP.terrain){say('🏡 Ce terrain coûte <b>'+HOMEP.terrain+' 💰</b> (tu as '+(S.or||0)+').','sys');return;}
+  openPick('🏡 Terrain à vendre','Un beau terrain plat près de Brumepont. Prix : '+HOMEP.terrain+' 💰 (tu as '+(S.or||0)+').',[{t:'Acheter le terrain',s:HOMEP.terrain+' 💰',fn:()=>{S.or-=HOMEP.terrain;S.home={x:HOME.site.x,z:HOME.site.z,rot:HOME.site.rot,house:null,garden:[null,null,null,null],cauldron:false,deco:false};
    $('#pick').classList.add('hidden');if(HOME.sale){scene.remove(HOME.sale);HOME.sale=null;}homeBuild('terrain');banner('Domaine de '+S.name,'Le terrain est à toi !');sfx('win');chron('J’ai acheté un terrain près de Brumepont.');save();setTimeout(homeMenu,1200);}}]);return;}
  const H=S.home,it=[];
- if(H.house===null)HOME_STYLES.forEach(([n],i)=>it.push({t:'🏠 '+n,s:HOMEP.maison+' 🪙',off:(S.or||0)<HOMEP.maison,fn:()=>buyPart('maison',HOMEP.maison,()=>{H.house=i;})}));
- if(!H.gardenOn)it.push({t:'🌱 Jardin (4 parcelles)',s:HOMEP.jardin+' 🪙 · fais pousser tes ingrédients',off:(S.or||0)<HOMEP.jardin,fn:()=>buyPart('jardin',HOMEP.jardin,()=>{H.gardenOn=true;})});
- if(!H.cauldron)it.push({t:'⚗ Chaudron d’alchimie',s:HOMEP.chaudron+' 🪙 · tes potions à la maison',off:(S.or||0)<HOMEP.chaudron,fn:()=>buyPart('chaudron',HOMEP.chaudron,()=>{H.cauldron=true;})});
- if(!H.deco)it.push({t:'🏮 Lanternes et fleurs',s:HOMEP.deco+' 🪙',off:(S.or||0)<HOMEP.deco,fn:()=>buyPart('deco',HOMEP.deco,()=>{H.deco=true;})});
+ if(H.house===null)HOME_STYLES.forEach(([n],i)=>it.push({t:'🏠 '+n,s:HOMEP.maison+' 💰',off:(S.or||0)<HOMEP.maison,fn:()=>buyPart('maison',HOMEP.maison,()=>{H.house=i;})}));
+ if(!H.gardenOn)it.push({t:'🌱 Jardin (4 parcelles)',s:HOMEP.jardin+' 💰 · fais pousser tes ingrédients',off:(S.or||0)<HOMEP.jardin,fn:()=>buyPart('jardin',HOMEP.jardin,()=>{H.gardenOn=true;})});
+ if(!H.cauldron)it.push({t:'⚗ Chaudron d’alchimie',s:HOMEP.chaudron+' 💰 · tes potions à la maison',off:(S.or||0)<HOMEP.chaudron,fn:()=>buyPart('chaudron',HOMEP.chaudron,()=>{H.cauldron=true;})});
+ if(!H.deco)it.push({t:'🏮 Lanternes et fleurs',s:HOMEP.deco+' 💰',off:(S.or||0)<HOMEP.deco,fn:()=>buyPart('deco',HOMEP.deco,()=>{H.deco=true;})});
  if(!it.length)it.push({t:'✔ Ton domaine est complet !',s:'Maison, jardin, chaudron, lanternes.',off:true});
- openPick('🏡 Domaine de '+S.name,'🪙 '+(S.or||0)+' pièces d’or. Construis ce que tu veux, dans l’ordre que tu veux.',it);}
+ openPick('🏡 Domaine de '+S.name,'💰 '+(S.or||0)+' pièces d’or. Construis ce que tu veux, dans l’ordre que tu veux.',it);}
 function buyPart(part,price,set){if((S.or||0)<price)return;S.or-=price;set();$('#pick').classList.add('hidden');fade(()=>{homeBuild(part);if(part==='jardin')homePlots();});
  SHAKE=Math.max(SHAKE,0.3);sfx('win');banner({maison:'Ta maison est construite !',jardin:'Le jardin est prêt',chaudron:'Ton chaudron bouillonne',deco:'Le domaine s’illumine'}[part],'Domaine de '+S.name);chron('Domaine : '+part+'.');save();}
 function homeRest(){if(S.time>=20*60||S.time<5*60){sleepHere();return;}if(typeof VIE!=='undefined')VIE.hp=VIE.max;mana=manaMax();sfx('learn');say('🏠 Tu te reposes chez toi : vie et magie au maximum.','sys');}
 // ---------- mise en place (au lancement de la partie) ----------
 function homeSetup(){HOME.site=S.home?{x:S.home.x,z:S.home.z,rot:S.home.rot}:homeFindSite();if(!HOME.site)return;const H=HOME.site;
- station({x:H.x+0,z:H.z+0,get reach(){return 2.4;},hint:()=>S.home?'🏡 Ton domaine':'🏡 Terrain à vendre ('+HOMEP.terrain+' 🪙)',act:()=>homeMenu()});
+ station({x:H.x+0,z:H.z+0,get reach(){return 2.4;},hint:()=>S.home?'🏡 Ton domaine':'🏡 Terrain à vendre ('+HOMEP.terrain+' 💰)',act:()=>homeMenu()});
  const p=homeW(0,0.5);station({x:p.x,z:p.z,reach:1.8,hint:()=>S.home&&S.home.house!==null?(S.time>=20*60||S.time<5*60?'Dormir chez toi':'Se reposer chez toi'):null,act:()=>homeRest()});
  if(!S.home){const g=new THREE.Group(),y=gh(H.x,H.z);g.position.set(H.x,y,H.z);g.rotation.y=H.rot;const wd=mat(0x6a4a2a);const post=new THREE.Mesh(new THREE.BoxGeometry(0.15,1.8,0.15),wd);post.position.y=0.9;g.add(post);
   const bd=new THREE.Mesh(new THREE.BoxGeometry(1.5,0.8,0.08),mat(0xe8dcc0));bd.position.y=1.6;g.add(bd);const gl=glow(0xffd24a,1.6,0.6);gl.position.y=2.2;g.add(gl);scene.add(g);HOME.sale=g;return;}
@@ -5050,7 +5064,7 @@ function pshTick(dt){if(!started)return;const t=performance.now()/1000;
      les créatures), tour de guet (on peut se tenir dessus), plateforme (même en l'air, en balai), mur de cristal
      (sans ressource : 40 mana).
    - Ressources : bois (couper un arbre de la vallée, une fois par jour), pierre (carrières des Ruines d'Ysmer et du
-     Plateau des Géants, rochers), ou l'Échoppe (matériaux). Construo et Reparo s'apprennent à l'Échoppe (50 🪙).
+     Plateau des Géants, rochers), ou l'Échoppe (matériaux). Construo et Reparo s'apprennent à l'Échoppe (50 💰).
    - Destruction progressive : sorts du joueur (le feu brûle le bois, l'eau l'éteint, Démantibulus pulvérise),
      créatures qui assiègent (bloquées, elles frappent), boules de feu d'Ignivor, tirs ennemis. Fissures, puis ruine.
      SEUL ce que le joueur construit peut casser : château, maisons et décors sont incassables.
@@ -5139,8 +5153,8 @@ function bldMenu(P){if(!P)return;const T=BLD_T[P.t],it=[];
 // ---------- récolter : bois et pierre ----------
 const GATHER={x:1e9,z:1e9,what:null,ref:null};
 station({get x(){return GATHER.x;},get z(){return GATHER.z;},reach:2.4,hint:()=>GATHER.what==='bois'?'🪓 Couper du bois (+2)':GATHER.what==='pierre'?'⛏ Extraire de la pierre (+2)':null,act:()=>{const R=GATHER.ref;if(!R)return;
- if(GATHER.what==='bois'){R.cut=S.day;addItem('bois',2);for(let i=0;i<14;i++)PN.emit(R.x+rnd(-.4,.4),gh(R.x,R.z)+rnd(0.5,1.5),R.z+rnd(-.4,.4),rnd(-2,2),rnd(1,3),rnd(-2,2),0x8a5a2a,0.25,0.5,0.7,5,0.6,0.9);sfx('impact','nature',R.x,R.z);say('🪵 +2 bois ('+S.inv.bois+').','sys');}
- else{R.mined=gameMin();addItem('pierre',2);debris(R.x,gh(R.x,R.z)+0.8,R.z,0x9a948a,6);sfx('impact','arcane',R.x,R.z);say('🪨 +2 pierre ('+S.inv.pierre+').','sys');}save();}});
+ if(GATHER.what==='bois'){R.cut=S.day;addItem('bois',2);for(let i=0;i<14;i++)PN.emit(R.x+rnd(-.4,.4),gh(R.x,R.z)+rnd(0.5,1.5),R.z+rnd(-.4,.4),rnd(-2,2),rnd(1,3),rnd(-2,2),0x8a5a2a,0.25,0.5,0.7,5,0.6,0.9);sfx('impact','nature',R.x,R.z);say('🌲 +2 bois ('+S.inv.bois+').','sys');}
+ else{R.mined=gameMin();addItem('pierre',2);debris(R.x,gh(R.x,R.z)+0.8,R.z,0x9a948a,6);sfx('impact','arcane',R.x,R.z);say('⛰️ +2 pierre ('+S.inv.pierre+').','sys');}save();}});
 const QUARRIES=[];
 function buildQuarries(){[['ruines',4,3],['landes_plateau',6,-4]].forEach(([id,ox,oz])=>{const L=LOCBY[id];if(!L)return;let p={x:L.spot.x+ox,z:L.spot.z+oz};if(!isFree(p,1.5))p=freePoint(L,6);const y=gh(p.x,p.z);
   const g=new THREE.Group();g.position.set(p.x,y,p.z);for(let i=0;i<7;i++){const m=new THREE.Mesh(new THREE.DodecahedronGeometry(rnd(0.35,0.6),0),mat([0x9a948a,0x8a847a,0xa8a296][i%3],{flatShading:true}));m.position.set(rnd(-0.9,0.9),0.3+(i>4?0.5:0),rnd(-0.9,0.9));m.castShadow=true;g.add(m);}
@@ -5170,8 +5184,8 @@ function bldTick(dt){if(!started||S.zone!=='monde')return;
 {const _sg=startGame;startGame=function(){const r=_sg.apply(this,arguments);try{BLD.splice(0).forEach(bldUnmake);(S.builds||[]).forEach(b=>{if(!BLD_T[b.t])return;const P=Object.assign({id:++BLDN},b);BLD.push(P);if(P.ruin){P.ruin=false;bldMake(P);bldUnmake(P);P.ruin=true;}else bldMake(P);});}catch(e){console.error(e);}return r;};}
 // ---------- apprendre Construo et Reparo, acheter des matériaux : l'Échoppe ----------
 {const _s=shopRoot;shopRoot=function(){_s.apply(this,arguments);const L=$('#pick-l'),add=(t,s,off,fn)=>{const b=document.createElement('button');b.className='pk'+(off?' off':'');b.innerHTML='<span>'+t+'</span><small>'+s+'</small>';if(!off)b.onclick=fn;L.appendChild(b);};
-  add('🧱 Matériaux','Bois 4 🪙 · Pierre 5 🪙 (par lot de 5)',false,()=>{openPick('🧱 Matériaux','🪙 '+(S.or||0)+' pièces d’or',[{t:'5 bois',s:'20 🪙',off:(S.or||0)<20,fn:()=>{S.or-=20;addItem('bois',5);sfx('pick');save();shopRoot();}},{t:'5 pierres',s:'25 🪙',off:(S.or||0)<25,fn:()=>{S.or-=25;addItem('pierre',5);sfx('pick');save();shopRoot();}},{t:'← Retour',fn:()=>shopRoot()}]);});
-  if(!S.spells.some(s=>s.special==='construo'))add('📜 Apprendre Construo et Reparo','Bâtir et réparer · 50 🪙'+(lvl()<3?' (dès le niveau 3)':''),(S.or||0)<50||lvl()<3,()=>{S.or-=50;learnSpell(Object.assign({},CONSTRUO_SP));learnSpell(Object.assign({},REPARO_SP));$('#pick').classList.add('hidden');banner('Construo · Reparo','Bâtis, protège, répare');save();});};}
+  add('🧱 Matériaux','Bois 4 💰 · Pierre 5 💰 (par lot de 5)',false,()=>{openPick('🧱 Matériaux','💰 '+(S.or||0)+' pièces d’or',[{t:'5 bois',s:'20 💰',off:(S.or||0)<20,fn:()=>{S.or-=20;addItem('bois',5);sfx('pick');save();shopRoot();}},{t:'5 pierres',s:'25 💰',off:(S.or||0)<25,fn:()=>{S.or-=25;addItem('pierre',5);sfx('pick');save();shopRoot();}},{t:'← Retour',fn:()=>shopRoot()}]);});
+  if(!S.spells.some(s=>s.special==='construo'))add('📜 Apprendre Construo et Reparo','Bâtir et réparer · 50 💰'+(lvl()<3?' (dès le niveau 3)':''),(S.or||0)<50||lvl()<3,()=>{S.or-=50;learnSpell(Object.assign({},CONSTRUO_SP));learnSpell(Object.assign({},REPARO_SP));$('#pick').classList.add('hidden');banner('Construo · Reparo','Bâtis, protège, répare');save();});};}
 {const _wc=worldCtx;worldCtx=function(){const r=_wc.apply(this,arguments);try{if(r&&typeof r==='object')r.constructions=BLD.filter(P=>!P.ruin).length+' constructions du joueur (murs, portes, tours…), seules choses destructibles du monde ; sorts Construo / Reparo ; incassabilité par enchantement.';}catch(e){}return r;};}
 /* ================= BRIQUES : construire pièce par pièce, avec de la vraie physique =================
    Dans la palette de Construo (section « Briques ») : brique de pierre, brique de bois, poutre, dalle, brique de
@@ -5272,7 +5286,7 @@ function brkTick(dt){if(!started||!BRK.length||S.zone!=='monde')return;let moved
    1er toucher : choisir → une lumière verte montre où l'objet sera posé ; elle suit les déplacements et la caméra.
    2e toucher sur le même bouton : poser. ⇄ (ou relancer Construo) : quitter le mode construction. */
 const BMODE={on:false,page:0,sel:null,ghost:null};
-const BITEMS=[['b:pierre','🧱','Brique'],['b:bois','🪵','Bois'],['b:cristal','💎','Cristal'],['b:poutre','➖','Poutre'],['b:dalle','⬛','Dalle'],
+const BITEMS=[['b:pierre','🧱','Brique'],['b:bois','🌲','Bois'],['b:cristal','💎','Cristal'],['b:poutre','➖','Poutre'],['b:dalle','⬛','Dalle'],
  ['w:pierre','🏰','Mur'],['w:bois','🚪','Mur bois'],['w:palissade','🪓','Palissade'],['w:porte','🚪','Porte'],['w:tour','🗼','Tour'],['w:plateforme','🟫','Plateforme'],['w:cristal','🔷','Mur cristal'],['x:inc','✨','Incassable']];
 const XITEMS={inc:{n:'Rendre incassable (zone de 5 m)',w:5,h:0.15,d:5,cost:{essence:1,cristal:1}}};
 /* incassabilité : les briques et constructions autour du point visé (1 essence + 1 cristal par lot de 6) */
@@ -5447,7 +5461,7 @@ function cObjBuild(){if(COBJ.done||!COBJETS.length)return;if(!O3.ready&&COBJETS.
 function cObjUse(c){if(c.interaction==='message'){say('📜 <b>'+esc(c.nom)+'</b> : '+esc(c.texte||'…'),'gm');return;}
  if(c.interaction==='soin'){if(typeof VIE!=='undefined')VIE.hp=VIE.max;burst(player.x,player.y+1,player.z,0xff7aa0,20,3);say('💚 '+esc(c.nom)+' : te voilà soigné(e).','sys');return;}
  if(c.interaction==='mana'){mana=manaMax();burst(player.x,player.y+1,player.z,0x4a7dff,20,3);say('💧 '+esc(c.nom)+' : ta magie est pleine.','sys');return;}
- if(c.interaction==='coffre'){S.objLoot=S.objLoot||{};if(S.objLoot[c.id]===S.day)return;S.objLoot[c.id]=S.day;const B=c.butin||{or:20};const out=[];if(B.or){gainOr(B.or);out.push(B.or+' 🪙');}['essence','cristal','bois','pierre'].forEach(k=>{if(B[k]){addItem(k,B[k]);out.push(B[k]+' '+INGR[k].n.toLowerCase());}});
+ if(c.interaction==='coffre'){S.objLoot=S.objLoot||{};if(S.objLoot[c.id]===S.day)return;S.objLoot[c.id]=S.day;const B=c.butin||{or:20};const out=[];if(B.or){gainOr(B.or);out.push(B.or+' 💰');}['essence','cristal','bois','pierre'].forEach(k=>{if(B[k]){addItem(k,B[k]);out.push(B[k]+' '+INGR[k].n.toLowerCase());}});
   sfx('win');burst(c.x,gh(c.x,c.z)+1,c.z,0xffd24a,30,4);say('🎁 '+esc(c.nom)+' : '+(out.join(', ')||'vide…')+'. (Il se remplit chaque jour.)','gm');save();}}
 {const _w=world4Tick;world4Tick=function(dt){const r=_w.apply(this,arguments);try{if(!COBJ.done)cObjBuild();}catch(e){}return r;};}
 /* ================= STRUCTURES : bâtiments faits de vraies briques =================
@@ -5507,7 +5521,7 @@ function cqGive(c){const q=cqQuest(c);if(!q){say('Cette quête n’a pas d’ét
   b.onclick=()=>{b.remove();if(c.description)line('n',c.description);if(cqGive(c))line('sys','Quête acceptée : '+c.titre);};$('#chips').prepend(b);}}return r;};}
 /* récompenses en plus de l'XP et du sort ; mémoire des quêtes finies */
 {const _f=finishQuest;finishQuest=function(q){const r=_f.apply(this,arguments);if(q&&q.cq){S.cqDone=S.cqDone||{};S.cqDone[q.cq]=S.day||1;const R=q.reward||{},out=[];
-  if(R.or){gainOr(R.or);out.push(R.or+' 🪙');}['essence','cristal'].forEach(k=>{if(R[k]){addItem(k,R[k]);out.push(R[k]+' '+INGR[k].n.toLowerCase());}});if(out.length)say('Récompense : '+out.join(', '),'sys');save();}return r;};}
+  if(R.or){gainOr(R.or);out.push(R.or+' 💰');}['essence','cristal'].forEach(k=>{if(R[k]){addItem(k,R[k]);out.push(R[k]+' '+INGR[k].n.toLowerCase());}});if(out.length)say('Récompense : '+out.join(', '),'sys');save();}return r;};}
 /* étape « vaincre » */
 function cqMatch(s,D){if(!D||D.duel||D.pet||D.charmed)return false;if(!s.crea)return !D.calme;if(D.cid===s.crea)return true;return (D.name||'').toLowerCase().includes(s.crea.toLowerCase());}
 {const _k=killCreature;killCreature=function(e){const D=e&&e.data,was=D&&ENT.includes(e);const r=_k.apply(this,arguments);
@@ -5660,6 +5674,9 @@ function terGo(x,z){fade(()=>{const a=TER.arch[0];player.x=x!==undefined?x:a.x+(
   else say('🗺 Les Grandes Terres.','sys');save();});}
 function terBack(to){const p=to==='landes'?TER.lp:TER.vp;if(!p)return;fade(()=>{player.x=p.x+Math.sin(p.ry)*3;player.z=p.z+Math.cos(p.ry)*3;player.y=gh(player.x,player.z)+0.2;player.vx=player.vz=player.vy=0;player.ry=p.ry;camYaw=p.ry;terClear();
   sfx('door');say(to==='landes'?'🌄 Les Landes d’Ombrelune.':'🏰 Retour dans la vallée d’Aldermoor.','sys');if(to==='landes'&&typeof LANDES!=='undefined')LANDES.seen=true;save();});}
+/* guidage (quêtes, repères) : une cible dans une autre région passe par le bon portail (via = « portail » dans le suivi) */
+{const _n=nav;nav=function(t){const r=_n.apply(this,arguments);if(!r||S.zone!=='monde')return r;const a=regionOf(player.x),b=regionOf(t.x);if(a===b)return r;
+ let p=null;if(a==='vallee')p=b==='landes'?LANDES.vp:TER.vp;else if(a==='landes')p=b==='vallee'?LANDES.lp:TER.lp;else p=TER.arch&&TER.arch[b==='vallee'?0:1];return p?{x:p.x,z:p.z,via:1}:r;};}
 /* ---------- peuplement selon le biome ---------- */
 const TER_POP=[
  [['Cerfs des plaines','feu','nature',2,1],['Sangliers grogneurs','glace','nature',3],['Poules des bruyères','eau','lumiere',1,1]],
@@ -5737,7 +5754,7 @@ function mineAt(kind,Q){if(DIG.cd>0)return;if(!inTerres()||S.zone!=='monde'){say
  if(b!==2&&b!==6||Math.random()<0.5){addItem('pierre',1);out.push('+1 pierre');}else out.push('sable');
  if(Math.random()<(nearM?0.42:(b===5||b===3)?0.24:0.06)+deep*0.025){addItem('minerai',1);out.push('+1 minerai');}
  if(Math.random()<(nearM&&deep>2?0.22:deep>4?0.07:0.015)){addItem('cristal',1);out.push('+1 cristal');}
- if(Math.random()<0.035+(nearM?0.03:0)){const g=4+Math.floor(Math.random()*9);gainOr(g);out.push('+'+g+' 🪙');}
+ if(Math.random()<0.035+(nearM?0.03:0)){const g=4+Math.floor(Math.random()*9);gainOr(g);out.push('+'+g+' 💰');}
  floatAt(x,z,out.join(' · '),'#ffe0a0');if(!S.mineVu){S.mineVu=1;say('⛏ Chaque coup rapporte de la pierre. Creuse en profondeur ou près des <b>Mines de Brisefer</b> pour trouver du minerai de fer et des cristaux. Le minerai fait des <b>briques de fer</b>, les plus solides.','gm');}
  save();renderSlots();}
 /* dans la roulette : aperçu en disque, et la page du minage d'abord quand on est dans les Grandes Terres */

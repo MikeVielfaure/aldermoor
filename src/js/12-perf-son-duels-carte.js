@@ -90,9 +90,16 @@ function grassFade(m){const ob=m.onBeforeCompile;m.onBeforeCompile=(sh,r)=>{ob(s
 let TALK=null;const TKV=new THREE.Vector3(),TKL=new THREE.Vector3();
 function camClear(cp,dist){const sx=-Math.sin(camYaw)*Math.cos(cp),sz=-Math.cos(camYaw)*Math.cos(cp),sy=Math.sin(cp),hy=player.y+1.7;
  for(let d=0.5;d<=dist;d+=0.3){const x=player.x+sx*d,z=player.z+sz*d;if(gh(x,z)+0.55>hy+sy*d)return Math.max(0.9,d-0.6);}return dist;}
+function talkBlocked(ax,az,bx,bz){const n=Math.max(2,Math.ceil(Math.hypot(bx-ax,bz-az)/0.4)),x0=Math.min(ax,bx),x1=Math.max(ax,bx),z0=Math.min(az,bz),z1=Math.max(az,bz);
+ for(const c of COLS){if(c.off||c.lake||c.bot!==undefined||(c.h!==undefined&&c.h<1.2))continue;const rx=(c.r!==undefined?c.r:c.hw)+0.3,rz=(c.r!==undefined?c.r:c.hd)+0.3;if(c.x<x0-rx||c.x>x1+rx||c.z<z0-rz||c.z>z1+rz)continue;
+  for(let i=1;i<n;i++){const t=i/n,x=ax+(bx-ax)*t,z=az+(bz-az)*t;if(c.r!==undefined?Math.hypot(x-c.x,z-c.z)<rx:Math.abs(x-c.x)<rx&&Math.abs(z-c.z)<rz)return true;}}return false;}
 function talkCam(dt){const n=TALK.n;const mx=(player.x+n.x)/2,mz=(player.z+n.z)/2,dx=n.x-player.x,dz=n.z-player.z,d=Math.hypot(dx,dz)||1;
  const ux=dx/d,uz=dz/d;let sx=-uz,sz=ux;const cx0=player.x-Math.sin(camYaw)*5,cz0=player.z-Math.cos(camYaw)*5;if((cx0-mx)*sx+(cz0-mz)*sz<0){sx=-sx;sz=-sz;}
- const D=Math.max(5.2,d*1.3+3);let x=mx+sx*D-ux*1.7,z=mz+sz*D-uz*1.7;const g0=S.zone==='monde'?gh(mx,mz):0,gy=Math.max(S.zone==='monde'?gh(x,z):0,g0);
+ const D=Math.max(5.2,d*1.3+3);
+ /* une place d'où l'on voit les deux sans lampadaire, arbre ou mur entre eux (cherchée une fois par dialogue) */
+ if(!TALK.cs||TALK.cs.n!==n){TALK.cs={n,sg:1,f:1};find:for(const sg of [1,-1])for(const f of [1,0.78,0.58,0.42]){const x=mx+sx*sg*D*f-ux*1.7,z=mz+sz*sg*D*f-uz*1.7;
+   if(!talkBlocked(x,z,player.x,player.z)&&!talkBlocked(x,z,n.x,n.z)){TALK.cs={n,sg,f};break find;}}}
+ sx*=TALK.cs.sg;sz*=TALK.cs.sg;let x=mx+sx*D*TALK.cs.f-ux*1.7,z=mz+sz*D*TALK.cs.f-uz*1.7;const g0=S.zone==='monde'?gh(mx,mz):0,gy=Math.max(S.zone==='monde'?gh(x,z):0,g0);
  TKV.set(x,gy+1.8,z);camera.position.lerp(TKV,Math.min(1,dt*5));TKL.set(mx-ux*0.2,g0+1.0,mz-uz*0.2);camera.lookAt(TKL);}
 function setTalk(n){if(TALK&&TALK.n!==n)TALK.n.obj.children.forEach(o=>{if(o.isSprite)o.visible=true;});if(n)n.obj.children.forEach(o=>{if(o.isSprite)o.visible=false;});TALK=n?{n}:null;const w=window.innerWidth,h=window.innerHeight;if(n)camera.setViewOffset(w,h,0,Math.round(h*0.13),w,h);else camera.clearViewOffset();camera.updateProjectionMatrix();}
 
@@ -357,6 +364,8 @@ function drawMap(){$('#map h3').textContent='Carte d’Aldermoor';const cv=$('#m
  ENT.forEach(e=>{if(e.z<-150||e.z>150)return;const [x,y]=P(e.x,e.z);if(e.kind==='event'){g.fillStyle='#ffd27a';g.font='800 14px Inter';g.fillText('!',x,y+5);g.font='600 11px Inter, sans-serif';}else if(e.kind==='creature'&&!e.data.duel){g.fillStyle='#ff6a6a';g.beginPath();g.arc(x,y,2.4,0,TAU);g.fill();}});
  npcs.forEach(n=>{if(n.sleep||n.z>150||n.z<-150||n.inDuel)return;const [x,y]=P(n.x,n.z);g.fillStyle='#ffc6ef';g.beginPath();g.arc(x,y,3.2,0,TAU);g.fill();g.fillStyle='rgba(255,255,255,.85)';g.font='600 9px Inter, sans-serif';g.fillText(n.d.name.replace(/^(Pr\.|Mère) /,'').split(' ')[0],x,y-5);g.font='600 11px Inter, sans-serif';});
  const q=trackedQuest();if(q){const t=stepTarget(q);if(t&&t.z>-150&&t.z<150){const [x,y]=P(t.x,t.z);star(g,x,y,7,'#f3cf7a');}}
+ /* portails vers les autres régions */[[LANDES.vp,'vers les Landes'],[TER.vp,'vers les Grandes Terres']].forEach(([p,n])=>{if(!p)return;const [x,y]=P(p.x,p.z);g.fillStyle='rgba(40,16,70,.85)';g.strokeStyle='#c79bff';g.lineWidth=2.5;g.beginPath();g.arc(x,y,6,0,TAU);g.fill();g.stroke();
+  g.font='700 9px Inter, sans-serif';g.lineWidth=3;g.strokeStyle='rgba(16,12,36,.8)';const hw=g.measureText('🌀 '+n).width/2+3,lx=clamp(x,hw,W-hw);g.strokeText('🌀 '+n,lx,y+17);g.fillStyle='#e2ccff';g.fillText('🌀 '+n,lx,y+17);g.font='600 11px Inter, sans-serif';});
  LOCS.forEach(L=>{if(L.hidden&&!(S.found||{})[L.id])return;const [x,y]=P(L.x,L.z);const on=S.wp===L.id;g.fillStyle=on?'rgba(255,122,224,.95)':'rgba(16,12,36,.72)';const tw=g.measureText(L.name).width+12;g.beginPath();if(g.roundRect)g.roundRect(x-tw/2,y-9,tw,17,8);else g.rect(x-tw/2,y-9,tw,17);g.fill();g.fillStyle=on?'#fff':'#f3e9d0';g.fillText((on?'📍 ':'')+L.name,x,y+4);});
  const [x,y]=P(px,pz);g.save();g.translate(x,y);g.rotate(-player.ry+Math.PI);g.fillStyle='#fff';g.strokeStyle='#23305e';g.lineWidth=2;g.beginPath();g.moveTo(0,-8);g.lineTo(6,6);g.lineTo(0,3);g.lineTo(-6,6);g.closePath();g.stroke();g.fill();g.restore();
  const cy=Math.cos(camYaw),sy=Math.sin(camYaw);g.strokeStyle='rgba(255,255,255,.35)';g.beginPath();g.moveTo(x,y);g.lineTo(x+sy*22,y+cy*22);g.stroke();
@@ -415,7 +424,7 @@ updateTracker=function(){if(DUEL){$('#tracker').classList.add('hidden');beacon.v
  if(S.zone==='monde'&&inLoc(S.wp,-2)){say('📍 Tu es arrivé : <b>'+esc(L.name)+'</b>','sys');S.wp=null;return _updateTracker();}
  const t=nav({x:L.spot.x,z:L.spot.z});const el=$('#tracker');el.classList.remove('hidden');$('#tr-q').textContent='📍 Repère';
  const dist=Math.hypot(t.x-player.x,t.z-player.z);const tx=t.x-player.x,tz=t.z-player.z,fx=Math.sin(camYaw),fz=Math.cos(camYaw);$('#arrow').style.transform='rotate('+Math.atan2(tx*(-fz)+tz*fx,tx*fx+tz*fz)+'rad)';
- beacon.visible=S.zone==='monde';beacon.position.set(t.x,gh(t.x,t.z),t.z);$('#tr-s').textContent=L.name+' · '+Math.round(dist)+' m';};
+ beacon.visible=S.zone==='monde';beacon.position.set(t.x,gh(t.x,t.z),t.z);$('#tr-s').textContent=L.name+' · '+(t.via?'portail · ':'')+Math.round(dist)+' m';};
 
 /* ---------- branchements : son, duels, caméra de dialogue ---------- */
 {const _cs=castSpell;castSpell=function(sp){const c0=CD[sp.id];const r=_cs.apply(this,arguments);if(CD[sp.id]!==c0)sfx('cast',sp.el,sp.form,player.x,player.z);return r;};}

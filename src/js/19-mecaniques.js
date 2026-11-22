@@ -31,7 +31,7 @@ function findFocus(){let best=null,bd=3.6;
  for(const s of STATIONS){const d=Math.hypot(s.x-player.x,s.z-player.z);if(d<(s.reach||2.6)&&d<bd+0.4){const hh=s.hint();if(hh){bd=d;best={t:'st',s,h:hh};}}}
  for(const p of PLANTS){if(p.type!=='flower'||p.t<1||p.burn>0)continue;const d=Math.hypot(p.x-player.x,p.z-player.z);if(d<1.4&&d<bd){bd=d;best={t:'plant',p};}}
  focus=best;const h=$('#hint'),b=$('#b-act');
- if(!best){h.classList.add('hidden');b.classList.remove('ready');return;}
+ if(!best||anyModal()){h.classList.add('hidden');b.classList.remove('ready');return;} /* rien à proposer pendant un dialogue ou un menu */
  h.classList.remove('hidden');b.classList.add('ready');
  if(best.t==='npc')h.textContent='Parler à '+best.n.d.name;
  else if(best.t==='st')h.textContent=best.h;

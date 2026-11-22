@@ -24,6 +24,6 @@ function cObjBuild(){if(COBJ.done||!COBJETS.length)return;if(!O3.ready&&COBJETS.
 function cObjUse(c){if(c.interaction==='message'){say('📜 <b>'+esc(c.nom)+'</b> : '+esc(c.texte||'…'),'gm');return;}
  if(c.interaction==='soin'){if(typeof VIE!=='undefined')VIE.hp=VIE.max;burst(player.x,player.y+1,player.z,0xff7aa0,20,3);say('💚 '+esc(c.nom)+' : te voilà soigné(e).','sys');return;}
  if(c.interaction==='mana'){mana=manaMax();burst(player.x,player.y+1,player.z,0x4a7dff,20,3);say('💧 '+esc(c.nom)+' : ta magie est pleine.','sys');return;}
- if(c.interaction==='coffre'){S.objLoot=S.objLoot||{};if(S.objLoot[c.id]===S.day)return;S.objLoot[c.id]=S.day;const B=c.butin||{or:20};const out=[];if(B.or){gainOr(B.or);out.push(B.or+' 🪙');}['essence','cristal','bois','pierre'].forEach(k=>{if(B[k]){addItem(k,B[k]);out.push(B[k]+' '+INGR[k].n.toLowerCase());}});
+ if(c.interaction==='coffre'){S.objLoot=S.objLoot||{};if(S.objLoot[c.id]===S.day)return;S.objLoot[c.id]=S.day;const B=c.butin||{or:20};const out=[];if(B.or){gainOr(B.or);out.push(B.or+' 💰');}['essence','cristal','bois','pierre'].forEach(k=>{if(B[k]){addItem(k,B[k]);out.push(B[k]+' '+INGR[k].n.toLowerCase());}});
   sfx('win');burst(c.x,gh(c.x,c.z)+1,c.z,0xffd24a,30,4);say('🎁 '+esc(c.nom)+' : '+(out.join(', ')||'vide…')+'. (Il se remplit chaque jour.)','gm');save();}}
 {const _w=world4Tick;world4Tick=function(dt){const r=_w.apply(this,arguments);try{if(!COBJ.done)cObjBuild();}catch(e){}return r;};}

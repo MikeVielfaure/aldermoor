@@ -99,7 +99,7 @@ function doZone(sp){const el=sp.el,k=pow(el),x=player.x,z=player.z,R=(el==='lumi
   ENT.forEach(e=>{if(e.kind==='creature'&&Math.hypot(e.x-x,e.z-z)<R)e.data.confused=3;});if(recentNear('eau',x,z,R+3))rainbow(x,z);if(recentNear('ombre',x,z,R))eclipse(x,z);}
  else if(el==='ombre'){CLOUDS.push({x,y:1.2,z,life:6});for(let i=0;i<5;i++)CLOUDS.push({x:x+rnd(-R,R)*0.6,y:1,z:z+rnd(-R,R)*0.6,life:5});LAMPS.forEach(l=>{if(Math.hypot(l.x-x,l.z-z)<R*2.5)l.off=40;});
   ENT.forEach(e=>{if(e.kind==='creature'&&Math.hypot(e.x-x,e.z-z)<R+2)e.data.confused=6;});stealth=10*k;say('🌑 Tu te fonds dans l’ombre : les créatures perdent ta trace.','sys');if(recentNear('lumiere',x,z,R)||ORBS.some(o=>Math.hypot(o.x-x,o.z-z)<R))eclipse(x,z);}
- else if(el==='arcane'){let n=0;PROPS.forEach(p=>{if(p.dead<=0&&Math.hypot(p.x-x,p.z-z)<R+1){p.lev=4.5*k*(tal('arcane_u')?2:1);p.vy=4;n++;}});ENT.forEach(e=>{if(e.kind==='creature'&&Math.hypot(e.x-x,e.z-z)<R)e.data.frozen=Math.max(e.data.frozen,2);});if(n)hint('lev','🪄 Tout ce qui t’entoure se met à léviter !');}
+ else if(el==='arcane'){let n=0;PROPS.forEach(p=>{if(p.dead<=0&&Math.hypot(p.x-x,p.z-z)<R+1){p.lev=4.5*k*(tal('arcane_u')?2:1);p.vy=4;n++;}});ENT.forEach(e=>{if(e.kind==='creature'&&Math.hypot(e.x-x,e.z-z)<R)e.data.frozen=Math.max(e.data.frozen,2);});if(n)hint('lev','✨ Tout ce qui t’entoure se met à léviter !');}
  elemHit(el,x,z,R);if(el==='vent')fogClear=25;mark(el,x,z,R);
 }
 /* ---------- utilitaires ---------- */
@@ -123,7 +123,7 @@ function doUtil(sp){const el=sp.el,k=pow(el),[dx,dz]=fwd(),c=ELEM[el].c;
   for(let i=0;i<30;i++){PN.emit(player.x+rnd(-.4,.4),player.y+rnd(0,2),player.z+rnd(-.4,.4),rnd(-1,1),rnd(0,1),rnd(-1,1),0x150a24,0.6,1.2,0.8,0,1,0.85);PN.emit(tx+rnd(-.4,.4),player.y+rnd(0,2),tz+rnd(-.4,.4),rnd(-1,1),rnd(0,1),rnd(-1,1),0x2a1048,0.6,0.1,0.6,0,1,0.85);}
   player.x=tx;player.z=tz;stealth=Math.max(stealth,2);}
  else if(el==='arcane'){let best=null,bd=20*Math.min(1.5,k);ENT.forEach(e=>{if((e.kind==='scroll'&&!e.data.hidden)||e.kind==='item'){const d=Math.hypot(e.x-player.x,e.z-player.z);if(d<bd){bd=d;best=e;}}});
-  if(best&&!lockedProp()){best.data.pull=true;say('🪄 Tu attires '+(best.kind==='scroll'?'le parchemin':esc(best.data.item))+' à toi…','sys');}
+  if(best&&!lockedProp()){best.data.pull=true;say('✨ Tu attires '+(best.kind==='scroll'?'le parchemin':esc(best.data.item))+' à toi…','sys');}
   else{let bp=lockedProp(),bpd=bp?Math.max(1.6,Math.hypot(bp.x-player.x,bp.z-player.z)):15;if(!bp)PROPS.forEach(p=>{if(p.dead>0)return;const d=Math.hypot(p.x-player.x,p.z-player.z);if(d<bpd&&d>1.5){bpd=d;bp=p;}});if(bp){bp.lev=3*(tal('arcane_u')?2:1);bp.vy=4;bp.vx=(player.x-bp.x)/bpd*5;bp.vz=(player.z-bp.z)/bpd*5;}else say('Rien à attirer à portée.','sys');}}
  mark(el,player.x,player.z,2);
 }
@@ -238,7 +238,7 @@ function impact(el,x,y,z,hitC){const c=ELEM[el].c,k=pow(el);
   if(recentNear('lumiere',gx,gz,4)||ORBS.some(o=>Math.hypot(o.x-gx,o.z-gz)<6))eclipse(gx,gz);}
  else if(el==='arcane'){for(let i=0;i<26;i++){const a=Math.random()*TAU,v=rnd(1,4);PA.emit(x,y,z,Math.cos(a)*v,rnd(-1,2),Math.sin(a)*v,Math.random()<0.5?0xff7ae0:0xb48cff,rnd(.25,.4),0.03,rnd(.4,.8),0,2);}ring(gx,gz,0xff7ae0,1.5,0.6);
   let n=0;PROPS.forEach(p=>{if(p.dead<=0&&Math.hypot(p.x-gx,p.z-gz)<2.8*k){p.lev=4.5*k*(tal('arcane_u')?2:1);p.vy=3;n++;if(p.burn>0)meteorize(p);}});
-  if(n)hint('lev','🪄 L’objet lévite ! Une bourrasque pendant qu’il flotte l’enverra valser… et le feu en fera un météore.');}
+  if(n)hint('lev','✨ L’objet lévite ! Une bourrasque pendant qu’il flotte l’enverra valser… et le feu en fera un météore.');}
  elemHit(el,gx,gz,2.5*k);mark(el,gx,gz,2.5*k);
 }
 function extinguish(x,z,r){let n=0;near(TREES,x,z,r+1).forEach(t=>{if(t.st==='burning'){t.st='charred';t.burn=0;treeLook(t);treesDirty();n++;for(let i=0;i<12;i++)PN.emit(t.x+rnd(-1,1),rnd(1,4),t.z+rnd(-1,1),0,rnd(1,2),0,0xdde4ea,0.6,1.8,rnd(1,2),-0.3,0.5,0.5);}});

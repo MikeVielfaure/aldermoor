@@ -141,6 +141,9 @@ function terGo(x,z){fade(()=>{const a=TER.arch[0];player.x=x!==undefined?x:a.x+(
   else say('🗺 Les Grandes Terres.','sys');save();});}
 function terBack(to){const p=to==='landes'?TER.lp:TER.vp;if(!p)return;fade(()=>{player.x=p.x+Math.sin(p.ry)*3;player.z=p.z+Math.cos(p.ry)*3;player.y=gh(player.x,player.z)+0.2;player.vx=player.vz=player.vy=0;player.ry=p.ry;camYaw=p.ry;terClear();
   sfx('door');say(to==='landes'?'🌄 Les Landes d’Ombrelune.':'🏰 Retour dans la vallée d’Aldermoor.','sys');if(to==='landes'&&typeof LANDES!=='undefined')LANDES.seen=true;save();});}
+/* guidage (quêtes, repères) : une cible dans une autre région passe par le bon portail (via = « portail » dans le suivi) */
+{const _n=nav;nav=function(t){const r=_n.apply(this,arguments);if(!r||S.zone!=='monde')return r;const a=regionOf(player.x),b=regionOf(t.x);if(a===b)return r;
+ let p=null;if(a==='vallee')p=b==='landes'?LANDES.vp:TER.vp;else if(a==='landes')p=b==='vallee'?LANDES.lp:TER.lp;else p=TER.arch&&TER.arch[b==='vallee'?0:1];return p?{x:p.x,z:p.z,via:1}:r;};}
 /* ---------- peuplement selon le biome ---------- */
 const TER_POP=[
  [['Cerfs des plaines','feu','nature',2,1],['Sangliers grogneurs','glace','nature',3],['Poules des bruyères','eau','lumiere',1,1]],

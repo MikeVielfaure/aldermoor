@@ -3,7 +3,7 @@
    1er toucher : choisir → une lumière verte montre où l'objet sera posé ; elle suit les déplacements et la caméra.
    2e toucher sur le même bouton : poser. ⇄ (ou relancer Construo) : quitter le mode construction. */
 const BMODE={on:false,page:0,sel:null,ghost:null};
-const BITEMS=[['b:pierre','🧱','Brique'],['b:bois','🪵','Bois'],['b:cristal','💎','Cristal'],['b:poutre','➖','Poutre'],['b:dalle','⬛','Dalle'],
+const BITEMS=[['b:pierre','🧱','Brique'],['b:bois','🌲','Bois'],['b:cristal','💎','Cristal'],['b:poutre','➖','Poutre'],['b:dalle','⬛','Dalle'],
  ['w:pierre','🏰','Mur'],['w:bois','🚪','Mur bois'],['w:palissade','🪓','Palissade'],['w:porte','🚪','Porte'],['w:tour','🗼','Tour'],['w:plateforme','🟫','Plateforme'],['w:cristal','🔷','Mur cristal'],['x:inc','✨','Incassable']];
 const XITEMS={inc:{n:'Rendre incassable (zone de 5 m)',w:5,h:0.15,d:5,cost:{essence:1,cristal:1}}};
 /* incassabilité : les briques et constructions autour du point visé (1 essence + 1 cristal par lot de 6) */

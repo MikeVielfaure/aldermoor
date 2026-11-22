@@ -29,30 +29,30 @@ function gearCrit(){return S&&S.equip?(gearW().crit||0):0;}
 function gearVie(){return S&&S.equip?(gearR().vie||0):0;}
 function gearInit(){if(!S.equip)S.equip={wand:'apprenti',robe:'apprenti'};if(!S.gear)S.gear=['w:apprenti','r:apprenti'];if(S.or===undefined)S.or=0;}
 const hasGear=(t,k)=>(S.gear||[]).includes(t+':'+k);
-function giveGear(t,k,why){gearInit();if(hasGear(t,k))return false;S.gear.push(t+':'+k);const G=t==='w'?WANDS[k]:ROBES[k];banner((t==='w'?'🪄 ':'🧥 ')+G.n,why||G.d);sfx('learn');chron('Nouvel équipement : '+G.n+'.');save();return true;}
+function giveGear(t,k,why){gearInit();if(hasGear(t,k))return false;S.gear.push(t+':'+k);const G=t==='w'?WANDS[k]:ROBES[k];banner((t==='w'?'✨ ':'🧥 ')+G.n,why||G.d);sfx('learn');chron('Nouvel équipement : '+G.n+'.');save();return true;}
 function equip(t,k){gearInit();if(!hasGear(t,k))return;if(t==='w')S.equip.wand=k;else S.equip.robe=k;mana=Math.min(mana,manaMax());sfx('click');GEARV.want=null;save();}
-function gainOr(n,why){gearInit();S.or+=n;if(why)floatAt(player.x,player.z,'+'+n+' 🪙','#ffd24a');}
+function gainOr(n,why){gearInit();S.or+=n;if(why)floatAt(player.x,player.z,'+'+n+' 💰','#ffd24a');}
 // ---------- gains de pièces d'or ----------
 {const _k=killCreature;killCreature=function(e){const D=e&&e.data,was=D&&ENT.includes(e)&&!D.calme&&!D.pet&&!D.duel;const elite=D&&D.elite;const r=_k.apply(this,arguments);
-  if(was&&!ENT.includes(e)){if(D.dragon){gainOr(200,1);if(giveGear('w','dragon','Taillée dans une écaille d’Ignivor'))setTimeout(()=>say('🪄 Dans les restes d’Ignivor, une écaille luit encore : tu en tailles la <b>Baguette du dragon</b> (Grimoire › Perso pour l’équiper).','gm'),3500);}
+  if(was&&!ENT.includes(e)){if(D.dragon){gainOr(200,1);if(giveGear('w','dragon','Taillée dans une écaille d’Ignivor'))setTimeout(()=>say('✨ Dans les restes d’Ignivor, une écaille luit encore : tu en tailles la <b>Baguette du dragon</b> (Grimoire › Perso pour l’équiper).','gm'),3500);}
    else if(elite){gainOr(30,1);if(Math.random()<0.10){const opts=[...Object.keys(WANDS).filter(k=>!WANDS[k].unique&&k!=='apprenti').map(k=>['w',k]),...Object.keys(ROBES).filter(k=>!ROBES[k].needDragon&&k!=='apprenti').map(k=>['r',k])].filter(([t,k])=>!hasGear(t,k));if(opts.length){const [t,k]=pick(opts);giveGear(t,k,'Trouvé sur une créature élite');}}}
    else gainOr(2+Math.floor(Math.random()*3));}return r;};}
-{const _f=finishQuest;finishQuest=function(q){const r=_f.apply(this,arguments);const n=Math.round(20+Math.min(20,((q.reward&&q.reward.xp)||0)/10));gainOr(n);say('🪙 +'+n+' pièces d’or.','sys');return r;};}
+{const _f=finishQuest;finishQuest=function(q){const r=_f.apply(this,arguments);const n=Math.round(20+Math.min(20,((q.reward&&q.reward.xp)||0)/10));gainOr(n);say('💰 +'+n+' pièces d’or.','sys');return r;};}
 {const _st=starTake;starTake=function(T){const was=!T.got;const r=_st.apply(this,arguments);if(was&&T.got)gainOr(5);return r;};}
 // événements réussis : on regarde la bannière de victoire (caravane, brèche)
 {const _b=banner;banner=function(t){if(/^(Caravane sauvée|La brèche se referme)/.test(t||''))gainOr(40,1);return _b.apply(this,arguments);};}
 // ---------- l'Échoppe de l'Artisan (Village de Brumepont) ----------
 const SHOPG={x:null,z:null,y:0};
 const SELL={essence:8,cristal:6};const sellPrice=k=>SELL[k]||3;
-function goldTxt(){return '🪙 '+(S.or||0)+' pièces d’or';}
+function goldTxt(){return '💰 '+(S.or||0)+' pièces d’or';}
 function shopRoot(){gearInit();openPick('🛠 L’Échoppe de l’Artisan','« Baguettes taillées main, robes cousues sur mesure ! Et je rachète tes récoltes. » — '+goldTxt(),[
- {t:'🪄 Baguettes',s:'Plus de puissance, des coups critiques…',fn:()=>shopList('w')},{t:'🧥 Robes',s:'Mana, vitesse, vie…',fn:()=>shopList('r')},{t:'🌿 Vendre mes récoltes',s:'Ingrédients, essences, cristaux',fn:()=>shopSell()}]);}
+ {t:'✨ Baguettes',s:'Plus de puissance, des coups critiques…',fn:()=>shopList('w')},{t:'🧥 Robes',s:'Mana, vitesse, vie…',fn:()=>shopList('r')},{t:'🌿 Vendre mes récoltes',s:'Ingrédients, essences, cristaux',fn:()=>shopSell()}]);}
 function shopList(t){const L=t==='w'?WANDS:ROBES;const items=Object.entries(L).filter(([k,G])=>k!=='apprenti'&&!G.unique).map(([k,G])=>{const own=hasGear(t,k),lock=G.needDragon&&!S.dragonMort;
-  return {t:(own?'✔ ':'')+G.n+(own?'':' — '+G.p+' 🪙'),s:lock?'Vendue une fois Ignivor vaincue.':G.d+(own?' (tu l’as déjà : équipe-la dans la fenêtre du personnage)':''),off:own||lock||(S.or||0)<G.p,
-   fn:()=>{if((S.or||0)<G.p)return;S.or-=G.p;S.gear.push(t+':'+k);equip(t,k);banner((t==='w'?'🪄 ':'🧥 ')+G.n,'Achetée et équipée');sfx('win');chron('Acheté : '+G.n+'.');save();shopList(t);}};});
- items.push({t:'← Retour',fn:()=>shopRoot()});openPick(t==='w'?'🪄 Baguettes':'🧥 Robes',goldTxt(),items);}
+  return {t:(own?'✔ ':'')+G.n+(own?'':' — '+G.p+' 💰'),s:lock?'Vendue une fois Ignivor vaincue.':G.d+(own?' (tu l’as déjà : équipe-la dans la fenêtre du personnage)':''),off:own||lock||(S.or||0)<G.p,
+   fn:()=>{if((S.or||0)<G.p)return;S.or-=G.p;S.gear.push(t+':'+k);equip(t,k);banner((t==='w'?'✨ ':'🧥 ')+G.n,'Achetée et équipée');sfx('win');chron('Acheté : '+G.n+'.');save();shopList(t);}};});
+ items.push({t:'← Retour',fn:()=>shopRoot()});openPick(t==='w'?'✨ Baguettes':'🧥 Robes',goldTxt(),items);}
 function shopSell(){const ks=Object.keys(S.inv||{}).filter(k=>INGR[k]&&(S.inv[k]||0)>0);
- const items=ks.map(k=>({t:INGR[k].n+' ×'+S.inv[k],s:'Vendre 1 : '+sellPrice(k)+' 🪙 · tout : '+sellPrice(k)*S.inv[k]+' 🪙',fn:()=>{const n=S.inv[k];S.or=(S.or||0)+sellPrice(k)*n;S.inv[k]=0;sfx('pick');say('🪙 Tu vends '+n+' '+esc(INGR[k].n)+' (+'+sellPrice(k)*n+').','sys');save();shopSell();}}));
+ const items=ks.map(k=>({t:INGR[k].n+' ×'+S.inv[k],s:'Vendre 1 : '+sellPrice(k)+' 💰 · tout : '+sellPrice(k)*S.inv[k]+' 💰',fn:()=>{const n=S.inv[k];S.or=(S.or||0)+sellPrice(k)*n;S.inv[k]=0;sfx('pick');say('💰 Tu vends '+n+' '+esc(INGR[k].n)+' (+'+sellPrice(k)*n+').','sys');save();shopSell();}}));
  if(!items.length)items.push({t:'Rien à vendre',s:'Cueille des ingrédients ou bats des créatures.',off:true});items.push({t:'← Retour',fn:()=>shopRoot()});openPick('🌿 Vendre mes récoltes',goldTxt()+' · un clic vend tout le lot',items);}
 function buildShop(){const L=LOCBY.village;let p=null;for(const [ox,oz] of [[-5,4],[5,5],[-6,-3],[6,-4],[0,7]]){const q={x:L.spot.x+ox,z:L.spot.z+oz};if(isFree(q,1.6)){p=q;break;}}if(!p)p=freePoint(L,6);
  const y=gh(p.x,p.z);SHOPG.x=p.x;SHOPG.z=p.z;SHOPG.y=y;const g=new THREE.Group();g.position.set(p.x,y,p.z);g.rotation.y=Math.atan2(L.spot.x-p.x,L.spot.z-p.z);scene.add(g);

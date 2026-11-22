@@ -27,7 +27,7 @@ function cqGive(c){const q=cqQuest(c);if(!q){say('Cette quête n’a pas d’ét
   b.onclick=()=>{b.remove();if(c.description)line('n',c.description);if(cqGive(c))line('sys','Quête acceptée : '+c.titre);};$('#chips').prepend(b);}}return r;};}
 /* récompenses en plus de l'XP et du sort ; mémoire des quêtes finies */
 {const _f=finishQuest;finishQuest=function(q){const r=_f.apply(this,arguments);if(q&&q.cq){S.cqDone=S.cqDone||{};S.cqDone[q.cq]=S.day||1;const R=q.reward||{},out=[];
-  if(R.or){gainOr(R.or);out.push(R.or+' 🪙');}['essence','cristal'].forEach(k=>{if(R[k]){addItem(k,R[k]);out.push(R[k]+' '+INGR[k].n.toLowerCase());}});if(out.length)say('Récompense : '+out.join(', '),'sys');save();}return r;};}
+  if(R.or){gainOr(R.or);out.push(R.or+' 💰');}['essence','cristal'].forEach(k=>{if(R[k]){addItem(k,R[k]);out.push(R[k]+' '+INGR[k].n.toLowerCase());}});if(out.length)say('Récompense : '+out.join(', '),'sys');save();}return r;};}
 /* étape « vaincre » */
 function cqMatch(s,D){if(!D||D.duel||D.pet||D.charmed)return false;if(!s.crea)return !D.calme;if(D.cid===s.crea)return true;return (D.name||'').toLowerCase().includes(s.crea.toLowerCase());}
 {const _k=killCreature;killCreature=function(e){const D=e&&e.data,was=D&&ENT.includes(e);const r=_k.apply(this,arguments);

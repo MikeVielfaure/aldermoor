@@ -38,7 +38,7 @@ function mineAt(kind,Q){if(DIG.cd>0)return;if(!inTerres()||S.zone!=='monde'){say
  if(b!==2&&b!==6||Math.random()<0.5){addItem('pierre',1);out.push('+1 pierre');}else out.push('sable');
  if(Math.random()<(nearM?0.42:(b===5||b===3)?0.24:0.06)+deep*0.025){addItem('minerai',1);out.push('+1 minerai');}
  if(Math.random()<(nearM&&deep>2?0.22:deep>4?0.07:0.015)){addItem('cristal',1);out.push('+1 cristal');}
- if(Math.random()<0.035+(nearM?0.03:0)){const g=4+Math.floor(Math.random()*9);gainOr(g);out.push('+'+g+' 🪙');}
+ if(Math.random()<0.035+(nearM?0.03:0)){const g=4+Math.floor(Math.random()*9);gainOr(g);out.push('+'+g+' 💰');}
  floatAt(x,z,out.join(' · '),'#ffe0a0');if(!S.mineVu){S.mineVu=1;say('⛏ Chaque coup rapporte de la pierre. Creuse en profondeur ou près des <b>Mines de Brisefer</b> pour trouver du minerai de fer et des cristaux. Le minerai fait des <b>briques de fer</b>, les plus solides.','gm');}
  save();renderSlots();}
 /* dans la roulette : aperçu en disque, et la page du minage d'abord quand on est dans les Grandes Terres */

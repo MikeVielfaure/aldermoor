@@ -4,7 +4,7 @@
      les créatures), tour de guet (on peut se tenir dessus), plateforme (même en l'air, en balai), mur de cristal
      (sans ressource : 40 mana).
    - Ressources : bois (couper un arbre de la vallée, une fois par jour), pierre (carrières des Ruines d'Ysmer et du
-     Plateau des Géants, rochers), ou l'Échoppe (matériaux). Construo et Reparo s'apprennent à l'Échoppe (50 🪙).
+     Plateau des Géants, rochers), ou l'Échoppe (matériaux). Construo et Reparo s'apprennent à l'Échoppe (50 💰).
    - Destruction progressive : sorts du joueur (le feu brûle le bois, l'eau l'éteint, Démantibulus pulvérise),
      créatures qui assiègent (bloquées, elles frappent), boules de feu d'Ignivor, tirs ennemis. Fissures, puis ruine.
      SEUL ce que le joueur construit peut casser : château, maisons et décors sont incassables.
@@ -93,8 +93,8 @@ function bldMenu(P){if(!P)return;const T=BLD_T[P.t],it=[];
 // ---------- récolter : bois et pierre ----------
 const GATHER={x:1e9,z:1e9,what:null,ref:null};
 station({get x(){return GATHER.x;},get z(){return GATHER.z;},reach:2.4,hint:()=>GATHER.what==='bois'?'🪓 Couper du bois (+2)':GATHER.what==='pierre'?'⛏ Extraire de la pierre (+2)':null,act:()=>{const R=GATHER.ref;if(!R)return;
- if(GATHER.what==='bois'){R.cut=S.day;addItem('bois',2);for(let i=0;i<14;i++)PN.emit(R.x+rnd(-.4,.4),gh(R.x,R.z)+rnd(0.5,1.5),R.z+rnd(-.4,.4),rnd(-2,2),rnd(1,3),rnd(-2,2),0x8a5a2a,0.25,0.5,0.7,5,0.6,0.9);sfx('impact','nature',R.x,R.z);say('🪵 +2 bois ('+S.inv.bois+').','sys');}
- else{R.mined=gameMin();addItem('pierre',2);debris(R.x,gh(R.x,R.z)+0.8,R.z,0x9a948a,6);sfx('impact','arcane',R.x,R.z);say('🪨 +2 pierre ('+S.inv.pierre+').','sys');}save();}});
+ if(GATHER.what==='bois'){R.cut=S.day;addItem('bois',2);for(let i=0;i<14;i++)PN.emit(R.x+rnd(-.4,.4),gh(R.x,R.z)+rnd(0.5,1.5),R.z+rnd(-.4,.4),rnd(-2,2),rnd(1,3),rnd(-2,2),0x8a5a2a,0.25,0.5,0.7,5,0.6,0.9);sfx('impact','nature',R.x,R.z);say('🌲 +2 bois ('+S.inv.bois+').','sys');}
+ else{R.mined=gameMin();addItem('pierre',2);debris(R.x,gh(R.x,R.z)+0.8,R.z,0x9a948a,6);sfx('impact','arcane',R.x,R.z);say('⛰️ +2 pierre ('+S.inv.pierre+').','sys');}save();}});
 const QUARRIES=[];
 function buildQuarries(){[['ruines',4,3],['landes_plateau',6,-4]].forEach(([id,ox,oz])=>{const L=LOCBY[id];if(!L)return;let p={x:L.spot.x+ox,z:L.spot.z+oz};if(!isFree(p,1.5))p=freePoint(L,6);const y=gh(p.x,p.z);
   const g=new THREE.Group();g.position.set(p.x,y,p.z);for(let i=0;i<7;i++){const m=new THREE.Mesh(new THREE.DodecahedronGeometry(rnd(0.35,0.6),0),mat([0x9a948a,0x8a847a,0xa8a296][i%3],{flatShading:true}));m.position.set(rnd(-0.9,0.9),0.3+(i>4?0.5:0),rnd(-0.9,0.9));m.castShadow=true;g.add(m);}
@@ -124,6 +124,6 @@ function bldTick(dt){if(!started||S.zone!=='monde')return;
 {const _sg=startGame;startGame=function(){const r=_sg.apply(this,arguments);try{BLD.splice(0).forEach(bldUnmake);(S.builds||[]).forEach(b=>{if(!BLD_T[b.t])return;const P=Object.assign({id:++BLDN},b);BLD.push(P);if(P.ruin){P.ruin=false;bldMake(P);bldUnmake(P);P.ruin=true;}else bldMake(P);});}catch(e){console.error(e);}return r;};}
 // ---------- apprendre Construo et Reparo, acheter des matériaux : l'Échoppe ----------
 {const _s=shopRoot;shopRoot=function(){_s.apply(this,arguments);const L=$('#pick-l'),add=(t,s,off,fn)=>{const b=document.createElement('button');b.className='pk'+(off?' off':'');b.innerHTML='<span>'+t+'</span><small>'+s+'</small>';if(!off)b.onclick=fn;L.appendChild(b);};
-  add('🧱 Matériaux','Bois 4 🪙 · Pierre 5 🪙 (par lot de 5)',false,()=>{openPick('🧱 Matériaux','🪙 '+(S.or||0)+' pièces d’or',[{t:'5 bois',s:'20 🪙',off:(S.or||0)<20,fn:()=>{S.or-=20;addItem('bois',5);sfx('pick');save();shopRoot();}},{t:'5 pierres',s:'25 🪙',off:(S.or||0)<25,fn:()=>{S.or-=25;addItem('pierre',5);sfx('pick');save();shopRoot();}},{t:'← Retour',fn:()=>shopRoot()}]);});
-  if(!S.spells.some(s=>s.special==='construo'))add('📜 Apprendre Construo et Reparo','Bâtir et réparer · 50 🪙'+(lvl()<3?' (dès le niveau 3)':''),(S.or||0)<50||lvl()<3,()=>{S.or-=50;learnSpell(Object.assign({},CONSTRUO_SP));learnSpell(Object.assign({},REPARO_SP));$('#pick').classList.add('hidden');banner('Construo · Reparo','Bâtis, protège, répare');save();});};}
+  add('🧱 Matériaux','Bois 4 💰 · Pierre 5 💰 (par lot de 5)',false,()=>{openPick('🧱 Matériaux','💰 '+(S.or||0)+' pièces d’or',[{t:'5 bois',s:'20 💰',off:(S.or||0)<20,fn:()=>{S.or-=20;addItem('bois',5);sfx('pick');save();shopRoot();}},{t:'5 pierres',s:'25 💰',off:(S.or||0)<25,fn:()=>{S.or-=25;addItem('pierre',5);sfx('pick');save();shopRoot();}},{t:'← Retour',fn:()=>shopRoot()}]);});
+  if(!S.spells.some(s=>s.special==='construo'))add('📜 Apprendre Construo et Reparo','Bâtir et réparer · 50 💰'+(lvl()<3?' (dès le niveau 3)':''),(S.or||0)<50||lvl()<3,()=>{S.or-=50;learnSpell(Object.assign({},CONSTRUO_SP));learnSpell(Object.assign({},REPARO_SP));$('#pick').classList.add('hidden');banner('Construo · Reparo','Bâtis, protège, répare');save();});};}
 {const _wc=worldCtx;worldCtx=function(){const r=_wc.apply(this,arguments);try{if(r&&typeof r==='object')r.constructions=BLD.filter(P=>!P.ruin).length+' constructions du joueur (murs, portes, tours…), seules choses destructibles du monde ; sorts Construo / Reparo ; incassabilité par enchantement.';}catch(e){}return r;};}

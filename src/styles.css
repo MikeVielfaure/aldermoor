@@ -165,3 +165,6 @@ body.induel #tracker,body.inwave #tracker,body.boss #tracker{visibility:hidden}
 .ov .gold{width:100%;padding:13px;margin-bottom:9px}
 .ghost{width:100%;padding:12px;background:none;border:1px solid var(--line);color:var(--ink);border-radius:12px;font:600 14px Inter,sans-serif;margin-bottom:9px}
 .keys{font-size:11.5px;color:var(--mute);margin-top:10px;line-height:1.6}
+/* rangées qui défilent de côté (réponses du dialogue, onglets du grimoire) : pas de barre blanche ; à la souris, elles passent à la ligne */
+#chips,.tabs{scrollbar-width:none}#chips::-webkit-scrollbar,.tabs::-webkit-scrollbar{display:none}
+@media (hover:hover) and (pointer:fine){#chips,.tabs{flex-wrap:wrap;overflow-x:visible}}

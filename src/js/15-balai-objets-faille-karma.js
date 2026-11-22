@@ -1,6 +1,6 @@
 /* ================= ÉTAPE 8 : BALAI, OBJETS MAGIQUES, FAILLE, KARMA & OUBLI ================= */
 const OBJS={balai:{n:'Balai de l’académie',ic:'🧹',d:'Vole librement : Saut = monter, ⬇ = descendre. Touche le sol pour te poser.'},
- rappel:{n:'Pierre de rappel',ic:'🪨',d:'Te ramène instantanément à la Grande Cour.',cd:60},
+ rappel:{n:'Pierre de rappel',ic:'💠',d:'Te ramène instantanément à la Grande Cour.',cd:60},
  boussole:{n:'Boussole des arcanes',ic:'🧭',d:'Un rayon de lumière désigne le parchemin le plus proche.',cd:40},
  sablier:{n:'Sablier d’ambre',ic:'⏳',d:'Ralentit ennemis et projectiles pendant 8 s.',cd:90},
  lanterne:{n:'Lanterne-follet',ic:'🏮',d:'Une petite lueur te suit et éclaire la nuit (allumer / éteindre).'}};
@@ -14,7 +14,7 @@ function updObjBtns(){$('#b-obj').classList.toggle('hidden',!S.objs||!Object.key
 function useObj(k){const O=OBJS[k],now=performance.now()/1000;if(O.cd&&(OCD[k]||0)>now){say(O.ic+' '+O.n+' : encore '+Math.ceil(OCD[k]-now)+' s.','sys');return;}
  if(k==='balai'){toggleBroom();return;}
  if(k==='lanterne'){S.lantern=!S.lantern;sfx('click');say(S.lantern?'🏮 La lanterne-follet s’éveille et virevolte autour de toi.':'🏮 La lueur s’endort dans sa lanterne.','sys');return;}
- if(k==='rappel'){if(DUEL||WAVE||RACE.on){say('Impossible pendant un défi.','sys');return;}OCD[k]=now+O.cd;if(FLY.on)dismount(true);const go=()=>{const Hm=homeSpawn();player.x=Hm?Hm.x:3;player.z=Hm?Hm.z:8;player.y=gh(player.x,player.z);player.vx=player.vz=player.vy=0;camYaw=Math.PI;burst(player.x,player.y+1,player.z,0xb48cff,40,4);sfx('learn');};if(S.zone!=='monde'){fade(()=>{S.zone='monde';go();});}else fade(go);say('🪨 La pierre chauffe dans ta main… et te voilà '+(homeSpawn()?'chez toi.':'à la Grande Cour.'),'sys');return;}
+ if(k==='rappel'){if(DUEL||WAVE||RACE.on){say('Impossible pendant un défi.','sys');return;}OCD[k]=now+O.cd;if(FLY.on)dismount(true);const go=()=>{const Hm=homeSpawn();player.x=Hm?Hm.x:3;player.z=Hm?Hm.z:8;player.y=gh(player.x,player.z);player.vx=player.vz=player.vy=0;camYaw=Math.PI;burst(player.x,player.y+1,player.z,0xb48cff,40,4);sfx('learn');};if(S.zone!=='monde'){fade(()=>{S.zone='monde';go();});}else fade(go);say('⛰️ La pierre chauffe dans ta main… et te voilà '+(homeSpawn()?'chez toi.':'à la Grande Cour.'),'sys');return;}
  if(k==='boussole'){let best=null,bd=1e9;ENT.forEach(e=>{if(e.kind!=='scroll')return;const d=Math.hypot(e.x-player.x,e.z-player.z);if(d<bd){bd=d;best=e;}});OCD[k]=now+O.cd;
   if(!best){say('🧭 L’aiguille tourne dans le vide : aucun parchemin dans les parages.','sys');return;}best.data.beam=30;const a=Math.atan2(best.x-player.x,-(best.z-player.z));const dirs=['au nord','au nord-est','à l’est','au sud-est','au sud','au sud-ouest','à l’ouest','au nord-ouest'];const di=dirs[(Math.round(a/(Math.PI/4))+8)%8];
   say('🧭 L’aiguille se fige : un parchemin'+(best.data.hidden?' caché':'')+' à '+Math.round(bd)+' m, '+di+' (vers '+esc((LOCBY[best.data.loc]||{name:'?'}).name)+'). Cherche le rayon de lumière !','sys');sfx('lock');return;}
@@ -27,7 +27,7 @@ const FLY={on:false,t:0,down:false,bank:0,mesh:null};
 function makeBroomMesh(){const g=new THREE.Group();const wood=mat(0x6a4424,{roughness:0.8});const st=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.045,2.1,8),wood);st.rotation.x=Math.PI/2;st.position.z=0.15;g.add(st);
  const br=new THREE.Mesh(new THREE.ConeGeometry(0.24,0.85,14,1,true),mat(0xc8a050,{roughness:1,side:THREE.DoubleSide}));br.rotation.x=Math.PI/2;br.position.z=-1.2;g.add(br);
  [-0.82,-0.95].forEach(z=>{const b=new THREE.Mesh(new THREE.TorusGeometry(0.075,0.022,6,12),mat(0xd4af37,{metalness:0.6,roughness:0.4}));b.position.z=z;g.add(b);});g.traverse(o=>{if(o.isMesh)o.castShadow=true;});return g;}
-function toggleBroom(){if(FLY.on){const h=player.y-gh(player.x,player.z);dismount();if(h>2.5){player.feather=1;player.vy=Math.min(player.vy,1);if(!S.seenFeather){S.seenFeather=1;say('🪶 Tu sautes du balai ! Une magie de plume ralentit ta chute. Touche 🧹 pour y remonter en plein vol.','sys');}}return;}
+function toggleBroom(){if(FLY.on){const h=player.y-gh(player.x,player.z);dismount();if(h>2.5){player.feather=1;player.vy=Math.min(player.vy,1);if(!S.seenFeather){S.seenFeather=1;say('🍃 Tu sautes du balai ! Une magie de plume ralentit ta chute. Touche 🧹 pour y remonter en plein vol.','sys');}}return;}
  if(S.zone!=='monde'){say('Pas de balai à l’intérieur !','sys');return;}if(DUEL){say('Pas de balai pendant un duel !','sys');return;}/* partout ailleurs, même en plein saut, en chute ou dans l’eau */if(player.swim){player.swim=false;player.y=Math.max(player.y,0.3);}player.feather=0;
  FLY.on=true;FLY.t=0;player.vy=6;player.grounded=false;if(!FLY.mesh){FLY.mesh=makeBroomMesh();FLY.mesh.position.set(0,0.82,0);player.H.root.add(FLY.mesh);}FLY.mesh.visible=true;player.H.root.children.forEach(o=>{if(o.geometry&&o.geometry.type==='RingGeometry')o.visible=false;});sfx('whoosh',player.x,player.z);
  for(let i=0;i<30;i++){const a=Math.random()*TAU;PA.emit(player.x+Math.cos(a)*0.6,player.y+0.3,player.z+Math.sin(a)*0.6,Math.cos(a)*3,rnd(0.5,2),Math.sin(a)*3,0xf3cf7a,0.25,0.05,0.7,0,1.5);}

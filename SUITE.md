@@ -162,6 +162,21 @@
   toujours de son point d'arrivée).
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
+## Académies élémentaires et grandes envies du joueur (notes du 2026-11-22)
+- Éléments : on garde les 8 (terre = nature, télékinésie = arcane, sombre = ombre). Électricité et magnétisme :
+  nouveaux éléments voulus, mis de côté pour plus tard.
+- Chaque académie : un prof par élément ; un cours apprend le prochain sort non connu de l'élément (du plus faible
+  au plus fort). Ces sorts existent aussi ailleurs (boss, quêtes, parchemins). Si tout est déjà appris, le prof le dit
+  et envoie chez le directeur → quête → sort inédit, disponible seulement là. But : donner envie de suivre les cours.
+- 3 académies : éléments primaires (eau, feu, glace, terre) = le château actuel ; des Cieux (vent, lumière, +
+  électricité, magnétisme plus tard) sur une terre volante (Îles du Miroir-Ciel ?) : balai, animal volant, ticket ;
+  de la Sombrité (ombre, télékinésie/arcane) dans une forêt dangereuse : invisibilité (cape, sort, potion), force ou ruse.
+- Prof de feu, phrase fétiche : « C'est feutastique ! ».
+- Activités voulues : protéger, reconstruire, créer des villages ; élever des créatures ; planter, récolter ;
+  espèces rares ; primes sur des méchants ; donjons (par élément ?) ; factions alliées / ennemies selon nos choix
+  (centaures, minotaures, gobelins, fées, géants).
+- Le joueur veut des décors propres et des monstres / personnages plus variés : on peut créer ou télécharger.
+
 ## Idées autour de la construction (vision du joueur : conquête, protection de village)
 - Attaques de village par des vagues qui visent les constructions ; alliés (PNJ) qui lancent Proteggo avec toi ;
   plans (escaliers, toits) ; multijoueur un jour (plusieurs sorciers qui unissent leurs Proteggo).

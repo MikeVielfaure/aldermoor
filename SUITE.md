@@ -177,9 +177,9 @@
   Géants), Grokk le Brise-Os (Dunes), Croc-de-Givre (Pics), Vorgath (Mines). Idées : nouvelles primes chaque semaine, factions.
 - v51 : montures : apprivoiser une licorne (forêt) ou un pégase (prairie) des Grandes Terres comme familier, puis ✋ pour
   monter : licorne au galop, pégase qui vole. Idées : écurie au Domaine (plusieurs montures), centaure, course à cheval.
+- v52 : on reprend la partie là où on l’a quittée (vallée, Citadelle, Landes, Grandes Terres).
 - À proposer au joueur : en balai, monter tout seul devant une pente au lieu de se poser (utile dans les
-  collines et montagnes des Grandes Terres) ; reprendre la partie là où on l'a quittée (aujourd'hui on repart
-  toujours de son point d'arrivée).
+  collines et montagnes des Grandes Terres).
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.
 
 ## Académies élémentaires et grandes envies du joueur (notes du 2026-11-22)

@@ -60,7 +60,7 @@ function update(dt){
   const H=player.H;H.root.position.set(player.x,player.y,player.z);H.root.rotation.y=player.ry;animHuman(H,dt,player.spd,t,!player.grounded);
   if(H.cast>0){const tp=new THREE.Vector3();H.p.tip.getWorldPosition(tp);PA.emit(tp.x,tp.y,tp.z,0,0.3,0,ELEM[S.lastEl||'arcane'].c,0.25,0.05,0.3,0,0);}
   player.cd=Math.max(0,player.cd-dt);
-  let nl=null,nd=1e9;for(const L of LOCS){const d=Math.hypot(player.x-L.x,player.z-L.z);if(d<L.r&&d<nd){nd=d;nl=L.id;}}
+  let nl=null,nd=1e9;for(const L of LOCS){const d=Math.hypot(player.x-L.x,player.z-L.z);if(d<L.r&&d<nd&&(L.y===undefined||player.y>L.y-4)){nd=d;nl=L.id;}} /* L.y : lieu en hauteur (Citadelle des Nuées, 20zf) */
   if(nl!==S.locId){S.locId=nl;if(nl)say('— '+esc(LOCBY[nl].name)+' —','sys');}
   S.quests.slice().forEach(q=>{const s=curStep(q);if(s&&s.kind==='goto'&&inLoc(s.loc)){say('✓ '+esc(s.text),'sys');advance(q);}});
   updSpecial(dt);updWeather(dt);updWorld2(dt);updWorld3(dt);updCourses(dtMin);updNPCs(dt,t);updEnts(dt);updProj(dt);updProps(dt);updPlants(dt);updIce(dt);updTrees(dt);updOrbs(dt);

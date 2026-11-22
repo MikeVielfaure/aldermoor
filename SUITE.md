@@ -166,6 +166,9 @@
 - v47 : Académie des Éléments primaires (château) : 3 nouveaux profs (Flambard « C’est feutastique ! », Ondine, Frimas) +
   Mirelle, l’Archimage Aldric Hautval ; cours à la demande (1/jour/prof), quête « Les Quatre Épreuves » → sort inédit
   « Concert des Quatre ». À faire : Académie des Cieux (Îles du Miroir-Ciel), Académie de la Sombrité (forêt dangereuse).
+- v48 : Académie des Cieux sur la Citadelle des Nuées (île au-dessus de la vallée) : balai, courant ascendant ou navette
+  (10 pièces) ; Zéphyrine (vent), Lucius (lumière), Célestine ; quête « L’Épreuve des Hauteurs » (plume de pégase dans les
+  Grandes Terres) → « Ailes de lumière ». Électricité et magnétisme à ajouter ici plus tard. Idées : cascades sous l’île, pégases.
 - À proposer au joueur : en balai, monter tout seul devant une pente au lieu de se poser (utile dans les
   collines et montagnes des Grandes Terres) ; reprendre la partie là où on l'a quittée (aujourd'hui on repart
   toujours de son point d'arrivée).

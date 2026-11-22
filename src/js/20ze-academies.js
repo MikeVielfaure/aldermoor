@@ -6,7 +6,7 @@
    l'académie sont connus, le directeur propose une quête qui donne un sort inédit, enseigné nulle part ailleurs
    (S.acad.ok[académie]). Pour ajouter une académie (Cieux, Sombrité…) : une entrée dans ACADS + ses personnages. */
 const ACAD_FORMES=['trait','util','zone'];
-const ACADS=[{id:'primaires',n:'Académie des Éléments primaires',dir:'archimage',profs:{feu:'flambard',eau:'ondine',glace:'frimas',nature:'mirelle'},
+const ACADS=[{id:'primaires',n:'Académie des Éléments primaires',dir:'archimage',ou:'au château',profs:{feu:'flambard',eau:'ondine',glace:'frimas',nature:'mirelle'},
  inedit:{name:'Concert des Quatre',inc:'Quattuor Elementa',el:'arcane',form:'zone',special:'quatre',legend:true,cost:50,cd:16,id:'acad-quatre',
   desc:'La nature, le feu, la glace puis l’eau déferlent tour à tour autour de toi. Seul l’Archimage l’enseigne.'},
  quete:{title:'Les Quatre Épreuves',desc:'L’Archimage veut voir les quatre éléments t’obéir, chacun là où il est chez lui.',steps:[
@@ -38,14 +38,14 @@ function acadNext(el){for(const f of ACAD_FORMES){const s=acadSort(el,f);if(s&&!
 function acadCount(A){let n=0,t=0;for(const el in A.profs)for(const f of ACAD_FORMES){const s=acadSort(el,f);if(s){t++;if(sameSpell(s))n++;}}return [n,t];}
 const acadState=()=>{S.acad=S.acad||{};S.acad.c=S.acad.c||{};S.acad.ok=S.acad.ok||{};return S.acad;};
 function acadCours(pid){const {A,el}=ACAD_PROF[pid],P=NPCBY[pid],D=ACAD_DIT[pid],st=acadState(),sp=acadNext(el);
- if(!sp){line('n',D.fini);const [n,t]=acadCount(A);if(n>=t&&!st.ok[A.id])line('n','Tu connais tout ce que l’Académie enseigne. Va voir '+NPCBY[A.dir].name+', au château.');return;}
+ if(!sp){line('n',D.fini);const [n,t]=acadCount(A);if(n>=t&&!st.ok[A.id])line('n','Tu connais tout ce que l’Académie enseigne. Va voir '+NPCBY[A.dir].name+', '+A.ou+'.');return;}
  if(st.c[pid]===S.day){line('n','Un cours par jour, pas plus ! Reviens demain.');return;}
  st.c[pid]=S.day;line('n',D.cours);save();
  setTimeout(()=>{closeDlg();fade(()=>{S.time=Math.min(S.time+60,23*60+50);learnSpell(sp);say('<b>'+esc(P.name)+'</b> : '+esc(D.bravo),'gm');
-  const [n,t]=acadCount(A);if(n>=t&&!st.ok[A.id])setTimeout(()=>say('<b>'+esc(P.name)+'</b> : tu as appris tout ce que l’Académie enseigne ! Va voir <b>'+esc(NPCBY[A.dir].name)+'</b>, au château.','gm'),1800);save();});},1500);}
+  const [n,t]=acadCount(A);if(n>=t&&!st.ok[A.id])setTimeout(()=>say('<b>'+esc(P.name)+'</b> : tu as appris tout ce que l’Académie enseigne ! Va voir <b>'+esc(NPCBY[A.dir].name)+'</b>, '+A.ou+'.','gm'),1800);save();});},1500);}
 function acadDir(A){const st=acadState(),[n,t]=acadCount(A),D=NPCBY[A.dir];
  if(st.ok[A.id]){line('n','Tu maîtrises le '+A.inedit.name+'. Peu de sorciers peuvent en dire autant.');return;}
- if(S.quests.some(q=>q.acad===A.id)){line('n','Les Quatre Épreuves t’attendent. Les éléments n’aiment pas patienter.');return;}
+ if(S.quests.some(q=>q.acad===A.id)){line('n','« '+A.quete.title+' » t’attend. Les éléments n’aiment pas patienter.');return;}
  if(n<t){line('n','Tu connais '+n+' des '+t+' sorts enseignés ici. Suis les cours de nos professeurs, puis reviens me voir.');return;}
  line('n','Tu as tout appris. Il reste un sort que je n’enseigne qu’aux meilleurs : le '+A.inedit.name+'. Mais d’abord, prouve que les quatre éléments t’obéissent.');
  const k=S.quests.length;addQuest({title:A.quete.title,desc:A.quete.desc,giver:D.id,acad:A.id,steps:A.quete.steps.map(s=>Object.assign({},s)),reward:{xp:200,spell:Object.assign({},A.inedit)}});

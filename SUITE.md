@@ -175,6 +175,8 @@
   énigmes de Noctis, vraie télékinésie (saisir et lancer une créature).
 - v50 : avis de recherche au village : Mirza l’Ombre-Lame (Ruines), le Roi champignon fou (Forêt), Brasier-Noir (Plateau des
   Géants), Grokk le Brise-Os (Dunes), Croc-de-Givre (Pics), Vorgath (Mines). Idées : nouvelles primes chaque semaine, factions.
+- v51 : montures : apprivoiser une licorne (forêt) ou un pégase (prairie) des Grandes Terres comme familier, puis ✋ pour
+  monter : licorne au galop, pégase qui vole. Idées : écurie au Domaine (plusieurs montures), centaure, course à cheval.
 - À proposer au joueur : en balai, monter tout seul devant une pente au lieu de se poser (utile dans les
   collines et montagnes des Grandes Terres) ; reprendre la partie là où on l'a quittée (aujourd'hui on repart
   toujours de son point d'arrivée).

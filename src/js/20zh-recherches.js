@@ -1,6 +1,7 @@
 /* ================= AVIS DE RECHERCHE : des méchants nommés, mis à prix =================
    Un tableau au Village de Brumepont liste les recherchés (RECH). Toucher un avis place un repère vers son repaire
-   (le suivi passe par les portails). Le méchant apparaît quand on approche de son repaire : une élite (20l) avec un vrai
+   (le suivi passe par les portails). Le méchant apparaît quand on approche de son repaire (seulement après avoir lu le tableau, et à partir du niveau
+   rechNiv : vallée 4, Landes 8, Grandes Terres 12) : une élite (20l) avec un vrai
    nom, plus grosse et plus coriace. Vaincu : la prime (or, XP, cristaux), une seule fois (S.rech[id] = jour).
    Le nom donné à la créature choisit son modèle (orc, bandit → ninja, roi champignon, grand démon, loup, taureau de lave). */
 const RECH=[
@@ -12,11 +13,13 @@ const RECH=[
  {id:'vorgath',n:'Vorgath, démon des cendres',nom:'Vorgath, grand démon des cendres',loc:'terres_mines',dx:16,dz:12,w:'eau',l:'feu',hp:12,or:220,d:'Un grand démon réveillé par les mineurs de Brisefer. Le plus dangereux de tous.'}];
 const RECH_ON={};let RECH_T=0;
 const rechFait=id=>!!(S.rech&&S.rech[id]);
+const rechNiv=R=>{const L=LOCBY[R.loc];return !L?99:L.x>4000?12:L.x>1500?8:4;}; /* niveau minimum pour croiser ce méchant */
 const rechRegion=L=>L.x>4000?'Grandes Terres':L.x>1500?'Landes d’Ombrelune':'vallée';
 function rechSpot(R){const L=LOCBY[R.loc];if(!L)return null;let x=L.x+R.dx,z=L.z+R.dz;for(let k=0;k<12;k++){if(gh(x,z)>0.4&&isFree({x,z},1.4))return {x,z};x+=rnd(-4,4);z+=rnd(-4,4);}return {x:L.spot.x,z:L.spot.z};}
 /* le méchant apparaît quand on approche de son repaire (et revient s'il a été perdu de vue) */
 function rechTick(dt){RECH_T-=dt;if(RECH_T>0||!started||S.zone!=='monde')return;RECH_T=1;
- for(const R of RECH){if(rechFait(R.id))continue;const e=RECH_ON[R.id];if(e&&ENT.includes(e))continue;const L=LOCBY[R.loc];if(!L||Math.hypot(player.x-L.x-R.dx,player.z-L.z-R.dz)>70)continue;
+ if(!S.rechVu)return; /* rien avant d'avoir lu le tableau : la Forêt de Sombrebois reste un lieu pour débutants */
+ for(const R of RECH){if(rechFait(R.id)||lvl()<rechNiv(R))continue;const e=RECH_ON[R.id];if(e&&ENT.includes(e))continue;const L=LOCBY[R.loc];if(!L||Math.hypot(player.x-L.x-R.dx,player.z-L.z-R.dz)>70)continue;
   const p=rechSpot(R);if(!p)continue;const c=spawnCreatureAt(p.x,p.z,R.nom,R.w,R.l,R.hp,{});makeElite(c);c.data.name='☠ '+R.n;c.data.baseName=R.n;c.data.rech=R.id;c.data.loc=R.loc;RECH_ON[R.id]=c;
   burst(p.x,gh(p.x,p.z)+1.5,p.z,0x8a1a1a,26,4);say('☠ <b>'+esc(R.n)+'</b> est dans les parages… La prime : <b>'+R.or+' 💰</b>.','gm');}}
 {const _w=world4Tick;world4Tick=function(dt){rechTick(dt);return _w.apply(this,arguments);};}
@@ -24,8 +27,8 @@ function rechTick(dt){RECH_T-=dt;if(RECH_T>0||!started||S.zone!=='monde')return;
   if(R&&!rechFait(R.id)){S.rech=S.rech||{};S.rech[R.id]=S.day||1;gainOr(R.or,1);gainXP(Math.round(R.or*0.8));addItem('cristal',2);
    banner('☠ Prime encaissée !',R.n+' : '+R.or+' pièces d’or');sfx('win');chron('Prime : '+R.n+' vaincu.');say('💰 <b>'+R.or+' pièces d’or</b> et 2 cristaux pour la capture de <b>'+esc(R.n)+'</b>.','gm');save();}return r;};}
 /* le tableau d'avis de recherche, au village */
-function rechBoard(){const left=RECH.filter(R=>!rechFait(R.id)).length;
- const it=RECH.map(R=>{const L=LOCBY[R.loc],f=rechFait(R.id);return {t:(f?'✔ ':'☠ ')+R.n+(f?' — prime payée':' — '+R.or+' 💰'),s:f?'Capturé. Le village respire.':R.d+' Vu vers '+(L?L.name:'?')+' ('+rechRegion(L)+').',off:f,
+function rechBoard(){S.rechVu=1;const left=RECH.filter(R=>!rechFait(R.id)).length;
+ const it=RECH.map(R=>{const L=LOCBY[R.loc],f=rechFait(R.id);const bas=!f&&lvl()<rechNiv(R);return {t:(f?'✔ ':'☠ ')+R.n+(f?' — prime payée':' — '+R.or+' 💰'),s:f?'Capturé. Le village respire.':R.d+' Vu vers '+(L?L.name:'?')+' ('+rechRegion(L)+').'+(bas?' Trop dangereux avant le niveau '+rechNiv(R)+'.':''),off:f||bas,
    fn:()=>{S.wp=R.loc;say('📍 Repère placé : <b>'+esc(L.name)+'</b> — '+esc(R.n)+' rôde par là.','sys');save();}};});
  openPick('📜 Avis de recherche',left?left+' recherché'+(left>1?'s':'')+'. Touche un avis pour placer un repère vers son repaire.':'Plus aucune prime… pour l’instant. Bravo, chasseur !',it);}
 {const _d=buildDecor;buildDecor=function(){const r=_d.apply(this,arguments);const V=LOCBY.village;if(!V)return r;

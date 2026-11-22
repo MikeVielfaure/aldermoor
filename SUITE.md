@@ -173,6 +173,8 @@
   passer invisible (philtre), malin (Lumière à la Pierre des Lucioles = sentier sûr 4 min) ou costaud ; Noctis (ombre),
   Aurèle (arcane / télékinésie), Dame Morgane ; quête « Les Trois Ombres » → « Main du Néant ». Idées : cape d’ombre,
   énigmes de Noctis, vraie télékinésie (saisir et lancer une créature).
+- v50 : avis de recherche au village : Mirza l’Ombre-Lame (Ruines), le Roi champignon fou (Forêt), Brasier-Noir (Plateau des
+  Géants), Grokk le Brise-Os (Dunes), Croc-de-Givre (Pics), Vorgath (Mines). Idées : nouvelles primes chaque semaine, factions.
 - À proposer au joueur : en balai, monter tout seul devant une pente au lieu de se poser (utile dans les
   collines et montagnes des Grandes Terres) ; reprendre la partie là où on l'a quittée (aujourd'hui on repart
   toujours de son point d'arrivée).

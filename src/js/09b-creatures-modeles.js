@@ -27,7 +27,7 @@ function creaPlay(D,n){const M=D.M,a=M.A[n];if(!a||M.cur===n)return;const old=M.
 function creaTick(dt){const cam=camera.position;
  for(const e of ENT){if(e.kind!=='creature')continue;const D=e.data,M=D.M;if(!M)continue;
   if(D.hp<M.hp&&M.A.HitRecieve){const a=M.A.HitRecieve;a.reset();a.setLoop(THREE.LoopOnce,1);a.play();a.crossFadeFrom(M.A[M.cur]||a,0.08,false);M.hitT=0.5;M.cur='HitRecieve';}M.hp=D.hp;
-  const col=D.frozen>0?0xcff4ff:null;for(const m of M.mats){const B=m.userData.b||WHITEC;if(M.hitT>0.35)m.color.copy(B).lerp(WHITEC,0.7);else if(col)m.color.copy(B).multiply(CREA_FROST);else m.color.copy(B).multiply(M.tint);if(m.emissive)m.emissive.setHex(M.hitT>0.35?0x553333:0);}
+  const col=D.frozen>0?0xcff4ff:null;for(const m of M.mats){const B=m.userData.b||WHITEC;if(M.hitT>0.35)m.color.copy(B).lerp(WHITEC,0.7);else if(col)m.color.copy(B).multiply(CREA_FROST);else m.color.copy(B).multiply(M.tint);if(m.emissive)m.emissive.setHex(M.hitT>0.35?0x553333:(m.userData.e||0)); /* userData.e : lueur propre (chimères, 20zd) */}
   if(M.hitT>0)M.hitT-=dt;
   else{const v=Math.hypot(e.x-M.lx,e.z-M.lz)/Math.max(dt,1e-3),stuck=D.frozen>0||D.rooted>0,near=Math.hypot(player.x-e.x,player.z-e.z)<1.6;
    creaPlay(D,M.vol?'Flying':near&&M.A.Bite_InPlace?'Bite_InPlace':!stuck&&v>0.4&&M.A.Walk?'Walk':'Idle');}

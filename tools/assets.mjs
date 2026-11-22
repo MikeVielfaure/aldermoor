@@ -1,9 +1,9 @@
 // Prépare les ressources du jeu à partir des packs bruts (assets/brut, non versionnés) vers src/assets (versionné).
-// Usage : node tools/assets.mjs [persos|creatures|monstres|objets|sons|tout]
+// Usage : node tools/assets.mjs [persos|creatures|monstres|chimeres|objets|sons|tout]
 // Objectif téléphone : fichiers .glb compacts, textures 256 px, sons .mp3 courts. Le jeu marche aussi sans eux.
 import {NodeIO} from '@gltf-transform/core';
 import {ALL_EXTENSIONS} from '@gltf-transform/extensions';
-import {prune,dedup,textureCompress,weld,mergeDocuments,unpartition} from '@gltf-transform/functions';
+import {prune,dedup,textureCompress,weld,mergeDocuments,unpartition,resample} from '@gltf-transform/functions';
 import sharp from 'sharp';
 import fs from 'fs';import path from 'path';import {fileURLToPath} from 'url';import {execFileSync} from 'child_process';
 import {createRequire} from 'module';
@@ -52,15 +52,21 @@ const MONS={orc:'Orc',ninja:'Ninja-xGYmeDpfTu',masque:'Tribal',spectre:'Ghost','
  'grand-yeti':'Yeti-ceRHrn8HHE',armabee:'Armabee',alpaking:'Alpaking',hywirl:'Hywirl',glub:'Glub',birb:'Birb',dragonnet:'Dragon','dragonnet-ancien':'Dragon Evolved',
  lapin:'Bunny',chat:'Cat',pigeon:'Pigeon',farceur:'Wizard'};
 const MONS_ANIM=[['Idle',['Idle']],['Walk',['Walk']],['Bite_InPlace',['Bite_Front','Punch','Headbutt']],['HitRecieve',['HitRecieve','HitReact']],['Death',['Death']],['Flying',['Flying_Idle']]];
-async function monstres(){const src=path.join(BRUT,'quaternius-ultimate-monsters','glb'),dst=path.join(SORTIE,'creatures');fs.mkdirSync(dst,{recursive:true});let tot=0;
- for(const [nom,f] of Object.entries(MONS)){const doc=await io.read(path.join(src,f+'.glb')),R=doc.getRoot(),A={};
-  R.listAnimations().forEach(a=>{A[a.getName().replace(/^.*\|/,'')]=a;});const keep=new Set();
-  for(const [to,from] of MONS_ANIM){const k=from.find(n=>A[n]&&!keep.has(A[n]));if(k){A[k].setName(to);keep.add(A[k]);}}
+/* animaux réalistes (Quaternius, Ultimate Animated Animal Pack, CC0) : la magie (corne, ailes, flammes…) est ajoutée par le jeu (20zd).
+   Le fichier de Poly Pizza contient chaque animation deux fois : on n'en garde qu'une. Pégase : le galop sert d'animation de vol. */
+const CHIM={licorne:'White Horse',pegase:'White Horse','cerf-etoiles':'Stag','loup-spectral':'Wolf','renard-feu':'Fox','taureau-lave':'Bull'};
+const CHIM_ANIM=nom=>[['Idle',['Idle']],['Walk',['Walk']],['Bite_InPlace',['Attack_Headbutt','Attack']],['HitRecieve',['Idle_HitReact_Left']],['Death',['Death']]].concat(nom==='pegase'?[['Flying',['Gallop']]]:[]);
+async function prepModeles(dossier,table,anims,quoi){const src=path.join(BRUT,dossier,'glb'),dst=path.join(SORTIE,'creatures');fs.mkdirSync(dst,{recursive:true});let tot=0;
+ for(const [nom,f] of Object.entries(table)){const doc=await io.read(path.join(src,f+'.glb')),R=doc.getRoot(),A={};
+  R.listAnimations().forEach(a=>{const n=a.getName().replace(/^.*\|/,'');if(!A[n])A[n]=a;});const keep=new Set();
+  for(const [to,from] of (typeof anims==='function'?anims(nom):anims)){const k=from.find(n=>A[n]&&!keep.has(A[n]));if(k){A[k].setName(to);keep.add(A[k]);}}
   R.listAnimations().forEach(a=>{if(!keep.has(a))sansAnim(a);});orphelins(doc);
   for(const m of R.listMaterials()){m.setMetallicFactor(0);m.setRoughnessFactor(0.8);}
-  await doc.transform(prune(),dedup());const out=path.join(dst,nom+'.glb');await io.write(out,doc);tot+=fs.statSync(out).size;
-  console.log('monstre',nom,'←',f,ko(out),'|',R.listAnimations().map(a=>a.getName()).join(','));}
- console.log('monstres : total',Math.round(tot/1024),'Ko');}
+  await doc.transform(resample(),prune(),dedup());const out=path.join(dst,nom+'.glb');await io.write(out,doc);tot+=fs.statSync(out).size;
+  console.log(quoi,nom,'←',f,ko(out),'|',R.listAnimations().map(a=>a.getName()).join(','));}
+ console.log(quoi+' : total',Math.round(tot/1024),'Ko');}
+const monstres=()=>prepModeles('quaternius-ultimate-monsters',MONS,MONS_ANIM,'monstre');
+const chimeres=()=>prepModeles('quaternius-animated-animals',CHIM,CHIM_ANIM,'chimère');
 
 /* ---------- objets (Quaternius, Fantasy Props MegaKit) : TOUS dans un seul fichier objets.glb ----------
    Les 4 grandes textures « trim » sont partagées par tous les objets : un seul fichier = téléchargées une fois.
@@ -88,6 +94,7 @@ export {mp3};
 if(quoi==='persos'||quoi==='tout')await persos();
 if(quoi==='creatures'||quoi==='tout')await creatures();
 if(quoi==='monstres'||quoi==='creatures'||quoi==='tout')await monstres();
+if(quoi==='chimeres'||quoi==='creatures'||quoi==='tout')await chimeres();
 if(quoi==='objets'||quoi==='tout')await objets();
 if(quoi==='sons'||quoi==='tout'){const m=await import('./sons.mjs');await m.sons(mp3,BRUT,SORTIE);}
 let total=0;const walk=d=>{for(const f of fs.readdirSync(d)){const p=path.join(d,f);if(fs.statSync(p).isDirectory())walk(p);else total+=fs.statSync(p).size;}};walk(SORTIE);

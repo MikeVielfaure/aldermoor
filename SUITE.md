@@ -160,6 +160,9 @@
 - v45 : 26 nouveaux monstres (Ultimate Monsters, CC0) : orcs, bandits, spectres, démons, roi champignon, grenouilles,
   blobs, cactoros, grand yéti, frelons, alpagas, dragonnets, lapins, chats, pigeons… répartis par biome et région.
   Suite voulue par le joueur : des créatures entre réaliste et mystique (licornes, hybrides).
+- v46 : chimères (animaux réalistes + magie) : licornes et cerfs des étoiles (forêt), pégases (prairie), renards de feu (désert),
+  loups spectraux (neige, roche, Landes), taureaux de lave (roche). Idées : centaure (torse de personnage sur un cheval),
+  griffon, monter un pégase ou une licorne, apprivoiser une licorne comme familier.
 - À proposer au joueur : en balai, monter tout seul devant une pente au lieu de se poser (utile dans les
   collines et montagnes des Grandes Terres) ; reprendre la partie là où on l'a quittée (aujourd'hui on repart
   toujours de son point d'arrivée).

@@ -19,6 +19,7 @@ sons et musiques OpenGameArt via `bash tools/oga.sh <page>` (n'accepte que le CC
 | `quaternius-medieval-village` | Medieval Village MegaKit : 176 pièces de maisons modulaires (murs, toits, balcons, escaliers) | réserve (nouvelles maisons) |
 | `kenney-mini-characters-1` | 43 modèles .glb, dont 20 personnages (≈ 770 triangles, 240 Ko) avec 32 animations : repos, marche, course, saut, chute, ramasser, lancer main droite, attaque, interaction, oui/non, mort | joueur et PNJ (chapeau et robe de sorcier ajoutés par le jeu) |
 | `quaternius-cute-monsters` | **utilisé** (12 dans `src/assets/creatures`) : 21 monstres « mignons » .gltf (≈ 1 000 à 1 800 triangles) : repos, marche, morsure, coup reçu, mort, saut, danse ; vol pour chauve-souris, abeille, dragon, Cthulhu | créatures (fantôme → esprits d'ombre, champignon → farfadets, yéti → lutins de givre, démon → étincelles sauvages, cyclope → golem…) |
+| `quaternius-ultimate-monsters` | Ultimate Monsters (CC0, 2022, pris en .glb sur Poly Pizza le 2026-11-22 : le Google Drive de Quaternius refuse les téléchargements automatiques, « Quota exceeded ») : 45 monstres animés sans texture (1 700 à 7 500 triangles, 8 à 15 animations : repos, marche, course, attaque, coup reçu, mort ; vol pour les volants) — orc, ninja, tribal, roi champignon, yéti, démons, petits dragons, fantômes, grenouille, cactus, animaux (lapin, chat, poule, pigeon) | créatures (en attente du choix du joueur) |
 | `quaternius-medieval-dungeon` | 26 objets .obj : livres, livre ouvert, chandeliers, bougie, coffres, fiole, tapis, os, barreaux, colonnes, entrées | intérieurs, souterrains, coffres |
 | `kenney-nature-kit` | 329 éléments : arbres, rochers, fleurs, champignons, souches, ponts, clôtures, tentes, feu de camp… | décor automatique |
 | `kenney-fantasy-town-kit` | 167 éléments : murs, toits, fontaines, puits, étals, charrettes, lanternes… | village, marché |
@@ -66,6 +67,12 @@ sons et musiques OpenGameArt via `bash tools/oga.sh <page>` (n'accepte que le CC
 - `sons/` (+ `sons.json`) : 29 groupes d'effets ; `musique/` : 8 musiques (jour, village, nuit, auberge, salle, duel, grotte, titre) et 5 ambiances (oiseaux, grillons, feu, rivière, vent).
 
 Les deux mégakits itch.io de Quaternius (objets fantasy, village médiéval) ont été ajoutés à la main le 2026-11-14.
+
+## Licences des nouveaux packs Quaternius
+
+Depuis août 2026, les nouveautés de Quaternius (ex. « Characters – Fantasy Races », « Bestiary ») sont sous
+**QAL** : gratuites dans un jeu, mais interdiction de redistribuer les fichiers seuls. Le dépôt GitHub étant
+public, ne pas les mettre dans `src/assets` sans en parler au joueur. Les anciens packs restent en CC0.
 
 ## Avant d'intégrer
 

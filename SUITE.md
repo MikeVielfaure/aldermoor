@@ -169,6 +169,10 @@
 - v48 : Académie des Cieux sur la Citadelle des Nuées (île au-dessus de la vallée) : balai, courant ascendant ou navette
   (10 pièces) ; Zéphyrine (vent), Lucius (lumière), Célestine ; quête « L’Épreuve des Hauteurs » (plume de pégase dans les
   Grandes Terres) → « Ailes de lumière ». Électricité et magnétisme à ajouter ici plus tard. Idées : cascades sous l’île, pégases.
+- v49 : Académie de la Sombrité (Grandes Terres, au fond de la Sylve) : Bois des Ombres-Longues (sombre, embuscades) ;
+  passer invisible (philtre), malin (Lumière à la Pierre des Lucioles = sentier sûr 4 min) ou costaud ; Noctis (ombre),
+  Aurèle (arcane / télékinésie), Dame Morgane ; quête « Les Trois Ombres » → « Main du Néant ». Idées : cape d’ombre,
+  énigmes de Noctis, vraie télékinésie (saisir et lancer une créature).
 - À proposer au joueur : en balai, monter tout seul devant une pente au lieu de se poser (utile dans les
   collines et montagnes des Grandes Terres) ; reprendre la partie là où on l'a quittée (aujourd'hui on repart
   toujours de son point d'arrivée).

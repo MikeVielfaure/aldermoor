@@ -163,6 +163,9 @@
 - v46 : chimères (animaux réalistes + magie) : licornes et cerfs des étoiles (forêt), pégases (prairie), renards de feu (désert),
   loups spectraux (neige, roche, Landes), taureaux de lave (roche). Idées : centaure (torse de personnage sur un cheval),
   griffon, monter un pégase ou une licorne, apprivoiser une licorne comme familier.
+- v47 : Académie des Éléments primaires (château) : 3 nouveaux profs (Flambard « C’est feutastique ! », Ondine, Frimas) +
+  Mirelle, l’Archimage Aldric Hautval ; cours à la demande (1/jour/prof), quête « Les Quatre Épreuves » → sort inédit
+  « Concert des Quatre ». À faire : Académie des Cieux (Îles du Miroir-Ciel), Académie de la Sombrité (forêt dangereuse).
 - À proposer au joueur : en balai, monter tout seul devant une pente au lieu de se poser (utile dans les
   collines et montagnes des Grandes Terres) ; reprendre la partie là où on l'a quittée (aujourd'hui on repart
   toujours de son point d'arrivée).

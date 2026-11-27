@@ -1,5 +1,5 @@
 // Prépare les ressources du jeu à partir des packs bruts (assets/brut, non versionnés) vers src/assets (versionné).
-// Usage : node tools/assets.mjs [persos|creatures|monstres|chimeres|objets|sons|tout]
+// Usage : node tools/assets.mjs [persos|creatures|monstres|chimeres|objets|batiments|sons|tout]
 // Objectif téléphone : fichiers .glb compacts, textures 256 px, sons .mp3 courts. Le jeu marche aussi sans eux.
 import {NodeIO} from '@gltf-transform/core';
 import {ALL_EXTENSIONS} from '@gltf-transform/extensions';
@@ -84,6 +84,24 @@ async function objets(){const src=path.join(BRUT,'quaternius-fantasy-props','Exp
  const out=path.join(dst,'objets.glb');await io.write(out,doc);
  const tex=doc.getRoot().listTextures().map(t=>t.getName()||t.getURI()).join(', ');console.log('objets',OBJETS.length,'→',ko(out),'| textures :',tex);}
 
+/* ---------- bâtiments (Quaternius, Medieval Village MegaKit, CC0) : les pièces modulaires dans UN fichier batiments.glb ----------
+   Murs de 2 m × 3,12 m, toits de tuiles, pignons, portes, fenêtres, volets, cheminées… assemblés par le jeu (20zl).
+   Textures 2048 px → 512 px WebP, sans relief ni ORM. */
+const BATI=['Wall_Plaster_Straight','Wall_Plaster_Door_Round','Wall_Plaster_Door_Flat','Wall_Plaster_Window_Wide_Round','Wall_Plaster_Window_Thin_Round','Wall_Plaster_WoodGrid',
+ 'Wall_UnevenBrick_Straight','Wall_UnevenBrick_Door_Round','Wall_UnevenBrick_Window_Wide_Round','Wall_UnevenBrick_Window_Thin_Round','Corner_Exterior_Wood',
+ 'Roof_RoundTiles_4x4','Roof_RoundTiles_4x6','Roof_RoundTiles_6x6','Roof_RoundTiles_6x8','Roof_RoundTiles_8x8','Roof_Front_Brick4','Roof_Front_Brick6','Roof_Front_Brick8',
+ 'Prop_Chimney','Door_1_Round','Door_2_Flat','Window_Wide_Round1','Window_Thin_Round1','WindowShutters_Wide_Round_Open','WindowShutters_Thin_Round_Open',
+ 'Overhang_Plaster_Long','Stairs_Exterior_Straight','Prop_Wagon','Prop_Crate','Prop_WoodenFence_Single','Prop_WoodenFence_Extension1','Prop_Vine1','Prop_Vine4','Roof_Tower_RoundTiles','Wall_Arch','Floor_WoodDark','Balcony_Simple_Straight'];
+async function batiments(){const src=path.join(BRUT,'quaternius-medieval-village','Medieval Village MegaKit[Standard]','glTF'),dst=path.join(SORTIE,'batiments');fs.mkdirSync(dst,{recursive:true});
+ const doc=await io.read(path.join(src,BATI[0]+'.gltf'));const scene=doc.getRoot().listScenes()[0];
+ const nommer=(sc,nom)=>{const g=doc.createNode(nom);sc.listChildren().forEach(n=>{sc.removeChild(n);g.addChild(n);});scene.addChild(g);};
+ nommer(scene,BATI[0]);
+ for(const nom of BATI.slice(1)){const d=await io.read(path.join(src,nom+'.gltf'));const map=mergeDocuments(doc,d);const sc=map.get(d.getRoot().listScenes()[0]);nommer(sc,nom);sc.dispose();}
+ for(const m of doc.getRoot().listMaterials()){m.setNormalTexture(null);m.setOcclusionTexture(null);m.setMetallicRoughnessTexture(null);m.setMetallicFactor(0);m.setRoughnessFactor(0.85);}
+ await doc.transform(unpartition(),dedup(),prune(),textureCompress({encoder:sharp,targetFormat:'webp',resize:[512,512],quality:80}));
+ const out=path.join(dst,'batiments.glb');await io.write(out,doc);
+ console.log('bâtiments',BATI.length,'pièces →',ko(out),'| matériaux :',doc.getRoot().listMaterials().map(m=>m.getName()).join(', '));}
+
 /* ---------- sons : .mp3 mono, coupés, volume normalisé ---------- */
 const FFMPEG=()=>require('ffmpeg-static');
 function mp3(src,out,{debut=0,duree=null,kbps=64,mono=true,fondu=0,norm=true}={}){const a=['-y','-loglevel','error','-ss',String(debut),'-i',src];if(duree)a.push('-t',String(duree));
@@ -96,6 +114,7 @@ if(quoi==='creatures'||quoi==='tout')await creatures();
 if(quoi==='monstres'||quoi==='creatures'||quoi==='tout')await monstres();
 if(quoi==='chimeres'||quoi==='creatures'||quoi==='tout')await chimeres();
 if(quoi==='objets'||quoi==='tout')await objets();
+if(quoi==='batiments'||quoi==='tout')await batiments();
 if(quoi==='sons'||quoi==='tout'){const m=await import('./sons.mjs');await m.sons(mp3,BRUT,SORTIE);}
 let total=0;const walk=d=>{for(const f of fs.readdirSync(d)){const p=path.join(d,f);if(fs.statSync(p).isDirectory())walk(p);else total+=fs.statSync(p).size;}};walk(SORTIE);
 console.log('total src/assets :',(total/1048576).toFixed(1),'Mo');

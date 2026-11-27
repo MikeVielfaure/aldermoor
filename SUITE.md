@@ -179,7 +179,10 @@
   monter : licorne au galop, pégase qui vole. Idées : écurie au Domaine (plusieurs montures), centaure, course à cheval.
 - v52 : on reprend la partie là où on l’a quittée (vallée, Citadelle, Landes, Grandes Terres).
 - v53 : licorne (corne collée, plus de flottement des créatures) ; zones dangereuses (niveau par zone, créatures renforcées,
-  avertissement, récompenses). En cours : vrais bâtiments (Medieval Village MegaKit), vraies histoires par lieu.
+  avertissement, récompenses). 
+- v54 : vrais bâtiments (kit médiéval) : hameaux de la Halte de l’Aube (auberge, forge, maisons, tour) et des Mines de Brisefer ;
+  histoires de Maëlle, Borin et Grégor (4 quêtes enchaînées, combats en zone dangereuse, Baguette de Brisefer).
+  Idées : bâtiments dans les Landes et sur la Côte, intérieurs visitables, plus d’histoires par lieu.
 - À proposer au joueur : en balai, monter tout seul devant une pente au lieu de se poser (utile dans les
   collines et montagnes des Grandes Terres).
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.

@@ -1488,7 +1488,7 @@ function creaTick(dt){const cam=camera.position;
   if(M.hitT>0)M.hitT-=dt;
   else{const v=Math.hypot(e.x-M.lx,e.z-M.lz)/Math.max(dt,1e-3),stuck=D.frozen>0||D.rooted>0,near=Math.hypot(player.x-e.x,player.z-e.z)<1.6;
    creaPlay(D,M.vol?'Flying':near&&M.A.Bite_InPlace?'Bite_InPlace':!stuck&&v>0.4&&M.A.Walk?'Walk':'Idle');}
-  M.lx=e.x;M.lz=e.z;
+  M.lx=e.x;M.lz=e.z;if(!M.vol&&!D.corpse)M.r.position.y=(gh(e.x,e.z)-e.obj.position.y)/(e.obj.scale.y||1); /* les créatures qui marchent restent au sol (la boule magique d’origine ondule, pas elles) */
   const far=Math.hypot(e.x-cam.x,e.z-cam.z)>55;if(!far)M.mx.update((D.frozen>0||D.rooted>0)?dt*0.15:dt);}}
 {const _w=world4Tick;world4Tick=function(dt){creaTick(dt);return _w.apply(this,arguments);};}
 /* ================= ÉTAPE 3 : RELIEF, INTÉRIEURS, GRAPHISMES ================= */
@@ -5818,7 +5818,7 @@ function chimDress(e,m){const M=e.data.M;if(!M||M.chim)return;M.chim={m,t:Math.r
  if(m==='licorne'||m==='pegase'){chimRecolor(M,/^Main$/i,0xf2f0fa,0x303038);chimRecolor(M,/^Main_Light$/i,0xffffff,0x34343c);chimRecolor(M,/Muzzle/i,0xe0c8d4,0x140c10);chimRecolor(M,/Hooves/i,m==='licorne'?0xe0b860:0xb8c4d8,m==='licorne'?0x3a2a08:0);
   chimRecolor(M,/Hair/i,m==='licorne'?0xe8ccff:0xcfe6ff,m==='licorne'?0x2a1640:0x12243a);}
  if(m==='licorne'){const g=new THREE.ConeGeometry(0.065,0.62,8,8).translate(0,0.31,0);const P=g.attributes.position;for(let i=0;i<P.count;i++){const y=P.getY(i),a=y*9,x=P.getX(i),z=P.getZ(i);P.setXYZ(i,x*Math.cos(a)-z*Math.sin(a),y,x*Math.sin(a)+z*Math.cos(a));}g.computeVertexNormals();
-  const h=chimAt(M,'Head',new THREE.Mesh(g,chimMat(0xfff4dc,0x8a6a30)),0,0.3,0.24);if(h){h.rotation.x=Math.PI/2-0.35;const tip=new THREE.Object3D();tip.position.y=0.62;h.add(tip);C.tips.push(tip);}}
+  const h=chimAt(M,'Head',new THREE.Mesh(g,chimMat(0xfff4dc,0x8a6a30)),0,0.15,0.13);if(h){h.rotation.x=Math.PI/2+0.15;const tip=new THREE.Object3D();tip.position.y=0.62;h.add(tip);C.tips.push(tip);}}
  if(m==='pegase'){for(const s of [1,-1]){const w=chimAt(M,'Torso2',chimWing(s),s*0.16,0.28,0.42);if(w){w.userData.side=s;(C.wings=C.wings||[]).push(w);}}}
  if(m==='cerf-etoiles'){M.r.traverse(o=>{if(o.isMesh&&/Horn/i.test(o.name)){o.material.userData.b=new THREE.Color(0xc8f0ff);o.material.userData.e=0x2f86c8;C.horn=o;}});}
  if(m==='loup-spectral'){for(const mt of M.mats){mt.transparent=true;mt.opacity=0.58;mt.userData.b=(mt.userData.b||new THREE.Color(1,1,1)).clone().lerp(new THREE.Color(0x9fb4ff),0.55);mt.userData.e=0x1a2450;}}

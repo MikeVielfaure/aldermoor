@@ -31,6 +31,6 @@ function creaTick(dt){const cam=camera.position;
   if(M.hitT>0)M.hitT-=dt;
   else{const v=Math.hypot(e.x-M.lx,e.z-M.lz)/Math.max(dt,1e-3),stuck=D.frozen>0||D.rooted>0,near=Math.hypot(player.x-e.x,player.z-e.z)<1.6;
    creaPlay(D,M.vol?'Flying':near&&M.A.Bite_InPlace?'Bite_InPlace':!stuck&&v>0.4&&M.A.Walk?'Walk':'Idle');}
-  M.lx=e.x;M.lz=e.z;
+  M.lx=e.x;M.lz=e.z;if(!M.vol&&!D.corpse)M.r.position.y=(gh(e.x,e.z)-e.obj.position.y)/(e.obj.scale.y||1); /* les créatures qui marchent restent au sol (la boule magique d’origine ondule, pas elles) */
   const far=Math.hypot(e.x-cam.x,e.z-cam.z)>55;if(!far)M.mx.update((D.frozen>0||D.rooted>0)?dt*0.15:dt);}}
 {const _w=world4Tick;world4Tick=function(dt){creaTick(dt);return _w.apply(this,arguments);};}

@@ -178,6 +178,8 @@
 - v51 : montures : apprivoiser une licorne (forêt) ou un pégase (prairie) des Grandes Terres comme familier, puis ✋ pour
   monter : licorne au galop, pégase qui vole. Idées : écurie au Domaine (plusieurs montures), centaure, course à cheval.
 - v52 : on reprend la partie là où on l’a quittée (vallée, Citadelle, Landes, Grandes Terres).
+- v53 : licorne (corne collée, plus de flottement des créatures) ; zones dangereuses (niveau par zone, créatures renforcées,
+  avertissement, récompenses). En cours : vrais bâtiments (Medieval Village MegaKit), vraies histoires par lieu.
 - À proposer au joueur : en balai, monter tout seul devant une pente au lieu de se poser (utile dans les
   collines et montagnes des Grandes Terres).
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.

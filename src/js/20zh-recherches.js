@@ -20,7 +20,7 @@ function rechSpot(R){const L=LOCBY[R.loc];if(!L)return null;let x=L.x+R.dx,z=L.z
 function rechTick(dt){RECH_T-=dt;if(RECH_T>0||!started||S.zone!=='monde')return;RECH_T=1;
  if(!S.rechVu)return; /* rien avant d'avoir lu le tableau : la Forêt de Sombrebois reste un lieu pour débutants */
  for(const R of RECH){if(rechFait(R.id)||lvl()<rechNiv(R))continue;const e=RECH_ON[R.id];if(e&&ENT.includes(e))continue;const L=LOCBY[R.loc];if(!L||Math.hypot(player.x-L.x-R.dx,player.z-L.z-R.dz)>70)continue;
-  const p=rechSpot(R);if(!p)continue;const c=spawnCreatureAt(p.x,p.z,R.nom,R.w,R.l,R.hp,{});makeElite(c);c.data.name='☠ '+R.n;c.data.baseName=R.n;c.data.rech=R.id;c.data.loc=R.loc;RECH_ON[R.id]=c;
+  const p=rechSpot(R);if(!p)continue;const c=spawnCreatureAt(p.x,p.z,R.nom,R.w,R.l,R.hp,{zfix:1});makeElite(c);c.data.name='☠ '+R.n;c.data.baseName=R.n;c.data.rech=R.id;c.data.loc=R.loc;RECH_ON[R.id]=c;
   burst(p.x,gh(p.x,p.z)+1.5,p.z,0x8a1a1a,26,4);say('☠ <b>'+esc(R.n)+'</b> est dans les parages… La prime : <b>'+R.or+' 💰</b>.','gm');}}
 {const _w=world4Tick;world4Tick=function(dt){rechTick(dt);return _w.apply(this,arguments);};}
 {const _k=killCreature;killCreature=function(e){const D=e&&e.data,R=D&&D.rech&&ENT.includes(e)&&RECH.find(r=>r.id===D.rech);const r=_k.apply(this,arguments);

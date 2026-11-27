@@ -18,7 +18,10 @@
   lines:['Tu l’entends, toi aussi ? Ce chant… il vient de sous les vagues.','Depuis que le phare s’est éteint, les bateaux ne rentrent plus.','La mer donne, la mer reprend. Mais là, elle reprend trop.']},
  {id:'haldaran',name:'Spectre du roi Haldaran',role:'fantôme d’un ancien roi, triste et solennel, parle de son royaume perdu comme s’il existait encore',home:'terres_ruines',mdl:['sorcier',0xbfe0ff],
   look:{skin:0xd8e8f0,hair:0xe8f0ff,style:'long',beard:0xe8f0ff,hat:0x8ab0d8,robe:0xa8c8e8,trim:0xe8f0ff,h:1.12},
-  lines:['Ici s’élevait Haldaran… la plus belle cité des Grandes Terres.','Ma garde m’a trahi. Ma couronne… ils l’ont emportée dans la mort.','Je ne peux partir. Pas sans elle.']}
+  lines:['Ici s’élevait Haldaran… la plus belle cité des Grandes Terres.','Ma garde m’a trahi. Ma couronne… ils l’ont emportée dans la mort.','Je ne peux partir. Pas sans elle.']},
+ {id:'rosalind',name:'Rosalind Ventebrune',role:'éclaireuse des Landes, vive et courageuse, surveille la vouivre Ignivor depuis la tour du campement',home:'landes_camp',mdl:['rodeuse',0xd8a868],
+  look:{skin:0xe8c0a0,hair:0xb85a2a,style:'pony',hat:0x5a4a2a,robe:0x6a7a3a,trim:0xd8b870,h:1.0},
+  lines:['De la tour, je vois tout : le lac, les îles… et la fumée du Nid de la Vouivre.','Ignivor dort mal, ces temps-ci. Ses diablotins brûlent les prairies.','Le Relais des Voyageurs t’offre un lit. Moi, je t’offre des ennuis.']}
 ].forEach(p=>{if(NPCS.some(n=>n.id===p.id))return;NPCS.push({id:p.id,name:p.name,role:p.role,home:p.home,els:[],cl:[],look:p.look});NPCBY[p.id]=NPCS[NPCS.length-1];MDL_PERSO[p.id]=p.mdl;LINES[p.id]=p.lines.slice();});
 WANDS.brisefer={n:'Baguette de Brisefer',p:0,d:'Forgée par Borin dans le minerai d’étoile : +12 % à tous tes sorts, +5 % de coups critiques.',tip:0xffb070,all:0.12,crit:0.05,unique:true};
 const HISTOIRES=[
@@ -64,16 +67,24 @@ const HISTOIRES=[
    {type:'ramasser',lieu:'terres_ruines',objet:'la couronne brisée',texte:'Retrouver la couronne brisée dans les ruines'},
    {type:'lancer',lieu:'terres_ruines',element:'lumiere',texte:'Bénir la couronne d’un sort de Lumière, au cœur des ruines'},
    {type:'parler',pnj:'haldaran',texte:'Rendre la couronne au roi Haldaran'}],
-  recompense:{xp:420,or:260,cristal:4}}];
+  recompense:{xp:420,or:260,cristal:4}},
+ {id:'hist-vouivre',titre:'La vouivre s’éveille',donneur:'rosalind',actif:true,
+  description:'Ignivor, la vouivre ancestrale, s’agite dans son nid. Ses diablotins de braise mettent le feu aux prairies des Landes. Rosalind veut savoir ce qui la tourmente.',
+  etapes:[{type:'vaincre',creature:'diablotin',nombre:5,lieu:'landes_prairie',texte:'Chasser les diablotins de braise de la Prairie aux Lucioles'},
+   {type:'lancer',lieu:'landes_pic',element:'glace',texte:'Prendre la fraîcheur du Pic de Givrecorne (sort de Glace)'},
+   {type:'ramasser',lieu:'landes_nid',objet:'une écaille de vouivre',texte:'Approcher le Nid de la Vouivre et ramasser une écaille (zone très dangereuse)'},
+   {type:'parler',pnj:'rosalind',texte:'Rapporter l’écaille à Rosalind'}],
+  recompense:{xp:300,or:200,essence:2}}];
 HISTOIRES.forEach(h=>{if(!CQUETES.some(c=>c.id===h.id))CQUETES.push(h);});
 /* la baguette de Brisefer : récompense de « Une baguette pour un héros » */
 {const _f=finishQuest;finishQuest=function(q){const r=_f.apply(this,arguments);
   if(q&&q.cq==='hist-haldaran')setTimeout(()=>say('👑 Le roi Haldaran pose la couronne sur sa tête. Un sourire, une lumière… puis il s’efface, enfin apaisé.','gm'),700);
+  if(q&&q.cq==='hist-vouivre')setTimeout(()=>{S.inv.p_soin=(S.inv.p_soin||0)+2;say('🐉 Rosalind examine l’écaille : « Elle est brûlante… Ignivor se prépare. Tiens, deux potions de soin : tu en auras besoin si tu vas la défier. »','gm');save();},700);
   if(q&&q.cq==='hist-chant')setTimeout(()=>say('🌊 Le phare brille de nouveau sur la Côte. Au loin, le chant s’est tu.','gm'),700);
   if(q&&q.cq==='hist-lame'&&typeof giveGear==='function')setTimeout(()=>giveGear('w','brisefer','Forgée par Borin pour toi'),800);return r;};}
 /* les ennemis des histoires : ils apparaissent près du lieu pendant l'étape « vaincre » */
 const HIST_ENN={'hist-caravanes':{nom:'Orcs de Grokk',w:'glace',l:'feu',hp:4},'hist-aubin':{nom:'Orcs geôliers de Grokk',w:'glace',l:'feu',hp:5},'hist-brisefer':{nom:'Démons des cendres',w:'eau',l:'feu',hp:4},
- 'hist-chant':{nom:'Glubs des profondeurs',w:'vent',l:'eau',hp:4},'hist-haldaran':{nom:'Spectres de la garde d’Haldaran',w:'lumiere',l:'ombre',hp:5}};
+ 'hist-vouivre':{nom:'Diablotins de braise',w:'eau',l:'feu',hp:3},'hist-chant':{nom:'Glubs des profondeurs',w:'vent',l:'eau',hp:4},'hist-haldaran':{nom:'Spectres de la garde d’Haldaran',w:'lumiere',l:'ombre',hp:5}};
 let HIST_T=0;
 function histTick(dt){HIST_T-=dt;if(HIST_T>0||!started||S.zone!=='monde')return;HIST_T=1.5;
  for(const q of S.quests){const E=HIST_ENN[q.cq],s=curStep(q);if(!E||!s||s.kind!=='kill'||!s.loc)continue;const L=LOCBY[s.loc];if(!L||Math.hypot(player.x-L.x,player.z-L.z)>85)continue;
@@ -81,9 +92,9 @@ function histTick(dt){HIST_T-=dt;if(HIST_T>0||!started||S.zone!=='monde')return;
   for(let i=0;i<manque;i++){let x,z,ok=false;for(let t=0;t<12&&!ok;t++){const a=Math.random()*TAU,r=8+Math.random()*18;x=L.x+Math.cos(a)*r;z=L.z+Math.sin(a)*r;ok=gh(x,z)>0.6&&isFree({x,z},1.2)&&Math.hypot(x-player.x,z-player.z)>10;}
    if(!ok)continue;const e=spawnCreatureAt(x,z,E.nom,E.w,E.l,E.hp);e.data.hist=q.cq;e.data.loc=s.loc;burst(x,gh(x,z)+1.2,z,0x8a3a1a,18,3);}}}
 {const _w=world4Tick;world4Tick=function(dt){histTick(dt);return _w.apply(this,arguments);};}
-/* l'Auberge de l'Aube : se reposer */
-{const _d=buildDecor;buildDecor=function(){const r=_d.apply(this,arguments);const P=BATI_PLANS.find(p=>p.id==='halte_auberge');if(!P||P.x===undefined)return r;
-  const D=BATI_TYPES.auberge.d*2,x=P.x+Math.sin(P.ry)*(D/2+1.4),z=P.z+Math.cos(P.ry)*(D/2+1.4);
-  station({x,z,reach:2.6,hint:()=>'🍺 Auberge de l’Aube : repas et lit (10 💰)',act:()=>{if((S.or||0)<10){say('🍺 Maëlle : « Dix pièces le repas et le lit, mon petit. »','sys');return;}
-   S.or-=10;fade(()=>{S.time=Math.min(S.time+60,23*60+50);if(typeof VIE!=='undefined')VIE.hp=VIE.max;mana=manaMax();say('🍺 Une soupe chaude, un vrai lit… Tu repars <b>en pleine forme</b>.','gm');save();});}});
+/* les auberges (Auberge de l'Aube, Relais des Voyageurs…) : se reposer */
+{const _d=buildDecor;buildDecor=function(){const r=_d.apply(this,arguments);for(const P of BATI_PLANS){if(P.t!=='auberge'||P.x===undefined)continue;
+  const D=BATI_TYPES.auberge.d*2,x=P.x+Math.sin(P.ry)*(D/2+1.4),z=P.z+Math.cos(P.ry)*(D/2+1.4),nom=P.nom||'Auberge';
+  station({x,z,reach:2.6,hint:()=>'🍺 '+nom+' : repas et lit (10 💰)',act:()=>{if((S.or||0)<10){say('🍺 « Dix pièces le repas et le lit. »','sys');return;}
+   S.or-=10;fade(()=>{S.time=Math.min(S.time+60,23*60+50);if(typeof VIE!=='undefined')VIE.hp=VIE.max;mana=manaMax();say('🍺 Une soupe chaude, un vrai lit… Tu repars <b>en pleine forme</b>.','gm');save();});}});}
   return r;};}

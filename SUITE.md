@@ -183,7 +183,8 @@
 - v54 : vrais bâtiments (kit médiéval) : hameaux de la Halte de l’Aube (auberge, forge, maisons, tour) et des Mines de Brisefer ;
   histoires de Maëlle, Borin et Grégor (4 quêtes enchaînées, combats en zone dangereuse, Baguette de Brisefer).
 - v55 : Côte des Coquillages (maisons de pêcheurs, phare) et Ruines d’Haldaran (vraies ruines) ; histoires de Nérée et du roi Haldaran.
-  Idées : bâtiments dans les Landes, intérieurs visitables, plus d’histoires par lieu.
+- v56 : avant-poste du Campement des Voyageurs (Landes : Relais des Voyageurs, maison, tour) ; histoire de Rosalind
+  « La vouivre s’éveille » (prépare le combat contre Ignivor). Idées : intérieurs visitables, plus d’histoires par lieu.
 - À proposer au joueur : en balai, monter tout seul devant une pente au lieu de se poser (utile dans les
   collines et montagnes des Grandes Terres).
 - Course céleste : 11 anneaux entre les Îles du Miroir-Ciel (départ sur la 1re île), record S.craceBest.

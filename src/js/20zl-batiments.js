@@ -24,7 +24,8 @@ const BATI_PLANS=[
  {id:'mines_tour',lieu:'terres_mines',dx:14,dz:11,ry:Math.PI,t:'tour'},
  {id:'cote_m1',lieu:'terres_cote',dx:-12,dz:4,ry:Math.PI/2,t:'maison'},{id:'cote_m2',lieu:'terres_cote',dx:-11,dz:-9,ry:Math.PI/2,t:'maison2'},
  {id:'cote_phare',lieu:'terres_cote',dx:9,dz:-6,ry:0,t:'phare',nom:'Phare des Coquillages'},
- {id:'hald_r1',lieu:'terres_ruines',dx:-8,dz:-5,ry:0,t:'ruine'},{id:'hald_r2',lieu:'terres_ruines',dx:9,dz:2,ry:Math.PI/2,t:'ruine2'},{id:'hald_r3',lieu:'terres_ruines',dx:1,dz:13,ry:Math.PI,t:'ruine'}];
+ {id:'hald_r1',lieu:'terres_ruines',dx:-8,dz:-5,ry:0,t:'ruine'},{id:'hald_r2',lieu:'terres_ruines',dx:9,dz:2,ry:Math.PI/2,t:'ruine2'},{id:'hald_r3',lieu:'terres_ruines',dx:1,dz:13,ry:Math.PI,t:'ruine'},
+ {id:'camp_auberge',lieu:'landes_camp',dx:-19,dz:6,ry:Math.PI/2,t:'auberge',nom:'Relais des Voyageurs'},{id:'camp_m1',lieu:'landes_camp',dx:4,dz:-20,ry:0,t:'maison2'},{id:'camp_tour',lieu:'landes_camp',dx:17,dz:15,ry:Math.PI,t:'tour'}];
 const BATI={ready:false,stats:null};
 /* les hameaux ont besoin de place : la Halte et les Mines sont aplanies sur 24 m (au lieu de 13 et 16) */
 TER_LIEUX.forEach(L=>{if(L.id==='terres_halte'||L.id==='terres_mines'||L.id==='terres_ruines')L.r=Math.max(L.r,24);if(L.id==='terres_cote'){L.flat=0.3;L.r=Math.max(L.r,22);L.base=Math.max(L.base,2.5);}});
@@ -61,6 +62,8 @@ function batiBuild(gltf){gltf.scene.updateMatrixWorld(true);const TPL={};gltf.sc
  for(const P of BATI_PLANS){if(P.x===undefined)continue;let sd=0;for(const ch of P.id)sd=(sd*31+ch.charCodeAt(0))|0;const T=Object.assign({t:P.t,seed:sd&1023},BATI_TYPES[P.t]),B=batiBox(P);
   /* hauteur : le point le plus haut sous le bâtiment ; un socle de pierre descend jusqu'au plus bas */
   let hi=-1e9,lo=1e9;for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){const h=gh(P.x+a*B.hw,P.z+b*B.hd);hi=Math.max(hi,h);lo=Math.min(lo,h);}
+  /* hors des Grandes Terres, les arbres déjà plantés sous le bâtiment sont retirés */
+  if(P.x<4000&&typeof TREES!=='undefined'){const R=Math.hypot(B.hw,B.hd)+1.2;TREES=TREES.filter(tr=>{if(Math.hypot(tr.x-P.x,tr.z-P.z)<R){COLS.forEach(c=>{if(c.tree===tr)c.off=true;});return false;}return true;});treesDirty();}
   const y0=(hi+lo)/2+0.08;P.y=y0;const soc=new THREE.Mesh(new THREE.BoxGeometry(B.hw*2+0.5,y0-lo+1.2,B.hd*2+0.5),rock);soc.position.set(P.x,(y0+lo-1.2)/2,P.z);soc.receiveShadow=true;scene.add(soc);
   Mb.compose(V.set(P.x,y0,P.z),Q.setFromAxisAngle(UPV,P.ry),ONE);
   const cr=Math.cos(P.ry),sr=Math.sin(P.ry);

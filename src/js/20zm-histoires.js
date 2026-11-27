@@ -12,7 +12,13 @@
   lines:['Une bonne lame, c’est du feu, du fer… et de la patience.','Le meilleur minerai vient de Brisefer. Le pire caractère aussi : demande à Grégor.','Tu veux que je forge quelque chose ? Apporte-moi de quoi travailler.']},
  {id:'gregor',name:'Grégor Sombrepic',role:'chef des mineurs de Brisefer, solide, superstitieux, inquiet pour ses hommes',home:'terres_mines',mdl:['guerrier',0x9a9aa8],
   look:{skin:0xd8b090,hair:0x6a6a6a,style:'bald',beard:0x8a8a8a,robe:0x5a5a68,trim:0xc8a040,h:1.04,w:1.2},
-  lines:['On a creusé trop profond. On a réveillé quelque chose.','La fonderie est froide depuis l’incendie. Sans elle, Brisefer meurt.','Écoute… tu entends ? La montagne gronde.']}
+  lines:['On a creusé trop profond. On a réveillé quelque chose.','La fonderie est froide depuis l’incendie. Sans elle, Brisefer meurt.','Écoute… tu entends ? La montagne gronde.']},
+ {id:'neree',name:'Nérée Coquillard',role:'pêcheuse de la Côte des Coquillages, rêveuse, entend des chants sous la mer la nuit',home:'terres_cote',mdl:['rodeuse',0x9ad8e8],
+  look:{skin:0xe8c098,hair:0x2a4a5a,style:'pony',hat:0x2a5a7a,robe:0x3a7a9a,trim:0xf0e0c0,h:0.96},
+  lines:['Tu l’entends, toi aussi ? Ce chant… il vient de sous les vagues.','Depuis que le phare s’est éteint, les bateaux ne rentrent plus.','La mer donne, la mer reprend. Mais là, elle reprend trop.']},
+ {id:'haldaran',name:'Spectre du roi Haldaran',role:'fantôme d’un ancien roi, triste et solennel, parle de son royaume perdu comme s’il existait encore',home:'terres_ruines',mdl:['sorcier',0xbfe0ff],
+  look:{skin:0xd8e8f0,hair:0xe8f0ff,style:'long',beard:0xe8f0ff,hat:0x8ab0d8,robe:0xa8c8e8,trim:0xe8f0ff,h:1.12},
+  lines:['Ici s’élevait Haldaran… la plus belle cité des Grandes Terres.','Ma garde m’a trahi. Ma couronne… ils l’ont emportée dans la mort.','Je ne peux partir. Pas sans elle.']}
 ].forEach(p=>{if(NPCS.some(n=>n.id===p.id))return;NPCS.push({id:p.id,name:p.name,role:p.role,home:p.home,els:[],cl:[],look:p.look});NPCBY[p.id]=NPCS[NPCS.length-1];MDL_PERSO[p.id]=p.mdl;LINES[p.id]=p.lines.slice();});
 WANDS.brisefer={n:'Baguette de Brisefer',p:0,d:'Forgée par Borin dans le minerai d’étoile : +12 % à tous tes sorts, +5 % de coups critiques.',tip:0xffb070,all:0.12,crit:0.05,unique:true};
 const HISTOIRES=[
@@ -44,12 +50,30 @@ const HISTOIRES=[
   etapes:[{type:'ramasser',lieu:'terres_pics',objet:'un éclat de givre éternel',texte:'Trouver un éclat de givre éternel (Pics de Givre-Haut, zone très dangereuse)'},
    {type:'ramasser',lieu:'terres_mines',objet:'du minerai d’étoile',texte:'Rapporter du minerai d’étoile (Mines de Brisefer)'},
    {type:'parler',pnj:'borin',texte:'Rapporter les trésors à Borin'}],
-  recompense:{xp:350,or:100}}];
+  recompense:{xp:350,or:100}},
+ {id:'hist-chant',titre:'Le chant sous les vagues',donneur:'neree',actif:true,
+  description:'Le phare de la Côte s’est éteint, et chaque nuit des créatures gluantes remontent sur la plage en chantant. Nérée pense qu’une perle les appelle.',
+  etapes:[{type:'vaincre',creature:'glub',nombre:4,lieu:'terres_cote',texte:'Repousser les glubs qui remontent sur la plage'},
+   {type:'ramasser',lieu:'terres_cote',objet:'une perle chantante',texte:'Trouver la perle chantante dans le sable (Côte des Coquillages)'},
+   {type:'lancer',lieu:'terres_cote',element:'lumiere',texte:'Rallumer le phare avec un sort de Lumière'},
+   {type:'parler',pnj:'neree',texte:'Rapporter la perle à Nérée'}],
+  recompense:{xp:260,or:170,essence:2}},
+ {id:'hist-haldaran',titre:'La couronne d’Haldaran',donneur:'haldaran',actif:true,
+  description:'Le fantôme du roi Haldaran erre dans les ruines de sa cité. Sa garde l’a trahi et a emporté sa couronne dans la mort. Tant qu’il ne l’aura pas retrouvée, il ne connaîtra pas le repos.',
+  etapes:[{type:'vaincre',creature:'spectre',nombre:6,lieu:'terres_ruines',texte:'Affronter les spectres de la garde d’Haldaran (zone très dangereuse)'},
+   {type:'ramasser',lieu:'terres_ruines',objet:'la couronne brisée',texte:'Retrouver la couronne brisée dans les ruines'},
+   {type:'lancer',lieu:'terres_ruines',element:'lumiere',texte:'Bénir la couronne d’un sort de Lumière, au cœur des ruines'},
+   {type:'parler',pnj:'haldaran',texte:'Rendre la couronne au roi Haldaran'}],
+  recompense:{xp:420,or:260,cristal:4}}];
 HISTOIRES.forEach(h=>{if(!CQUETES.some(c=>c.id===h.id))CQUETES.push(h);});
 /* la baguette de Brisefer : récompense de « Une baguette pour un héros » */
-{const _f=finishQuest;finishQuest=function(q){const r=_f.apply(this,arguments);if(q&&q.cq==='hist-lame'&&typeof giveGear==='function')setTimeout(()=>giveGear('w','brisefer','Forgée par Borin pour toi'),800);return r;};}
+{const _f=finishQuest;finishQuest=function(q){const r=_f.apply(this,arguments);
+  if(q&&q.cq==='hist-haldaran')setTimeout(()=>say('👑 Le roi Haldaran pose la couronne sur sa tête. Un sourire, une lumière… puis il s’efface, enfin apaisé.','gm'),700);
+  if(q&&q.cq==='hist-chant')setTimeout(()=>say('🌊 Le phare brille de nouveau sur la Côte. Au loin, le chant s’est tu.','gm'),700);
+  if(q&&q.cq==='hist-lame'&&typeof giveGear==='function')setTimeout(()=>giveGear('w','brisefer','Forgée par Borin pour toi'),800);return r;};}
 /* les ennemis des histoires : ils apparaissent près du lieu pendant l'étape « vaincre » */
-const HIST_ENN={'hist-caravanes':{nom:'Orcs de Grokk',w:'glace',l:'feu',hp:4},'hist-aubin':{nom:'Orcs geôliers de Grokk',w:'glace',l:'feu',hp:5},'hist-brisefer':{nom:'Démons des cendres',w:'eau',l:'feu',hp:4}};
+const HIST_ENN={'hist-caravanes':{nom:'Orcs de Grokk',w:'glace',l:'feu',hp:4},'hist-aubin':{nom:'Orcs geôliers de Grokk',w:'glace',l:'feu',hp:5},'hist-brisefer':{nom:'Démons des cendres',w:'eau',l:'feu',hp:4},
+ 'hist-chant':{nom:'Glubs des profondeurs',w:'vent',l:'eau',hp:4},'hist-haldaran':{nom:'Spectres de la garde d’Haldaran',w:'lumiere',l:'ombre',hp:5}};
 let HIST_T=0;
 function histTick(dt){HIST_T-=dt;if(HIST_T>0||!started||S.zone!=='monde')return;HIST_T=1.5;
  for(const q of S.quests){const E=HIST_ENN[q.cq],s=curStep(q);if(!E||!s||s.kind!=='kill'||!s.loc)continue;const L=LOCBY[s.loc];if(!L||Math.hypot(player.x-L.x,player.z-L.z)>85)continue;

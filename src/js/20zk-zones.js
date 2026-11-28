@@ -26,7 +26,7 @@ function zoneDe(x,z){const near=(T)=>{for(const [id,r,n] of T){const L=LOCBY[id]
 /* entrer dans une zone : son nom et son niveau ; avertissement si elle dépasse nettement le tien */
 const ZONE={t:0,cur:null,vus:{}};
 function zoneTick(dt){ZONE.t-=dt;if(ZONE.t>0||!started)return;ZONE.t=0.6;if(S.zone!=='monde'){ZONE.cur=null;return;}
- const Z=zoneDe(player.x,player.z);ZONE.cur=Z;const key=Z.n+'|'+Z.niv;if(key===ZONE.last)return;const first=!ZONE.last;ZONE.last=key;if(first||Z.niv<4)return;
+ const Z=zoneDe(player.x,player.z);ZONE.cur=Z;const key=Z.n+'|'+Z.niv;if(key===ZONE.last)return;const first=!ZONE.last;ZONE.last=key;updateHUD(); /* le niveau s’affiche dès qu’on change de zone */if(first||Z.niv<4)return;
  if(Z.niv>lvl()+2){say('⚠ <b>'+esc(Z.n)+'</b> : zone de niveau <b>'+Z.niv+'</b> (tu es niveau '+lvl()+'). Les créatures y sont redoutables… et rapportent gros.','gm');
   if(!ZONE.vus[key]){ZONE.vus[key]=1;banner('⚠ '+Z.n,'Zone de niveau '+Z.niv);}}}
 {const _w=world4Tick;world4Tick=function(dt){zoneTick(dt);return _w.apply(this,arguments);};}
